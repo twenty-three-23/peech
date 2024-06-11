@@ -5,7 +5,7 @@ import com.twentythree.peech.dto.ParagraphResponseDTO;
 import com.twentythree.peech.dto.ScriptRequestDto;
 import com.twentythree.peech.dto.DefaultTimeResponseDTO;
 import com.twentythree.peech.dto.ParagraphRequestDTO;
-import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
