@@ -1,12 +1,14 @@
 package com.twentythree.peech.api;
 
-import com.twentythree.peech.dto.*;
+import com.twentythree.peech.dto.DefaultTimeResponseDTO;
+import com.twentythree.peech.dto.ParagraphRequestDTO;
+import com.twentythree.peech.dto.ParagraphResponseDTO;
+import com.twentythree.peech.dto.ScriptRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalTime;
 
@@ -21,10 +23,4 @@ public interface SwaggerScriptInterface {
     @ApiResponse(responseCode = "200", description = "성공", content = {@Content(schema = @Schema(implementation = DefaultTimeResponseDTO.class), mediaType = "application/json")})
     @ApiResponse(responseCode = "400", description = "실패", content = {@Content(schema = @Schema(implementation = Error.class), mediaType = "application/json")})
     DefaultTimeResponseDTO getDefaultTimePerParagraphResponseDTO(@RequestBody ParagraphRequestDTO paragraph);
-
-
-    @Operation(summary = "대본 입력", description = "대본 전송시 전체 예상 소요시간 출력")
-    @ApiResponse(responseCode = "200", description = "성공", content = {@Content(schema = @Schema(implementation = AllDefaultTimeResponseDTO.class), mediaType = "application/json")})
-    AllDefaultTimeResponseDTO getAllDefaultTimeResponseDTO(@RequestBody ScriptRequestDto script);
-
 }

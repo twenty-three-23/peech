@@ -1,8 +1,11 @@
 package com.twentythree.peech.api;
 
-import com.twentythree.peech.dto.*;
+import com.twentythree.peech.dto.ParagraphResponseDTO;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import com.twentythree.peech.dto.ScriptRequestDto;
+import com.twentythree.peech.dto.DefaultTimeResponseDTO;
+import com.twentythree.peech.dto.ParagraphRequestDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,12 +32,5 @@ public class ScriptController implements SwaggerScriptInterface {
 
         LocalTime defaultTime = LocalTime.of(0, 1, 20);
         return new DefaultTimeResponseDTO(defaultTime);
-    }
-
-    @GetMapping("/api/script/allDefaultTime")
-    public AllDefaultTimeResponseDTO getAllDefaultTimeResponseDTO(@RequestBody ScriptRequestDto script) {
-
-        LocalTime allDefaultTime = LocalTime.of(0, 1, 20);
-        return new AllDefaultTimeResponseDTO(allDefaultTime);
     }
 }
