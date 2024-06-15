@@ -1,11 +1,10 @@
-package com.twentythree.peech.api;
+package com.twentythree.peech.script;
 
-import com.twentythree.peech.dto.ParagraphResponseDTO;
+import com.twentythree.peech.script.dto.ParagraphResponseDTO;
 
-import com.twentythree.peech.dto.ScriptRequestDto;
-import com.twentythree.peech.dto.DefaultTimeResponseDTO;
-import com.twentythree.peech.dto.ParagraphRequestDTO;
-import io.swagger.v3.oas.annotations.Operation;
+import com.twentythree.peech.script.dto.ScriptRequestDto;
+import com.twentythree.peech.script.dto.DefaultTimeResponseDTO;
+import com.twentythree.peech.script.dto.ParagraphRequestDTO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
