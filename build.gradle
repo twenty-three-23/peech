@@ -46,6 +46,12 @@ dependencies {
     //MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    //spring-data-jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    //
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
