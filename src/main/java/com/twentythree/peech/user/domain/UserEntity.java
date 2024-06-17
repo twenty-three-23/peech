@@ -1,4 +1,4 @@
-package com.twentythree.peech.user;
+package com.twentythree.peech.user.domain;
 
 import com.twentythree.peech.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
