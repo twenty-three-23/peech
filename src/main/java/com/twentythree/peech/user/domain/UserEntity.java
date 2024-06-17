@@ -22,7 +22,7 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "device_id", unique=true)
     private String device_id;
 
-    public UserEntity ofNoLogin(Long id, String device_id) {
+    public static UserEntity ofNoLogin(Long id, String device_id) {
         return new UserEntity(id, device_id);
     }
 
