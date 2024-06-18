@@ -4,12 +4,14 @@ import com.twentythree.peech.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "USER")
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity extends BaseTimeEntity {
@@ -20,10 +22,14 @@ public class UserEntity extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "device_id", unique=true)
-    private String device_id;
+    private String deviceId;
 
-    public static UserEntity ofNoLogin(Long id, String device_id) {
-        return new UserEntity(id, device_id);
+    public UserEntity(String device_id) {
+        this.deviceId = device_id;
+    }
+
+    public static UserEntity ofNoLogin(String device_id) {
+        return new UserEntity(device_id);
     }
 
     @Override
