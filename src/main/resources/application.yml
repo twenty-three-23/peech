@@ -4,10 +4,11 @@ logging:
 
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: "jdbc:mysql://localhost:3306/peech_test"
+    username: "root"
+    password: "0000"
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     defer-datasource-initialization: true # data.sql? ???? ??
     hibernate:
@@ -26,3 +27,9 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
+
+  naver:
+    client:
+      secret: "a12698d1a30f4ba5b954fb585231ee53"
+    stt:
+      url: "https://clovaspeech-gw.ncloud.com/recog/v1/stt"
