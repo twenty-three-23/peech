@@ -1,15 +1,17 @@
 package com.twentythree.peech.script.dto.response;
 
+import com.twentythree.peech.script.dto.OrderToParagraph;
+import com.twentythree.peech.script.dto.TimePerParagraph;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalTime;
-import java.util.Map;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
 public class ProcessedScriptResponseDTO {
     private LocalTime expectedAllTime;
-    private Map<Long, LocalTime> expectedTimePerParagraphs;
-    private Map<Long, String> paragraphs;
+    private List<TimePerParagraph> expectedTimePerParagraphs;
+    private List<OrderToParagraph> paragraphs;
 }

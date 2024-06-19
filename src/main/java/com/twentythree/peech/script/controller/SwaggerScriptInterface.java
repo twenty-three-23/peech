@@ -1,8 +1,6 @@
 package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.script.dto.request.ScriptRequestDTO;
-import com.twentythree.peech.script.dto.response.ExpectedAllTimeResponseDTO;
-import com.twentythree.peech.script.dto.response.ParagraphsResponseDTO;
 import com.twentythree.peech.script.dto.response.ProcessedScriptResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

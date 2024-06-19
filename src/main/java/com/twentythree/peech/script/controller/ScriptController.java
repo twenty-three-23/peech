@@ -1,5 +1,7 @@
 package com.twentythree.peech.script.controller;
 
+import com.twentythree.peech.script.dto.OrderToParagraph;
+import com.twentythree.peech.script.dto.TimePerParagraph;
 import com.twentythree.peech.script.dto.request.ScriptRequestDTO;
 import com.twentythree.peech.script.dto.response.ProcessedScriptResponseDTO;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,24 +9,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalTime;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class ScriptController implements SwaggerScriptInterface {
     @Override
     @GetMapping("/test")
     public ProcessedScriptResponseDTO processScript(@RequestBody ScriptRequestDTO paragraph) {
-        HashMap<Long, LocalTime> hm = new HashMap<>();
+        List<TimePerParagraph> tpp = new ArrayList<>();
         LocalTime lt = LocalTime.of(0, 1, 29);
-        HashMap<Long, String> hm2 = new HashMap<>();
+        List<OrderToParagraph> itp = new ArrayList<>();
 
-        hm.put(1L, LocalTime.of(0, 1, 29));
-        hm.put(2L, LocalTime.of(0, 1, 29));
+        tpp.add(new TimePerParagraph(1L, LocalTime.of(0, 1, 29)));
+        tpp.add(new TimePerParagraph(1L, LocalTime.of(0, 2, 33)));
 
-        hm2.put(1L, "qweqwe");
-        hm2.put(2L, "asdasdfsdfd");
+        itp.add(new OrderToParagraph(1L, "qweqwe"));
+        itp.add(new OrderToParagraph(1L, "asd"));
 
-        ProcessedScriptResponseDTO processedScriptResponseDTO = new ProcessedScriptResponseDTO(lt, hm, hm2);
+        ProcessedScriptResponseDTO processedScriptResponseDTO = new ProcessedScriptResponseDTO(lt, tpp, itp);
         return processedScriptResponseDTO;
     }
 }
