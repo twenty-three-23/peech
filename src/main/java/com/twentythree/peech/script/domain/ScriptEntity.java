@@ -59,13 +59,19 @@ public class ScriptEntity extends BaseCreatedAtEntity {
                                                    String scriptContent,
                                                    LocalTime totalExpectTime,
                                                    InputAndSttType DType) {
+        if (DType != InputAndSttType.INPUT) {
+            throw new IllegalArgumentException("팩토리 함수를 잘못사용했습니다.");
+        }
         return new ScriptEntity(versionFk, scriptContent, totalExpectTime, DType);
     }
 
     public static ScriptEntity ofCreateSTTScript(VersionPk versionFk,
                                                    String scriptContent,
-                                                   LocalTime totalExpectTime,
+                                                   LocalTime totalRealTime,
                                                  InputAndSttType DType) {
-        return new ScriptEntity(versionFk, scriptContent, totalExpectTime, DType);
+        if (DType != InputAndSttType.STT) {
+            throw new IllegalArgumentException("팩토리 함수를 잘못사용했습니다.");
+        }
+        return new ScriptEntity(versionFk, scriptContent, totalRealTime, DType);
     }
 }
