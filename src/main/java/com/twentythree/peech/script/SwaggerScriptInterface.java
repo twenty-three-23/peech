@@ -1,16 +1,14 @@
-package com.twentythree.peech.api;
+package com.twentythree.peech.script;
 
-import com.twentythree.peech.dto.DefaultTimeResponseDTO;
-import com.twentythree.peech.dto.ParagraphRequestDTO;
-import com.twentythree.peech.dto.ParagraphResponseDTO;
-import com.twentythree.peech.dto.ScriptRequestDto;
+import com.twentythree.peech.script.dto.DefaultTimeResponseDTO;
+import com.twentythree.peech.script.dto.ParagraphRequestDTO;
+import com.twentythree.peech.script.dto.ParagraphResponseDTO;
+import com.twentythree.peech.script.dto.ScriptRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.time.LocalTime;
 
 public interface SwaggerScriptInterface {
 

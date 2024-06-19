@@ -1,4 +1,4 @@
-package com.twentythree.peech.dto;
+package com.twentythree.peech.script.dto;
 
 
 import lombok.Data;
