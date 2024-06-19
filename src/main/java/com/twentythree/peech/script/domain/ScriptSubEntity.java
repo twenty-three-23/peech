@@ -7,5 +7,6 @@ import java.time.LocalTime;
 @DiscriminatorValue("input")
 @Entity
 public class ScriptSubEntity extends ScriptSuperEntity {
-    private LocalTime total_expect_time;
+    @Column(name = "total_expect_time")
+    private LocalTime totalExpectTime;
 }
