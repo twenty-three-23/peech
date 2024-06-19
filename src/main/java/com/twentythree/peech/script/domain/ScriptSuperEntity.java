@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
+@Table(name = "SCRIPT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DType")
 @Getter
