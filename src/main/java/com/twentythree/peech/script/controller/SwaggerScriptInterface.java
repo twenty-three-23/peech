@@ -1,4 +1,4 @@
-package com.twentythree.peech.script;
+package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.script.dto.DefaultTimeResponseDTO;
 import com.twentythree.peech.script.dto.ParagraphRequestDTO;
