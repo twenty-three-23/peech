@@ -1,11 +1,15 @@
 package com.twentythree.peech.user.dto.request;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.Data;
 
-@Getter
-@AllArgsConstructor
+@Data
 public class CreateUserRequestDTO {
     private String deviceId;
+
+    @JsonCreator
+    public CreateUserRequestDTO(String deviceId) {
+        this.deviceId = deviceId;
+    }
 }
