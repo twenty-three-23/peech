@@ -36,7 +36,7 @@ public class ScriptEntity extends BaseCreatedAtEntity {
     @Column(name = "total_real_time")
     private LocalTime totalRealTime;
 
-    @Column(name = "d_type")
+    @Column(name = "d_type", nullable = false)
     private InputAndSttType DType;
 
     private ScriptEntity(VersionPk versionFk, String scriptContent, LocalTime time, InputAndSttType DType) {
