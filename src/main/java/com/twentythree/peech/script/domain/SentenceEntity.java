@@ -16,7 +16,7 @@ public class SentenceEntity extends BaseCreatedAtEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sentence_id", nullable = false)
+    @Column(name = "sentence_id")
     private Long sentenceId;
 
     @ManyToOne
