@@ -24,7 +24,32 @@ public class ScriptService {
     public ScriptService(ScriptRepository scriptRepository) {
         this.scriptRepository = scriptRepository;
     }
-    
+
+
+
+    public ScriptEntity saveInputScript(Long packageId, String text) {
+        LocalTime expectedTime = calculateExpectedTime(text);
+
+
+        Long latestMajorVersion = scriptRepository.findByMaxMajorVersionInPackageId(packageId);
+
+        VersionPk versionPk;
+
+        if (latestMajorVersion == null) {
+            versionPk = new VersionPk(1L, 0L);
+        } else {
+            versionPk = new VersionPk(latestMajorVersion + 1, 0L);
+        }
+
+        ScriptEntity scriptEntity = ScriptEntity.ofCreateInputScript(versionPk, text, expectedTime, InputAndSttType.INPUT);
+
+        scriptRepository.save(scriptEntity);
+        return scriptEntity;
+    }
+
+
+
+
 
     // 메소드
 
