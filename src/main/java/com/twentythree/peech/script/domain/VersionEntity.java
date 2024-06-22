@@ -22,13 +22,12 @@ public class VersionEntity extends BaseCreatedAtEntity {
     @Column(name = "minor_version")
     private Long minorVersion;
 
-    // @ManyToOne(fetch = FetchType.LAZY) package entity가 완성되면 packageId에 @OneToMany로 연결
-    @JoinColumn
-    @Column(name = "package_id", nullable = false)
-    private Long packageId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "package_id")
+    private PackageEntity packageEntity;
 
-    public static VersionEntity of(Long majorVersion, Long minorVersion, Long packageId) {
-        return new VersionEntity(majorVersion, minorVersion, packageId);
+    public static VersionEntity of(Long majorVersion, Long minorVersion, PackageEntity packageEntity) {
+        return new VersionEntity(majorVersion, minorVersion, packageEntity);
     }
 
 }

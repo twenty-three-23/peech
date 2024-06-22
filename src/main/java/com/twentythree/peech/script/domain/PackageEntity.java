@@ -8,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "PACKAGE")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,12 +22,15 @@ public class PackageEntity extends BaseTimeEntity {
     @Column(name = "package_id")
     private Long packageId;
 
-    @ManyToOne
-    @JoinColumn(name="user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
     @Column(name = "package_title")
     private String packageTitle;
+
+    @OneToMany(mappedBy = "packageEntity")
+    private List<VersionEntity> versions = new ArrayList<>();
 
 }
 

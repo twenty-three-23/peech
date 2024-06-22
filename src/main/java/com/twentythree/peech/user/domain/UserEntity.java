@@ -1,12 +1,14 @@
 package com.twentythree.peech.user.domain;
 
 import com.twentythree.peech.common.domain.BaseTimeEntity;
+import com.twentythree.peech.script.domain.PackageEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -23,6 +25,9 @@ public class UserEntity extends BaseTimeEntity {
 
     @Column(name = "device_id", unique=true)
     private String deviceId;
+
+    @OneToMany(mappedBy = "userEntity")
+    private List<PackageEntity> packages;
 
     public UserEntity(String device_id) {
         this.deviceId = device_id;
