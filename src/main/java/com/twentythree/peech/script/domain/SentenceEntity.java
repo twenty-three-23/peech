@@ -11,6 +11,7 @@ import java.time.LocalTime;
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "SENTENCE")
 @Getter
 public class SentenceEntity extends BaseCreatedAtEntity {
 
