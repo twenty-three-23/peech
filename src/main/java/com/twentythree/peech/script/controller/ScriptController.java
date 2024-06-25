@@ -1,10 +1,13 @@
 package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
+import com.twentythree.peech.script.dto.request.ScriptIdRequestDTO;
+import com.twentythree.peech.script.dto.response.ExpectedTimeResponseDTO;
 import com.twentythree.peech.script.dto.response.SaveScriptAndSentenceResponseDTO;
 import com.twentythree.peech.script.service.ScriptSentenceFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,4 +27,8 @@ public class ScriptController implements SwaggerScriptInterface{
         return new SaveScriptAndSentenceResponseDTO(scriptId);
     }
 
+    @GetMapping("/api/v1/script")
+    public ExpectedTimeResponseDTO getScriptAndSentenceExpectedTime(@RequestBody ScriptIdRequestDTO request) {
+        return scriptSentenceFacade.getScriptAndSentence(request.scriptId());
+    }
 }
