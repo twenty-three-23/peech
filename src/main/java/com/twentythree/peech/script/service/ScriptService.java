@@ -1,5 +1,7 @@
 package com.twentythree.peech.script.service;
 
+import com.twentythree.peech.common.dto.request.GPTRequest;
+import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.SaveScripDTO;
 import com.twentythree.peech.script.repository.PackageRepository;
@@ -20,7 +22,13 @@ import java.time.LocalTime;
 @Service
 @Transactional(readOnly = true)
 public class ScriptService {
-    
+
+    @Value("${gpt.model}")
+    private String model;
+
+    @Value("${gpt.api.url}")
+    private String apiURL;
+    private final RestTemplate restTemplate;
     private final ScriptRepository scriptRepository;
     private final PackageRepository packageRepository;
     private final VersionRepository versionRepository;
@@ -50,4 +58,20 @@ public class ScriptService {
 
         return scriptEntity.getTotalExpectTime();
     }
+
+    // GPT
+
+    public String[] sliceScriptToParagraph(String text){
+
+        String prompt = "아래의 스크립트를 문장으로 나누고 그 문장들을 문단으로 다시 합쳐줘 " + text;
+
+        GPTRequest request = new GPTRequest(model, prompt);
+        GPTResponse Response = restTemplate.postForObject(apiURL, request, GPTResponse.class);
+        String result = Response.getChoices().get(0).getMessage().getContent();
+
+        String[] paragraphs = result.split("\n");
+
+        return paragraphs;
+    }
+
 }
