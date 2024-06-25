@@ -45,4 +45,9 @@ public class ScriptService {
         return new SaveScripDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
     }
 
+    public LocalTime getInputExpectedScriptTime(Long scriptId) {
+        ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
+
+        return scriptEntity.getTotalExpectTime();
+    }
 }
