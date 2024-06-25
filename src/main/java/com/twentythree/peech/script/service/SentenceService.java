@@ -4,6 +4,7 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.script.domain.ScriptEntity;
 import com.twentythree.peech.script.domain.SentenceEntity;
+import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
 import com.twentythree.peech.script.repository.SentenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -41,4 +44,31 @@ public class SentenceService {
         return sentenceIds;
     }
 
+    public List<paragraphIdToExpectedTime> getParagraphExpectedTime(Long scriptId) {
+
+        List<paragraphIdToExpectedTime> results = new ArrayList<>();
+
+        Map<Long, LocalTime> timeMap = new HashMap<>();
+
+        List<SentenceEntity> sentences = sentenceRepository.findBySentencesToScriptId(scriptId);
+
+        for (SentenceEntity sentence : sentences) {
+            Long paragraphId = sentence.getParagraphId();
+            LocalTime expectedTime = timeMap.get(paragraphId);
+
+            if (expectedTime == null) {
+                timeMap.put(paragraphId, sentence.getSentenceExpectTime());
+            } else {
+                LocalTime sumTime = ScriptUtils.sumLocalTime(expectedTime, sentence.getSentenceExpectTime());
+                timeMap.put(paragraphId, sumTime);
+            }
+        }
+
+        Long paragraphId = 0L;
+        for (Map.Entry<Long, LocalTime> entry : timeMap.entrySet()) {
+            results.add(new paragraphIdToExpectedTime(entry.getKey(), entry.getValue()));
+        }
+
+        return results;
+    }
 }
