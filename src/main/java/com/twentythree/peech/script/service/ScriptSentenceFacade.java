@@ -1,10 +1,13 @@
 package com.twentythree.peech.script.service;
 
 import com.twentythree.peech.script.dto.SaveScripDTO;
+import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
+import com.twentythree.peech.script.dto.response.ExpectedTimeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -21,4 +24,11 @@ public class ScriptSentenceFacade {
         return saveScripDTO.scriptEntity().getScriptId();
     }
 
+    @Transactional
+    public ExpectedTimeResponseDTO getScriptAndSentence(Long scriptId) {
+        LocalTime inputExpectedScriptTime = scriptService.getInputExpectedScriptTime(scriptId);
+        List<paragraphIdToExpectedTime> paragraphExpectedTime = sentenceService.getParagraphExpectedTime(scriptId);
+
+        return new ExpectedTimeResponseDTO(inputExpectedScriptTime, paragraphExpectedTime);
+    }
 }
