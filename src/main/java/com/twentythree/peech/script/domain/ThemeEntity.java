@@ -12,24 +12,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "PACKAGE")
+@Table(name = "THEME")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PackageEntity extends BaseTimeEntity {
+public class ThemeEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "package_id")
-    private Long packageId;
+    @Column(name = "theme_id")
+    private Long themeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @Column(name = "package_title")
-    private String packageTitle;
+    @Column(name = "theme_title")
+    private String themeTitle;
 
-    @OneToMany(mappedBy = "packageEntity")
+    @OneToMany(mappedBy = "ThemeEntity")
     private List<VersionEntity> versions = new ArrayList<>();
 
 }

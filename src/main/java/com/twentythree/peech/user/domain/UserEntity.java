@@ -1,7 +1,7 @@
 package com.twentythree.peech.user.domain;
 
 import com.twentythree.peech.common.domain.BaseTimeEntity;
-import com.twentythree.peech.script.domain.PackageEntity;
+import com.twentythree.peech.script.domain.ThemeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ public class UserEntity extends BaseTimeEntity {
     private String deviceId;
 
     @OneToMany(mappedBy = "userEntity")
-    private List<PackageEntity> packages;
+    private List<ThemeEntity> themes;
 
     public UserEntity(String device_id) {
         this.deviceId = device_id;
