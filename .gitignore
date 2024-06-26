@@ -38,3 +38,5 @@ out/
 
 ### git mirror
 /peech.git
+
+data.sql

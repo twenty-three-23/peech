@@ -7,20 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(VersionPk.class)
-@Table(name="VERSION")
+@Table(name = "VERSION")
 @Entity
 public class VersionEntity extends BaseCreatedAtEntity {
 
     @Id
+    @Column(name = "major_version")
     private Long majorVersion;
     @Id
+    @Column(name = "minor_version")
     private Long minorVersion;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,6 +28,14 @@ public class VersionEntity extends BaseCreatedAtEntity {
 
     public static VersionEntity of(Long majorVersion, Long minorVersion, PackageEntity packageEntity) {
         return new VersionEntity(majorVersion, minorVersion, packageEntity);
+    }
+
+    public static VersionEntity ofCreateInputScriptVersion(Long latestMajorVersion, PackageEntity packageEntity) {
+        if (latestMajorVersion == null) {
+            return VersionEntity.of(1L, 0L, packageEntity);
+        } else {
+            return VersionEntity.of(latestMajorVersion + 1L, 0L, packageEntity);
+        }
     }
 
 }

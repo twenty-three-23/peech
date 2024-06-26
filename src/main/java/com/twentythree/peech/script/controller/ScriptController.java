@@ -1,33 +1,34 @@
 package com.twentythree.peech.script.controller;
 
-import com.twentythree.peech.script.dto.OrderToParagraph;
-import com.twentythree.peech.script.dto.TimePerParagraph;
-import com.twentythree.peech.script.dto.request.ScriptRequestDTO;
-import com.twentythree.peech.script.dto.response.ProcessedScriptResponseDTO;
+import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
+import com.twentythree.peech.script.dto.request.ScriptIdRequestDTO;
+import com.twentythree.peech.script.dto.response.ExpectedTimeResponseDTO;
+import com.twentythree.peech.script.dto.response.SaveScriptAndSentenceResponseDTO;
+import com.twentythree.peech.script.service.ScriptSentenceFacade;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
-public class ScriptController implements SwaggerScriptInterface {
-    @Override
-    @GetMapping("/test")
-    public ProcessedScriptResponseDTO processScript(@RequestBody ScriptRequestDTO paragraph) {
-        List<TimePerParagraph> tpp = new ArrayList<>();
-        LocalTime lt = LocalTime.of(0, 1, 29);
-        List<OrderToParagraph> itp = new ArrayList<>();
+@AllArgsConstructor
+public class ScriptController implements SwaggerScriptInterface{
 
-        tpp.add(new TimePerParagraph(1L, LocalTime.of(0, 1, 29)));
-        tpp.add(new TimePerParagraph(1L, LocalTime.of(0, 2, 33)));
+    private final ScriptSentenceFacade scriptSentenceFacade;
 
-        itp.add(new OrderToParagraph(1L, "qweqwe"));
-        itp.add(new OrderToParagraph(1L, "asd"));
+    @Operation(summary = "문단들 입력", description = "버전 생성 및 저장, 대본 저장, 문장 저장.")
+    @PostMapping("/api/v1/script")
+    public SaveScriptAndSentenceResponseDTO saveScriptAndSentence(@RequestBody ParagraphsRequestDTO request) {
 
-        ProcessedScriptResponseDTO processedScriptResponseDTO = new ProcessedScriptResponseDTO(lt, tpp, itp);
-        return processedScriptResponseDTO;
+        Long scriptId = scriptSentenceFacade.createScriptAndSentence(request.packageId(), request.paragraphs());
+
+        return new SaveScriptAndSentenceResponseDTO(scriptId);
+    }
+
+    @GetMapping("/api/v1/script")
+    public ExpectedTimeResponseDTO getScriptAndSentenceExpectedTime(@RequestBody ScriptIdRequestDTO request) {
+        return scriptSentenceFacade.getScriptAndSentence(request.scriptId());
     }
 }
