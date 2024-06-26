@@ -3,7 +3,7 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.domain.*;
-import com.twentythree.peech.script.dto.SaveScripDTO;
+import com.twentythree.peech.script.dto.SaveScriptDTO;
 import com.twentythree.peech.script.repository.PackageRepository;
 import com.twentythree.peech.script.repository.ScriptRepository;
 import com.twentythree.peech.common.utils.ScriptUtils;
@@ -34,7 +34,7 @@ public class ScriptService {
     private final VersionRepository versionRepository;
 
     @Transactional
-    public SaveScripDTO saveInputScript(Long packageId, String[] paragraphs) {
+    public SaveScriptDTO saveInputScript(Long packageId, String[] paragraphs) {
 
         String script = String.join("\n", paragraphs);
 
@@ -50,7 +50,7 @@ public class ScriptService {
         versionRepository.save(versionEntity);
         scriptRepository.save(scriptEntity);
 
-        return new SaveScripDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
+        return new SaveScriptDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
     }
 
     public LocalTime getInputExpectedScriptTime(Long scriptId) {

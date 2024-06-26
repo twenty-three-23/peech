@@ -1,6 +1,6 @@
 package com.twentythree.peech.script.service;
 
-import com.twentythree.peech.script.dto.SaveScripDTO;
+import com.twentythree.peech.script.dto.SaveScriptDTO;
 import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
 import com.twentythree.peech.script.dto.response.ExpectedTimeResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class ScriptSentenceFacade {
 
     @Transactional
     public Long createScriptAndSentence(Long packageId, String[] paragraphs) {
-        SaveScripDTO saveScripDTO = scriptService.saveInputScript(packageId, paragraphs);
+        SaveScriptDTO saveScripDTO = scriptService.saveInputScript(packageId, paragraphs);
         List<Long> sentenceIds = sentenceService.saveInputSentencesByParagraphs(saveScripDTO.scriptEntity(), paragraphs);
 
         return saveScripDTO.scriptEntity().getScriptId();
