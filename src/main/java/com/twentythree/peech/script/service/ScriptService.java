@@ -4,7 +4,7 @@ import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.SaveScriptDTO;
-import com.twentythree.peech.script.repository.PackageRepository;
+import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.script.repository.ScriptRepository;
 import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.script.repository.VersionRepository;
@@ -30,21 +30,21 @@ public class ScriptService {
     private String apiURL;
     private final RestTemplate restTemplate;
     private final ScriptRepository scriptRepository;
-    private final PackageRepository packageRepository;
+    private final ThemeRepository themeRepository;
     private final VersionRepository versionRepository;
 
     @Transactional
-    public SaveScriptDTO saveInputScript(Long packageId, String[] paragraphs) {
+    public SaveScriptDTO saveInputScript(Long themeId, String[] paragraphs) {
 
         String script = String.join("\n", paragraphs);
 
         LocalTime expectedTime = ScriptUtils.calculateExpectedTime(script);
 
-        PackageEntity packageEntity = packageRepository.findById(packageId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
 
-        Long latestMajorVersion = scriptRepository.findByMaxMajorVersionInPackageId(packageId);
+        Long latestMajorVersion = scriptRepository.findByMaxMajorVersionInthemeId(themeId);
 
-        VersionEntity versionEntity = VersionEntity.ofCreateInputScriptVersion(latestMajorVersion, packageEntity);
+        VersionEntity versionEntity = VersionEntity.ofCreateInputScriptVersion(latestMajorVersion, ThemeEntity);
         ScriptEntity scriptEntity = ScriptEntity.ofCreateInputScript(versionEntity, script, expectedTime, InputAndSttType.INPUT);
 
         versionRepository.save(versionEntity);

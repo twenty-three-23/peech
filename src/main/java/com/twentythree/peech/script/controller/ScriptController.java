@@ -22,7 +22,7 @@ public class ScriptController implements SwaggerScriptInterface{
     @PostMapping("/api/v1/script")
     public SaveScriptAndSentenceResponseDTO saveScriptAndSentence(@RequestBody ParagraphsRequestDTO request) {
 
-        Long scriptId = scriptSentenceFacade.createScriptAndSentence(request.packageId(), request.paragraphs());
+        Long scriptId = scriptSentenceFacade.createScriptAndSentence(request.themeId(), request.paragraphs());
 
         return new SaveScriptAndSentenceResponseDTO(scriptId);
     }

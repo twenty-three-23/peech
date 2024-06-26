@@ -1,10 +1,10 @@
 INSERT INTO user (user_id, device_id, created_at, updated_at) VALUES
                                                                   (1, 'device_1', '2018-02-01', '2018-12-18');
 
-INSERT INTO package (package_id, user_id, created_at, updated_at, package_title) VALUES
+INSERT INTO theme (theme_id, user_id, created_at, updated_at, theme_title) VALUES
                                                                                      (1, 1, '2022-11-08', '2021-02-24', 'Package Title 1');
 
-INSERT INTO version (major_version, minor_version, package_id, created_at) VALUES
+INSERT INTO version (major_version, minor_version, theme_id, created_at) VALUES
                                                                                (1, 0, 1, '2021-01-08'),
                                                                                (2, 0, 1, '2021-02-03'),
                                                                                (3, 0, 1, '2021-02-24');
