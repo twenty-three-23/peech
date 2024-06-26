@@ -16,19 +16,18 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(UserIdDTO.class) && parameter.hasParameterAnnotation(LoginUserId.class);
+        log.info("supportsParameter 시작");
+        return UserIdDTO.class.isAssignableFrom(parameter.getParameterType()) && parameter.hasParameterAnnotation(LoginUserId.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         Cookie[] cookies = request.getCookies();
-        log.info("1");
         if (cookies == null) {
             throw new IllegalArgumentException("로그인을 다시 해주세요");
         }
-        log.info("{}", cookies);
 
         Long userId = null;
         for (Cookie cookie : cookies) {
