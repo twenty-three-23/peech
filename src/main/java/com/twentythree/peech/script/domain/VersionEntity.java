@@ -30,11 +30,11 @@ public class VersionEntity extends BaseCreatedAtEntity {
         return new VersionEntity(majorVersion, minorVersion, ThemeEntity);
     }
 
-    public static VersionEntity ofCreateInputScriptVersion(Long latestMajorVersion, PackageEntity packageEntity) {
+    public static VersionEntity ofCreateInputScriptVersion(Long latestMajorVersion, ThemeEntity ThemeEntity) {
         if (latestMajorVersion == null) {
-            return VersionEntity.of(1L, 0L, packageEntity);
+            return VersionEntity.of(1L, 0L, ThemeEntity);
         } else {
-            return VersionEntity.of(latestMajorVersion + 1L, 0L, packageEntity);
+            return VersionEntity.of(latestMajorVersion + 1L, 0L, ThemeEntity);
         }
     }
 

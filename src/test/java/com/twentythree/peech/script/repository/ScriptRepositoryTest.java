@@ -18,7 +18,7 @@ class ScriptRepositoryTest {
         // given
 
         // when
-        Long id = scriptRepository.findByMaxMajorVersionInPackageId(1L);
+        Long id = scriptRepository.findByMaxMajorVersionInthemeId(1L);
 
         // then
         assertThat(id).isEqualTo(3L);
