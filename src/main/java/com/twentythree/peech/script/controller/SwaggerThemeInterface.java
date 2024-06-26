@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface SwaggerThemeInterface {
 
-    @ApiResponse(responseCode = "200", description = "성공", content = {@Content(schema = @Schema(implementation = ThemeIdResponseDTO.class), mediaType = "application/json")})
+    @ApiResponse(responseCode = "201", description = "성공", content = {@Content(schema = @Schema(implementation = ThemeIdResponseDTO.class), mediaType = "application/json")})
     ThemeIdResponseDTO saveTheme(@RequestBody ThemeTitleRequestDTO request, @LoginUserId UserIdDTO userIdDTO);
 }
