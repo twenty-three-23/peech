@@ -23,11 +23,11 @@ public class VersionEntity extends BaseCreatedAtEntity {
     private Long minorVersion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "package_id")
-    private PackageEntity packageEntity;
+    @JoinColumn(nullable = false, name = "theme_id")
+    private ThemeEntity ThemeEntity;
 
-    public static VersionEntity of(Long majorVersion, Long minorVersion, PackageEntity packageEntity) {
-        return new VersionEntity(majorVersion, minorVersion, packageEntity);
+    public static VersionEntity of(Long majorVersion, Long minorVersion, ThemeEntity ThemeEntity) {
+        return new VersionEntity(majorVersion, minorVersion, ThemeEntity);
     }
 
     public static VersionEntity ofCreateInputScriptVersion(Long latestMajorVersion, PackageEntity packageEntity) {
