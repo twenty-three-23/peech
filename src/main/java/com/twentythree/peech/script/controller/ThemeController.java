@@ -4,13 +4,15 @@ import com.twentythree.peech.auth.dto.LoginUserId;
 import com.twentythree.peech.auth.dto.UserIdDTO;
 import com.twentythree.peech.script.dto.request.ThemeTitleRequestDTO;
 import com.twentythree.peech.script.dto.response.ThemeIdResponseDTO;
+import com.twentythree.peech.script.dto.response.ThemesResponseDTO;
 import com.twentythree.peech.script.service.ThemeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -27,5 +29,13 @@ public class ThemeController implements SwaggerThemeInterface {
         Long themeId = themeService.saveTheme(userId, request.themeTitle());
 
         return new ThemeIdResponseDTO(themeId);
+    }
+
+    @Override
+    @GetMapping("/api/v1/theme")
+    public ThemesResponseDTO getThemes(@LoginUserId UserIdDTO userIdDTO) {
+        Long userId = userIdDTO.userId();
+
+        return themeService.getThemesByUserId(userId);
     }
 }
