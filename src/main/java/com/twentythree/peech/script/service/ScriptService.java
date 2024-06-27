@@ -3,7 +3,9 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.domain.*;
+import com.twentythree.peech.script.dto.MajorScriptDTO;
 import com.twentythree.peech.script.dto.SaveScriptDTO;
+import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
 import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.script.repository.ScriptRepository;
 import com.twentythree.peech.common.utils.ScriptUtils;
@@ -16,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -57,6 +61,16 @@ public class ScriptService {
         ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
 
         return scriptEntity.getTotalExpectTime();
+    }
+
+    public MajorScriptsResponseDTO getMajorScript(Long themeId) {
+        List<ScriptEntity> scripts = scriptRepository.findMajorScriptByThemeId(themeId);
+        List<MajorScriptDTO> majorScript = new ArrayList<>();
+        for (ScriptEntity script : scripts) {
+            majorScript.add(new MajorScriptDTO(script.getScriptId(), script.getVersion().getMajorVersion(), script.getScriptContent(), script.getCreatedAt()));
+        }
+
+        return new MajorScriptsResponseDTO(majorScript);
     }
 
     // GPT
