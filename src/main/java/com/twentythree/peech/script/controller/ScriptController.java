@@ -3,6 +3,7 @@ package com.twentythree.peech.script.controller;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
 import com.twentythree.peech.script.dto.response.ExpectedTimeResponseDTO;
 import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
+import com.twentythree.peech.script.dto.response.MinorScriptsResponseDTO;
 import com.twentythree.peech.script.dto.response.SaveScriptAndSentenceResponseDTO;
 import com.twentythree.peech.script.service.ScriptSentenceFacade;
 import com.twentythree.peech.script.service.ScriptService;
@@ -35,5 +36,11 @@ public class ScriptController implements SwaggerScriptInterface{
     public MajorScriptsResponseDTO getMajorScript(@PathVariable("themeId") Long themeId) {
         MajorScriptsResponseDTO majorScript = scriptService.getMajorScript(themeId);
         return majorScript;
+    }
+
+    @Override
+    @GetMapping("/api/v1/script/{themeId}/{majorVersion}")
+    public MinorScriptsResponseDTO getMinorScript(@PathVariable("themeId") Long themeId, @PathVariable("majorVersion") Long majorVersion) {
+        return scriptService.getMinorScript(themeId, majorVersion);
     }
 }

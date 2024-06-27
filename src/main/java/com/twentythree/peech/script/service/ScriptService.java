@@ -4,8 +4,10 @@ import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.MajorScriptDTO;
+import com.twentythree.peech.script.dto.MinorScriptDTO;
 import com.twentythree.peech.script.dto.SaveScriptDTO;
 import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
+import com.twentythree.peech.script.dto.response.MinorScriptsResponseDTO;
 import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.script.repository.ScriptRepository;
 import com.twentythree.peech.common.utils.ScriptUtils;
@@ -73,6 +75,18 @@ public class ScriptService {
         return new MajorScriptsResponseDTO(majorScript);
     }
 
+    public MinorScriptsResponseDTO getMinorScript(Long themeId, Long majorVersion) {
+        List<ScriptEntity> scripts = scriptRepository.findMinorScriptByThemeIdAndMajorVersion(themeId, majorVersion);
+
+        List<MinorScriptDTO> minorScripts = new ArrayList<>();
+
+        for (ScriptEntity script : scripts) {
+            minorScripts.add(new MinorScriptDTO(script.getVersion().getMinorVersion(), script.getScriptContent(), script.getCreatedAt()));
+        }
+
+        return new MinorScriptsResponseDTO(minorScripts);
+    }
+
     // GPT
 
     public String[] sliceScriptToParagraph(String text){
@@ -84,6 +98,7 @@ public class ScriptService {
         String result = Response.getChoices().get(0).getMessage().getContent();
 
         String[] paragraphs = result.split("\n");
+        System.out.println(paragraphs);
 
         return paragraphs;
     }

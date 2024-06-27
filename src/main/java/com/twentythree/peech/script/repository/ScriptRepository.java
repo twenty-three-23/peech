@@ -17,4 +17,13 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long> {
             "where v.ThemeEntity.themeId = :themeId " +
             "and v.minorVersion = 0")
     List<ScriptEntity> findMajorScriptByThemeId(Long themeId);
+
+    @Query("select s from ScriptEntity s " +
+            "join fetch VersionEntity v " +
+            "on s.version.majorVersion = v.majorVersion and s.version.minorVersion = v.minorVersion " +
+            "where v.minorVersion != 0 " +
+            "and v.ThemeEntity.themeId = :themeId " +
+            "and v.majorVersion = :majorVersion")
+    List<ScriptEntity> findMinorScriptByThemeIdAndMajorVersion(Long themeId, Long majorVersion);
+
 }
