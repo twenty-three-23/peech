@@ -39,7 +39,7 @@ jobs:
         spring.data.redis.host: ${{secrets.REDIS_HOST}}
         spring.data.redis.port: ${{secrets.REDIS_PORT}}
         spring.data.redis.password: ${{secrets.REDIS_PASSWORD}}
-        gpt.api.key: ${{secret.GPT_API_KEY}}
+        gpt.api.key: ${{secrets.GPT_API_KEY}}
 
     # 2. Spring Boot 애플리케이션 빌드
     - name: Build with Gradle
