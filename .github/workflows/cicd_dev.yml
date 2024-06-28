@@ -40,7 +40,10 @@ jobs:
         spring.data.redis.port: ${{secrets.REDIS_PORT}}
         spring.data.redis.password: ${{secrets.REDIS_PASSWORD}}
         gpt.api.key: ${{secrets.GPT_API_KEY}}
-
+        
+    # application.yml 파일 내용 확인
+    - name: Display modified application.yml
+      run: cat ${{ env.RESOURCE_PATH }}
     # excute 허용
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
