@@ -40,7 +40,10 @@ jobs:
         spring.data.redis.port: ${{secrets.REDIS_PORT}}
         spring.data.redis.password: ${{secrets.REDIS_PASSWORD}}
         gpt.api.key: ${{secrets.GPT_API_KEY}}
-
+        
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
+      
     # 2. Spring Boot 애플리케이션 빌드
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
