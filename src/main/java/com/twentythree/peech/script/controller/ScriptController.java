@@ -39,7 +39,7 @@ public class ScriptController implements SwaggerScriptInterface{
     @Operation(summary = "입력(메이저) 대본 가져오기",
             description = "특정 주제의 themeId를 path에 넣으면 특정 주제에 대해 입력한(메이저) 스크립트들을 응답한다.")
     @Override
-    @GetMapping("/api/v1/themes/{themeId}/Scripts/majors")
+    @GetMapping("/api/v1/themes/{themeId}/scripts/majors")
     public MajorScriptsResponseDTO getMajorScripts(@PathVariable("themeId") Long themeId) {
         MajorScriptsResponseDTO majorScripts = scriptService.getMajorScripts(themeId);
         return majorScripts;
