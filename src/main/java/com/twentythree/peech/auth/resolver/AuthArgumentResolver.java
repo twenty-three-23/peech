@@ -2,8 +2,11 @@ package com.twentythree.peech.auth.resolver;
 
 import com.twentythree.peech.auth.dto.LoginUserId;
 import com.twentythree.peech.auth.dto.UserIdDTO;
+import com.twentythree.peech.common.utils.JWTUtils;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -12,7 +15,10 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Slf4j
+@RequiredArgsConstructor
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
+
+    private final JWTUtils jwtUtils;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -22,22 +28,32 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        try {
 
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new IllegalArgumentException("로그인을 다시 해주세요");
-        }
 
-        Long userId = null;
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("userId")) {
-                userId = Long.parseLong(cookie.getValue());
+            HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+
+            Cookie[] cookies = request.getCookies();
+            if (cookies == null) {
+                throw new IllegalArgumentException("로그인을 다시 해주세요");
             }
+
+            Long userId = null;
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("LoginToken")) {
+                    String token = cookie.getValue();
+
+                    userId = Long.parseLong(jwtUtils.parseJWT(token).getPayload().get("userId").toString());
+                }
+            }
+
+            if (userId == null) {
+                throw new IllegalArgumentException("cookie의 userId가 잘 못 되었습니다");
+            }
+
+            return new UserIdDTO(userId);
+        } catch (JwtException e) {
+            throw e;
         }
-
-        if (userId == null) {throw new IllegalArgumentException("cookie의 userId가 잘 못 되었습니다");}
-
-        return new UserIdDTO(userId);
     }
 }
