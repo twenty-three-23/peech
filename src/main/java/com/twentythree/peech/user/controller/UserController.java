@@ -17,7 +17,7 @@ public class UserController implements SwaggerUserController{
     private final UserService userService;
 
     @Operation(summary = "유저 가입",
-            description = "deviceId를 CreateUserRequestDTO에 담아 요청하면 생성된 UserId를 CreteUserResponseDTO에 담아 응답한다.")
+            description = "deviceId를 RequestBody에 담아 요청하면 새로운 유저를 생성하고 생성된 UserId를 응답한다.")
     @Override
     @PostMapping("api/v1/user")
     public CreateUserResponseDTO createUser(@RequestBody CreateUserRequestDTO request) {
