@@ -65,7 +65,7 @@ public class ScriptService {
         return scriptEntity.getTotalExpectTime();
     }
 
-    public MajorScriptsResponseDTO getMajorScript(Long themeId) {
+    public MajorScriptsResponseDTO getMajorScripts(Long themeId) {
         List<ScriptEntity> scripts = scriptRepository.findMajorScriptByThemeId(themeId);
         List<MajorScriptDTO> majorScript = new ArrayList<>();
         for (ScriptEntity script : scripts) {
@@ -75,7 +75,7 @@ public class ScriptService {
         return new MajorScriptsResponseDTO(majorScript);
     }
 
-    public MinorScriptsResponseDTO getMinorScript(Long themeId, Long majorVersion) {
+    public MinorScriptsResponseDTO getMinorScripts(Long themeId, Long majorVersion) {
         List<ScriptEntity> scripts = scriptRepository.findMinorScriptByThemeIdAndMajorVersion(themeId, majorVersion);
 
         List<MinorScriptDTO> minorScripts = new ArrayList<>();
