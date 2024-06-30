@@ -5,9 +5,10 @@ import lombok.Data;
 
 @Data
 public class CreateUserResponseDTO {
-    private Long userId;
+    private String token;
+
     @JsonCreator
-    public CreateUserResponseDTO(Long userId) {
-        this.userId = userId;
+    public CreateUserResponseDTO(String token) {
+        this.token = token;
     }
 }

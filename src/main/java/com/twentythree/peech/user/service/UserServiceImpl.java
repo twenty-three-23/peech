@@ -15,8 +15,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long createUser(CreateUserRequestDTO request) {
-        String deviceId = request.getDeviceId();
+    public Long createUser(String deviceId) {
 
         if (validateDeviceId(deviceId)) {
             UserEntity userEntity = UserEntity.ofNoLogin(deviceId);
