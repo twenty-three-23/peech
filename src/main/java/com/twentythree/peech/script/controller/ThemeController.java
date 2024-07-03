@@ -32,7 +32,7 @@ public class ThemeController implements SwaggerThemeInterface {
     }
 
     @Override
-    @GetMapping("/api/v1/theme")
+    @GetMapping("/api/v1/themes")
     public ThemesResponseDTO getThemes(@LoginUserId UserIdDTO userIdDTO) {
         Long userId = userIdDTO.userId();
 
