@@ -23,7 +23,10 @@ public class UserController implements SwaggerUserController{
         String token = userService.createUser(request.getDeviceId());
         return new UserIdTokenResponseDTO(token);
     }
+
+    @Override
+    public UserIdTokenResponseDTO reIssuanceUserToken(@RequestBody CreateUserRequestDTO request) {
+        String token = userService.reIssuanceUserToken(request.getDeviceId());
+        return new UserIdTokenResponseDTO(token);
     }
-
-
 }

@@ -29,6 +29,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public String reIssuanceUserToken(String deviceId) {
+        if (!validateDeviceId(deviceId)) {
+            UserEntity user = userRepository.findByDeviceId(deviceId);
+            Long userId = user.getId();
+
+            String jwt = jwtUtils.createJWT(userId);
+            return jwt;
+        } else {
+            throw new IllegalArgumentException("가입된적 없는 유저입니다.");
+        }
+    }
+
     // DeviceId가 존재 하면 false
     private boolean validateDeviceId(String deviceId) {
         UserEntity user = userRepository.findByDeviceId(deviceId);
