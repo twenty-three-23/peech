@@ -1,6 +1,7 @@
 package com.twentythree.peech.script.service;
 
 import com.twentythree.peech.script.domain.ThemeEntity;
+import com.twentythree.peech.script.dto.response.ThemesResponseDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,10 @@ class ThemeServiceTest {
         Long userId = 1L;
 
         //When
-        List<ThemeEntity> themesByUserId = themeService.getThemesByUserId(userId);
+        ThemesResponseDTO themesByUserId = themeService.getThemesByUserId(userId);
 
         //Then
-        assertThat(themesByUserId.size()).isEqualTo(1);
+        assertThat(themesByUserId.getThemes().size()).isEqualTo(1);
 
     }
 }

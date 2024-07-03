@@ -1,5 +1,7 @@
 package com.twentythree.peech.common.utils;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -33,6 +35,16 @@ public class JWTUtils {
                 claim("userId", userId).
                 signWith(secretKey, Jwts.SIG.HS256).
                 compact();
+    }
+
+    public Jws<Claims> parseJWT(String token) {
+
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token);
+
+        return claimsJws;
     }
 
 }
