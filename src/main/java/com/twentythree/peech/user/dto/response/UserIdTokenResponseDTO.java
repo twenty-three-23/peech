@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Data;
 
 @Data
-public class CreateUserResponseDTO {
+public class UserIdTokenResponseDTO {
     private String token;
 
     @JsonCreator
-    public CreateUserResponseDTO(String token) {
+    public UserIdTokenResponseDTO(String token) {
         this.token = token;
     }
 }

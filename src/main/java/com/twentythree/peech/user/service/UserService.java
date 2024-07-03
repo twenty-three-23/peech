@@ -1,7 +1,6 @@
 package com.twentythree.peech.user.service;
 
-import com.twentythree.peech.user.dto.request.CreateUserRequestDTO;
 
 public interface UserService {
-    Long createUser(String deviceId);
+    String createUser(String deviceId);
 }
