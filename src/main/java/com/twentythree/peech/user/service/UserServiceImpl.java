@@ -1,7 +1,7 @@
 package com.twentythree.peech.user.service;
 
+import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.user.domain.UserEntity;
-import com.twentythree.peech.user.dto.request.CreateUserRequestDTO;
 import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,17 +12,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final JWTUtils jwtUtils;
 
     @Override
     @Transactional
-    public Long createUser(String deviceId) {
+    public String createUser(String deviceId) {
 
         if (validateDeviceId(deviceId)) {
-            UserEntity userEntity = UserEntity.ofNoLogin(deviceId);
+            UserEntity user = UserEntity.ofNoLogin(deviceId);
 
-            return userRepository.save(userEntity).getId();
+            Long userId = userRepository.save(user).getId();
+            String jwt = jwtUtils.createJWT(userId);
+            return jwt;
         } else {
             throw new IllegalArgumentException("이미 가입된 유저 입니다");
+        }
+    }
+
+    @Override
+    public String reIssuanceUserToken(String deviceId) {
+        if (!validateDeviceId(deviceId)) {
+            UserEntity user = userRepository.findByDeviceId(deviceId);
+            Long userId = user.getId();
+
+            String jwt = jwtUtils.createJWT(userId);
+            return jwt;
+        } else {
+            throw new IllegalArgumentException("가입된적 없는 유저입니다.");
         }
     }
 
