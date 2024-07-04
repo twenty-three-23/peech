@@ -1,5 +1,6 @@
 package com.twentythree.peech.user.service;
 
+import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.user.domain.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
             String jwt = jwtUtils.createJWT(userId);
             return jwt;
         } else {
-            throw new IllegalArgumentException("이미 가입된 유저 입니다");
+            throw new UserAlreadyExistException("이미 가입된 유저 입니다");
         }
     }
 
