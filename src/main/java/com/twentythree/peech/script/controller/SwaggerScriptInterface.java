@@ -1,5 +1,7 @@
 package com.twentythree.peech.script.controller;
 
+import com.twentythree.peech.auth.dto.LoginUserId;
+import com.twentythree.peech.auth.dto.UserIdDTO;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
 import com.twentythree.peech.script.dto.response.*;
@@ -27,6 +29,6 @@ public interface SwaggerScriptInterface {
     @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = MajorScriptsResponseDTO.class), mediaType = "application/json")})
     MinorScriptsResponseDTO getMinorScripts(@PathVariable Long majorVersion, @PathVariable Long themeId);
 
-    @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = ModifiedScriptResponseDTO.class), mediaType = "application/json")})
-    ModifiedScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request);
+    @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = ModifyScriptResponseDTO.class), mediaType = "application/json")})
+    ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request, @LoginUserId UserIdDTO userId);
 }

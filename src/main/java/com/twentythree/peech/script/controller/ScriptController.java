@@ -1,5 +1,7 @@
 package com.twentythree.peech.script.controller;
 
+import com.twentythree.peech.auth.dto.LoginUserId;
+import com.twentythree.peech.auth.dto.UserIdDTO;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
 import com.twentythree.peech.script.dto.response.*;
@@ -57,7 +59,7 @@ public class ScriptController implements SwaggerScriptInterface{
             description = "수정한 측정대본을 전달하면 수정된 부분에 대해서는 예상 시간을 통해서 결과를 응답한다.")
     @Override
     @PostMapping("/api/v1/themes/{themeId}/scripts/{scriptId}")
-    public ModifiedScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request) {
-        return scriptService.modifyScriptService(request.getParagraphs(), scriptId);
+    public ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request, @LoginUserId UserIdDTO userId) {
+        return scriptService.modifyScriptService(request.getParagraphs(), scriptId, userId.userId());
     }
 }
