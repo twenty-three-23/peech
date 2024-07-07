@@ -29,6 +29,9 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try {
+
+            final String BEARER = "Bearer ";
+
             HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
             String token = request.getHeader("Authorization");
@@ -37,7 +40,15 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                 throw new UserAlreadyExistException("로그인을 다시 해주세요");
             }
 
-            Long userId = Long.parseLong(jwtUtils.parseJWT(token).getPayload().get("userId").toString());
+            String credential;
+
+            if (token.startsWith(BEARER)) {
+                credential = token.substring(BEARER.length());
+            } else {
+                throw new IllegalArgumentException("token의 type이 올바르지 않습니다.");
+            }
+
+            Long userId = Long.parseLong(jwtUtils.parseJWT(credential).getPayload().get("userId").toString());
 
             if (userId == null) {
                 throw new IllegalArgumentException("cookie의 userId가 잘 못 되었습니다");
