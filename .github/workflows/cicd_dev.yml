@@ -76,18 +76,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
-    # 개발 서버 ec2 ssh 접속
-    - name: excute ec2 ssh
-      uses: appleboy/ssh-action@master
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
       with:
-        key : ${{ secrets.DEV_EC2_KEY }}
-        host: ${{ secrets.DEV_EC2_IP }}
-        username: ${{ secrets.DEV_EC2_ID }}
-        port: ${{ secrets.DEV_EC2_PORT }}
-        script: |
-          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-          sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
-          sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-          sudo docker system prune -f
+        ssh-private-key: ${{ secrets.DEV_EC2_KEY }}
+    - name: Run deployment script on Lightsail
+      run: |
+        sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+        sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
+        sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+        sudo docker system prune -f 
 
