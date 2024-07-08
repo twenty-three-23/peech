@@ -79,7 +79,7 @@ jobs:
 
       # 개발 서버 ec2 ssh 접속
       - name: excute ec2 ssh
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.0
         with:
           key : ${{ secrets.DEV_EC2_KEY }}
           host: ${{ secrets.DEV_EC2_IP }}
