@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class RedisTemplateImplTest {
+public class ScriptRedisTemplateImplTest {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;

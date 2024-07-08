@@ -20,7 +20,7 @@ public class RedisTemplateImpl implements CacheTemplate {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public void saveSentencesIdList(String userId, List<Long> sentencesIdList) throws Exception {
+    public void saveSentencesIdList(String userId, List<Long> sentencesIdList){
 
         try{
             // Long 타입의 SentenceId List를 String 타입으로 변환
@@ -37,7 +37,7 @@ public class RedisTemplateImpl implements CacheTemplate {
     }
 
     @Override
-    public void saveSentenceInfo(List<SaveRedisSentenceInfoDto> sentencesInfoList) throws Exception {
+    public void saveSentenceInfo(List<SaveRedisSentenceInfoDto> sentencesInfoList){
 
         try {
             for (SaveRedisSentenceInfoDto sentenceInfo : sentencesInfoList) {
@@ -59,4 +59,4 @@ public class RedisTemplateImpl implements CacheTemplate {
         }
     }
 }
-}
+
