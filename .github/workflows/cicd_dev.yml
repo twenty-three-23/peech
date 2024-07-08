@@ -79,13 +79,13 @@ jobs:
 
     # 개발 서버 ec2 ssh 접속
     - name: excute ec2 ssh
-      uses: appleboy/ssh-action@v1.0.0
+      uses: appleboy/ssh-action@master
       with:
         key : ${{ secrets.DEV_EC2_KEY }}
         host: ${{ secrets.DEV_EC2_IP }}
         username: ${{ secrets.DEV_EC2_ID }}
         port: ${{ secrets.DEV_EC2_PORT }}
-        script:
+        script: |
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
           sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
           sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
