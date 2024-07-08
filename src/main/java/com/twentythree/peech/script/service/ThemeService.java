@@ -33,10 +33,7 @@ public class ThemeService {
 
     public ThemesResponseDTO getThemesByUserId(Long userId) {
 
-        List<Long> user = new ArrayList<>();
-        user.add(userId);
-
-        List<ThemeEntity> themes = themeRepository.findAllById(user);
+        List<ThemeEntity> themes = themeRepository.findAllThemesByUserId(userId);
 
         List<ThemeDTO> themesDTO = new ArrayList<>();
         for (ThemeEntity theme : themes) {
