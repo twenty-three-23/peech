@@ -76,7 +76,7 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
-        - uses: actions/checkout@3
+        - uses: actions/checkout@v3
 
         # 개발 서버 ec2 ssh 접속
         - name: excute ec2 ssh
