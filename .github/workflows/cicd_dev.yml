@@ -6,7 +6,7 @@ on:
     branches: [ "dev" ]
   pull_request:
     branches: [ "dev" ]
-    #types: [close]
+    types: [close]
 permissions:
   contents: read
   
@@ -90,3 +90,4 @@ jobs:
         sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
         sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
         sudo docker system prune -f 
+        EOF
