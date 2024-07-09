@@ -82,10 +82,10 @@ jobs:
         ssh-private-key: ${{ secrets.DEV_EC2_KEY }}
     - name: Run deployment script
       run: |
-        docker login
+        sudo docker login
         sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
         sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
         sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-        sudo docker system prune -f
+        sudo docker system prune -f 
 
 
