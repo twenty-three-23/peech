@@ -85,7 +85,7 @@ jobs:
         DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
         ssh -o StrictHostKeyChecking=no ubuntu@43.203.55.241
         sudo docker pull $DOCKERHUB_USERNAME/github-actions-demo &&
-        sudo docker stop \$(sudo docker ps -q) 2>/dev/null || true &&
+        sudo docker stop $(sudo docker ps -q) 2>/dev/null || true &&
         sudo docker run --name github-actions-demo --rm -d -p 8080:8080 $DOCKERHUB_USERNAME/github-actions-demo &&
         sudo docker system prune -f
 
