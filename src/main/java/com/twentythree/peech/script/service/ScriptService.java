@@ -12,10 +12,13 @@ import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.script.repository.ScriptRepository;
 import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.script.repository.VersionRepository;
+import com.twentythree.peech.script.stt.dto.SaveSTTScriptVO;
+import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.context.Theme;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -57,6 +60,51 @@ public class ScriptService {
         scriptRepository.save(scriptEntity);
 
         return new SaveScriptDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
+    }
+
+    public SaveSTTScriptVO saveSTTScriptVO(Long themeId, Long scriptId, ClovaResponseDto clovaResponseDto) {
+
+        ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
+
+        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+
+        // 해당 스크립트의 MajorVersion과 MinorVersion을 가져옴
+        Long majorVersion = scriptEntity.getVersion().getMajorVersion();
+
+        Long minorVersion = scriptEntity.getVersion().getMinorVersion();
+
+        VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersion(majorVersion, minorVersion, ThemeEntity);
+
+
+        return saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity);
+    }
+
+    @Transactional
+    // Version과 SCRIPT Entity 저장 로직은 공통이므로 묶어서 처리
+    public SaveSTTScriptVO saveSTTScriptEntity(Long themeId, ClovaResponseDto clovaResponseDto, VersionEntity versionEntity) {
+
+
+        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+
+        ScriptEntity sttScriptEntity = ScriptEntity.ofCreateSTTScript(versionEntity, clovaResponseDto.getFullText(), clovaResponseDto.getTotalRealTime(), InputAndSttType.STT);
+
+        versionRepository.save(versionEntity);
+        scriptRepository.save(sttScriptEntity);
+
+        return new SaveSTTScriptVO(sttScriptEntity, clovaResponseDto.getTotalRealTime());
+    }
+
+    public SaveSTTScriptVO saveSTTScriptVO(Long themeId, ClovaResponseDto clovaResponseDto) {
+
+        String script = clovaResponseDto.getFullText();
+
+        LocalTime totalRealTime = clovaResponseDto.getTotalRealTime();
+
+        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+
+        VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersion(ThemeEntity);
+
+        return saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity);
     }
 
     public LocalTime getInputExpectedScriptTime(Long scriptId) {

@@ -57,6 +57,14 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    //Gson
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    //WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.2.0.Alpha1:osx-aarch_64")
+
 }
 
 tasks.named('test') {

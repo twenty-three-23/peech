@@ -6,6 +6,8 @@ import com.twentythree.peech.script.domain.ScriptEntity;
 import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
 import com.twentythree.peech.script.repository.SentenceRepository;
+import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
+import com.twentythree.peech.script.stt.dto.SentenceListVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,25 @@ public class SentenceService {
         return sentenceIds;
     }
 
+    @Transactional
+    public List<SentenceListVO> saveSTTSentences(ScriptEntity scriptEntity, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<List<Integer>> sentenceSpan) {
+
+        Long paragraphId = 1L;
+        List<Long> sentenceIdList = new ArrayList<>();
+
+        for(List<Integer> paragraph : sentenceSpan) {
+            for (Integer index : paragraph) {
+                EditClovaSpeechSentenceVO sentence = sentenceAndRealTimeList.get(index);
+                SentenceEntity sentenceEntity = SentenceEntity.ofCreateSTTSentence(scriptEntity, paragraphId, sentence.sentenceContent(), sentence.sentenceOrder(), sentence.sentenceDuration());
+                sentenceRepository.save(sentenceEntity);
+                sentenceIdList.add(sentenceEntity.getSentenceId());
+            }
+            paragraphId++;
+        }
+
+        return sentenceIdList;
+    }
+
     public List<paragraphIdToExpectedTime> getParagraphExpectedTime(Long scriptId) {
 
         List<paragraphIdToExpectedTime> results = new ArrayList<>();
@@ -71,4 +92,6 @@ public class SentenceService {
 
         return results;
     }
+
+
 }

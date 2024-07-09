@@ -38,4 +38,14 @@ public class VersionEntity extends BaseCreatedAtEntity {
         }
     }
 
+    // 대본을 입력한 후 STTScript를 생성할 때 사용
+    public static VersionEntity ofCreateSTTScriptVersion(Long majorVersion, Long minorVersion, ThemeEntity ThemeEntity) {
+        return VersionEntity.of(majorVersion, minorVersion + 1L, ThemeEntity);
+    }
+
+    // 대본 없이 바로 STTScript를 생성할 때 사용
+    public static VersionEntity ofCreateSTTScriptVersion(ThemeEntity ThemeEntity) {
+        return VersionEntity.of(1L, 0L, ThemeEntity);
+    }
+
 }
