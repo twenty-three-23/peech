@@ -2,9 +2,9 @@ package com.twentythree.peech.auth.resolver;
 
 import com.twentythree.peech.auth.dto.LoginUserId;
 import com.twentythree.peech.auth.dto.UserIdDTO;
+import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import io.jsonwebtoken.JwtException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,22 +30,25 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try {
 
+            final String BEARER = "Bearer ";
 
             HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
-            Cookie[] cookies = request.getCookies();
-            if (cookies == null) {
-                throw new IllegalArgumentException("로그인을 다시 해주세요");
+            String token = request.getHeader("Authorization");
+
+            if (token.isEmpty()) {
+                throw new UserAlreadyExistException("로그인을 다시 해주세요");
             }
 
-            Long userId = null;
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("LoginToken")) {
-                    String token = cookie.getValue();
+            String credential;
 
-                    userId = Long.parseLong(jwtUtils.parseJWT(token).getPayload().get("userId").toString());
-                }
+            if (token.startsWith(BEARER)) {
+                credential = token.substring(BEARER.length());
+            } else {
+                throw new IllegalArgumentException("token의 type이 올바르지 않습니다.");
             }
+
+            Long userId = Long.parseLong(jwtUtils.parseJWT(credential).getPayload().get("userId").toString());
 
             if (userId == null) {
                 throw new IllegalArgumentException("cookie의 userId가 잘 못 되었습니다");
