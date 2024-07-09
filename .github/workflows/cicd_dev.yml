@@ -86,7 +86,7 @@ jobs:
         
         eval $(ssh-agent -s) # ssh-agent 시작
         echo -e "${{ secrets.DEV_EC2_KEY }}" | ssh-add -
-        ssh -A ubuntu@${{ secrets.DEV_EC2_IP }}
+        ssh -T -A ubuntu@${{ secrets.DEV_EC2_IP }}
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
         sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
         sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
