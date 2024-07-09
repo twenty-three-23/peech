@@ -80,6 +80,10 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.DEV_EC2_KEY }}
+
+    - name: Connect to EC2
+      run: ssh -i ubuntu@${{ secrets.DEV_EC2_HOST }} "~/deploy.sh
+
     - name: Run deployment script
       run: |
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
