@@ -3,15 +3,12 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.domain.*;
-import com.twentythree.peech.script.dto.MajorScriptDTO;
-import com.twentythree.peech.script.dto.MinorScriptDTO;
-import com.twentythree.peech.script.dto.SaveScriptDTO;
+import com.twentythree.peech.script.dto.*;
 import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
 import com.twentythree.peech.script.dto.response.MinorScriptsResponseDTO;
-import com.twentythree.peech.script.repository.ThemeRepository;
-import com.twentythree.peech.script.repository.ScriptRepository;
+import com.twentythree.peech.script.dto.response.ModifyScriptResponseDTO;
+import com.twentythree.peech.script.repository.*;
 import com.twentythree.peech.common.utils.ScriptUtils;
-import com.twentythree.peech.script.repository.VersionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,7 +18,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -38,6 +37,8 @@ public class ScriptService {
     private final ScriptRepository scriptRepository;
     private final ThemeRepository themeRepository;
     private final VersionRepository versionRepository;
+    private final SentenceRepository sentenceRepository;
+    private final ScriptInMemoryRepository scriptRedisRepository;
 
     @Transactional
     public SaveScriptDTO saveInputScript(Long themeId, String[] paragraphs) {
@@ -85,6 +86,134 @@ public class ScriptService {
         }
 
         return new MinorScriptsResponseDTO(minorScripts);
+    }
+
+    @Transactional // Redis는 분산 락을 걸어야 하나?
+    public ModifyScriptResponseDTO modifyScriptService(List<ParagraphDTO> modifiedParagraphs, Long scriptId, Long userId) {
+        
+        Map<ParagraphId, Map<SentenceId, RedisSentenceDTO>> redisSentences = new HashMap<>(); // Redis에서 문단 id별로 문장들을 저장하기 위한 map
+        List<Long>                                          sentenceIds    = scriptRedisRepository.findAllByUserKey("user"+userId);
+
+        for (Long sentenceId : sentenceIds) { // Redis에서 가져온 문장들을 문단별로 분리
+            RedisSentenceDTO                  sentence                     = scriptRedisRepository.findByKey(sentenceId);
+            Map<SentenceId, RedisSentenceDTO> redisSentencesPerParagraphId = redisSentences.get(new ParagraphId(sentence.getParagraphId()));
+
+            redisSentencesPerParagraphId.put(new SentenceId(sentenceId), new RedisSentenceDTO(sentence.getParagraphId(), sentence.getParagraphOrder(), sentence.getSentenceOrder(), sentence.getSentenceContent(), sentence.getTime(), sentence.isChanged()));
+        }
+
+        List<ModifiedParagraphDTO> modifiedParagraphList = new ArrayList<>(); // ResponseDTO를 만들기 위함
+        
+        // 이러면 paragraph domain을 만드는게 맞지 않을까요..
+        for (ParagraphDTO modifiedParagraph : modifiedParagraphs) {
+                
+            List<SentenceDTO> modifiedSentenceList = new ArrayList<>(); // ResponseDTO를 만들기 위함
+            
+            Long              modifiedParagraphId    = modifiedParagraph.getParagraphId();
+            Long              modifiedParagraphOrder = modifiedParagraph.getParagraphOrder();
+            List<SentenceDTO> modifiedSentences      = modifiedParagraph.getSentences();
+
+            Map<SentenceId, RedisSentenceDTO> redisSentencesByParagraphId = redisSentences.get(modifiedParagraphId);
+            
+            Map<SentenceId, RedisSentenceDTO> temporaryRedisList = new HashMap<>(); // redis에 새롭게 저장할 문장들의 임시저장소
+
+            if (redisSentencesByParagraphId.isEmpty()) { // 새로운 문단 생성 domain관점에는 isNewLine(parameter) 이런식이 되어야 할 듯
+
+                LocalTime expectedTimePerParagraph = LocalTime.of(0,0,0,0);
+
+                for (SentenceDTO modifiedSentence : modifiedSentences) {
+                    Long      modifiedSentenceId           = modifiedSentence.getSentenceId();
+                    Long      modifiedSentenceOrder        = modifiedSentence.getSentenceOrder();
+                    String    modifiedSentenceContent      = modifiedSentence.getSentenceContent();
+                    LocalTime modifiedSentenceExpectedTime = ScriptUtils.calculateExpectedTime(modifiedSentenceContent);
+
+                    temporaryRedisList.put(new SentenceId(modifiedSentenceId), new RedisSentenceDTO(modifiedParagraphId,
+                                                                modifiedParagraphOrder,
+                                                                modifiedSentenceOrder,
+                                                                modifiedSentenceContent,
+                                                                modifiedSentenceExpectedTime,
+                                                                true));
+
+                    SentenceDTO sentenceDTO = new SentenceDTO(modifiedSentenceId, modifiedSentenceOrder, modifiedSentenceContent);
+                    modifiedSentenceList.add(sentenceDTO);
+                    expectedTimePerParagraph = ScriptUtils.sumLocalTime(expectedTimePerParagraph, modifiedSentenceExpectedTime);
+
+                }
+                modifiedParagraphList.add(new ModifiedParagraphDTO(modifiedParagraphId,
+                                                                   modifiedParagraphOrder,
+                                                                   expectedTimePerParagraph,
+                                                                   true,
+                                                                   modifiedSentenceList));
+                continue; // 새로운 문단을 생성했다면 기존 문장과 비교할 필요가 없다.
+            }
+
+            //기존에 존재하던 문단
+
+            boolean isCalculated = false;
+            LocalTime timePerParagraph = LocalTime.of(0,0,0,0);
+
+            for (SentenceDTO modifiedSentence : modifiedSentences) {
+
+                Long             modifiedSentenceId      = modifiedSentence.getSentenceId();
+                String           modifiedSentenceContent = modifiedSentence.getSentenceContent();
+                Long             modifiedSentenceOrder   = modifiedSentence.getSentenceOrder();
+
+
+                RedisSentenceDTO redisSentence           = redisSentencesByParagraphId.get(new SentenceId(modifiedSentenceId)); // 수정된 문장과 일치하던 문장을 redis에서 가져오기
+
+                if (redisSentence == null) { // 새로운 문장이 추가
+                    LocalTime modifiedSentenceExpectedTime = ScriptUtils.calculateExpectedTime(modifiedSentenceContent);
+
+                    temporaryRedisList.put(new SentenceId(modifiedSentenceId), new RedisSentenceDTO(modifiedParagraphId,
+                                                                                                    modifiedParagraphOrder,
+                            modifiedSentenceOrder,
+                                                                                                    modifiedSentenceContent,
+                                                                                                    modifiedSentenceExpectedTime,
+                                                                                                    true));
+
+                    timePerParagraph = ScriptUtils.sumLocalTime(timePerParagraph, modifiedSentenceExpectedTime);
+                    modifiedSentenceList.add(new SentenceDTO(modifiedSentenceId, modifiedSentenceOrder, modifiedSentenceContent));
+                    isCalculated = true;
+                    continue; // 새로운 문장이 추가 된 것이면 기준 문장과 비교할 필요가 없다.
+                }
+
+                String redisSentenceContent = redisSentence.getSentenceContent();
+                
+                // 문장을 비교해서 같은 내요이면 수정이 안된것, 다른 내용이면 수정이 된것으로 예상시간을 계산해서 넣는다.
+                if (redisSentenceContent.equals(modifiedSentenceContent)) { // 이런 로직이 sentence domain에 들어있어야 하는 것 같다.
+                    temporaryRedisList.put(new SentenceId(modifiedSentenceId), new RedisSentenceDTO(modifiedParagraphId,
+                                                                                                    modifiedParagraphOrder,
+                                                                                                    modifiedSentenceOrder,
+                                                                                                    redisSentenceContent,
+                                                                                                    redisSentence.getTime(),
+                                                                                                    false));
+                    timePerParagraph = ScriptUtils.sumLocalTime(timePerParagraph, redisSentence.getTime());
+                } else {
+                    temporaryRedisList.put(new SentenceId(modifiedSentenceId), new RedisSentenceDTO(modifiedParagraphId, // 위의 class 생성 부분과 겹치는게 많은데 이런것도 공통화를 하고 setter로 다른 부분만 넣어줘야하나?
+                                                                                                    modifiedParagraphOrder,
+                                                                                                    modifiedSentenceOrder,
+                                                                                                    modifiedSentenceContent,
+                                                                                                    ScriptUtils.calculateExpectedTime(modifiedSentenceContent),
+                                                                                                    true));
+                    timePerParagraph = ScriptUtils.sumLocalTime(timePerParagraph, ScriptUtils.calculateExpectedTime(modifiedSentenceContent));
+                }
+                modifiedSentenceList.add(new SentenceDTO(modifiedSentenceId, modifiedSentenceOrder, modifiedSentenceContent));
+            }
+            modifiedParagraphList.add(new ModifiedParagraphDTO(modifiedParagraphId, modifiedParagraphOrder, timePerParagraph, isCalculated, modifiedSentenceList));
+
+            List<Long> newSentenceIds = new ArrayList<>();
+
+            for (Map.Entry<SentenceId, RedisSentenceDTO> redisSentenceMap : temporaryRedisList.entrySet()) {
+                Long newSentenceId = redisSentenceMap.getKey().getSentenceId();
+                RedisSentenceDTO newSentence = redisSentenceMap.getValue();
+
+                scriptRedisRepository.setKeySentenceIdValueSentenceInformations(newSentenceId, newSentence);
+                newSentenceIds.add(newSentenceId);
+
+            }
+            scriptRedisRepository.setKeyUserValueSentenceIds("user"+userId, newSentenceIds);
+            
+        }
+        return new ModifyScriptResponseDTO(modifiedParagraphList);
     }
 
     // GPT
