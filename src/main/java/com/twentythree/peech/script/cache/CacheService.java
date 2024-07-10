@@ -14,6 +14,4 @@ public interface CacheService {
     List<Long> findAllByUserKey(String userKey);
 
     RedisSentenceDTO findByKey(Long sentenceId);
-
-    void setKeySentenceIdValueSentenceInformations(Long sentenceId, RedisSentenceDTO redisSentence);
 }
