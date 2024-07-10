@@ -1,19 +1,16 @@
 package com.twentythree.peech.config;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
-
-@NoArgsConstructor
+@Component
 public class ScriptRedisTemplate {
 
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         // RedisTemplate 인스턴스 생성
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate = new org.springframework.data.redis.core.RedisTemplate<>();
         // RedisConnectionFactory 설정하여 Redis 서버와의 연결을 설정
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         // key-value 직렬화하는 방법 설정
@@ -24,6 +21,4 @@ public class ScriptRedisTemplate {
 
         return redisTemplate;
     }
-
-
 }

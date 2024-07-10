@@ -27,11 +27,5 @@ public class RedisConfig {
         return new LettuceConnectionFactory(config);
     }
 
-    @Bean
-    public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-
-        return new ScriptRedisTemplate().redisTemplate(redisConnectionFactory);
-    }
-
 
 }

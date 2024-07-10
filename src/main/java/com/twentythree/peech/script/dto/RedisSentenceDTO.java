@@ -15,9 +15,4 @@ public class RedisSentenceDTO {
     private String sentenceContent;
     private LocalTime time;
     private boolean isChanged;
-
-    public String toStringIsChanged() {
-        return isChanged ? "true" : "false";
-    }
-
 }
