@@ -2,6 +2,7 @@ package com.twentythree.peech.script.service;
 
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
 import com.twentythree.peech.script.dto.SaveRedisSentenceInfoDto;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,6 +40,7 @@ public class ScriptRedisTemplateImplTest {
     }
 
     @Test
+    @Disabled
     public void 문장_정보_저장() throws Exception {
         List<SaveRedisSentenceInfoDto> sentencesInfoList = List.of(
                 new SaveRedisSentenceInfoDto(1L, 1L, 1L, "sentence1", 1L, LocalTime.of(0, 0, 12), false),

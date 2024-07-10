@@ -2,6 +2,7 @@ package com.twentythree.peech.script.service;
 
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
+import com.twentythree.peech.script.cache.CacheService;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.*;
 import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
@@ -38,7 +39,7 @@ public class ScriptService {
     private final ThemeRepository themeRepository;
     private final VersionRepository versionRepository;
     private final SentenceRepository sentenceRepository;
-    private final ScriptInMemoryRepository scriptRedisRepository;
+    private final CacheService scriptRedisRepository;
 
     @Transactional
     public SaveScriptDTO saveInputScript(Long themeId, String[] paragraphs) {
@@ -206,11 +207,11 @@ public class ScriptService {
                 Long newSentenceId = redisSentenceMap.getKey().getSentenceId();
                 RedisSentenceDTO newSentence = redisSentenceMap.getValue();
 
-                scriptRedisRepository.setKeySentenceIdValueSentenceInformations(newSentenceId, newSentence);
+                scriptRedisRepository.saveSentenceInfo(newSentenceId, newSentence);
                 newSentenceIds.add(newSentenceId);
 
             }
-            scriptRedisRepository.setKeyUserValueSentenceIds("user"+userId, newSentenceIds);
+            scriptRedisRepository.saveSentencesIdList("user"+userId, newSentenceIds);
             
         }
         return new ModifyScriptResponseDTO(modifiedParagraphList);
