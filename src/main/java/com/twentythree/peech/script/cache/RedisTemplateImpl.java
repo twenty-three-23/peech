@@ -57,5 +57,15 @@ public class RedisTemplateImpl implements CacheService {
             throw new RuntimeException("Error saving redisSentence List: " + sentenceId);
         }
     }
+
+    @Override
+    public List<Long> findAllByUserKey(String userKey) {
+        return List.of();
+    }
+
+    @Override
+    public RedisSentenceDTO findByKey(Long sentenceId) {
+        return null;
+    }
 }
 
