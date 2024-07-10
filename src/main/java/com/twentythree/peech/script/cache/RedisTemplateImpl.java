@@ -1,5 +1,6 @@
 package com.twentythree.peech.script.cache;
 
+import com.twentythree.peech.script.dto.RedisSentenceDTO;
 import com.twentythree.peech.script.dto.SaveRedisSentenceInfoDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class RedisTemplateImpl implements CacheTemplate {
+public class RedisTemplateImpl implements CacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -37,25 +38,23 @@ public class RedisTemplateImpl implements CacheTemplate {
     }
 
     @Override
-    public void saveSentenceInfo(List<SaveRedisSentenceInfoDto> sentencesInfoList){
+    public void saveSentenceInfo(Long sentenceId, RedisSentenceDTO redisSentence){
 
         try {
-            for (SaveRedisSentenceInfoDto sentenceInfo : sentencesInfoList) {
-                Map<String, String> sentenceDetails = new HashMap<>();
-                sentenceDetails.put("paragraphId", sentenceInfo.paragraphId().toString());
-                sentenceDetails.put("paragraphOrder", sentenceInfo.paragraphOrder().toString());
-                sentenceDetails.put("sentenceContent", sentenceInfo.sentenceContent());
-                sentenceDetails.put("sentenceOrder", sentenceInfo.sentenceOrder().toString());
-                sentenceDetails.put("sentenceTime", sentenceInfo.sentenceTime().toString());
-                sentenceDetails.put("isChanged", sentenceInfo.isChanged().toString());
+                Map<String, String> sentenceInfomations = new HashMap<>();
+                sentenceInfomations.put("paragraphId", redisSentence.getParagraphId().toString());
+                sentenceInfomations.put("paragraphOrder", redisSentence.getParagraphOrder().toString());
+                sentenceInfomations.put("sentenceContent", redisSentence.getSentenceContent());
+                sentenceInfomations.put("sentenceOrder", redisSentence.getSentenceOrder().toString());
+                sentenceInfomations.put("sentenceTime", redisSentence.getTime().toString());
+                sentenceInfomations.put("isChanged", redisSentence.toStringIsChanged());
 
                 // 해당 문장의 정보를 담아주는 Hash 저장
-                redisTemplate.opsForHash().putAll(sentenceInfo.sentenceId().toString(), sentenceDetails);
-                log.info("Successfully saved sentenceInfo: {}", sentenceInfo);
-            }
+                redisTemplate.opsForHash().putAll(sentenceId.toString(), sentenceInfomations);
+                log.info("Successfully saved redisSentence: {}", redisSentence);
         }catch (Exception e) {
-            log.error("Error saving sentenceInfo List: {}", sentencesInfoList,e);
-            throw new RuntimeException("Error saving sentenceInfo List: " + sentencesInfoList);
+            log.error("Error saving redisSentence List: {}",sentenceId,e);
+            throw new RuntimeException("Error saving redisSentence List: " + sentenceId);
         }
     }
 }
