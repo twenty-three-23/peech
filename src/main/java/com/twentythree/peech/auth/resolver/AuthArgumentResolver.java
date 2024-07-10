@@ -44,6 +44,9 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
             if (token.startsWith(BEARER)) {
                 credential = token.substring(BEARER.length());
+                if (credential.isEmpty()) {
+                    throw new UserAlreadyExistException("로그인을 다시 해주세요");
+                }
             } else {
                 throw new IllegalArgumentException("token의 type이 올바르지 않습니다.");
             }
