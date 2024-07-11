@@ -2,7 +2,6 @@ package com.twentythree.peech.script.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import java.time.LocalTime;
 
 
@@ -20,6 +19,7 @@ public class RedisSentenceDTO {
     public String toStringIsChanged() {
         return isChanged ? "true" : "false";
     }
+
     public RedisSentenceDTO(String paragraphId, String paragraphOrder, String sentenceOrder, String sentenceContent, String time, String isChanged) {
         this.paragraphId = Long.parseLong(paragraphId);
         this.paragraphOrder = Long.parseLong(paragraphOrder);
@@ -28,5 +28,6 @@ public class RedisSentenceDTO {
         this.time = LocalTime.parse(time);
         this.isChanged = Boolean.parseBoolean(isChanged);
     }
+
 }
 

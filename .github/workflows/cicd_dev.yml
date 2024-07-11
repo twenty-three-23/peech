@@ -41,6 +41,8 @@ jobs:
         spring.data.redis.password: ${{secrets.REDIS_PASSWORD}}
         gpt.api.key: ${{secrets.GPT_API_KEY}}
         jwt.secret.key: ${{secrets.JWT_SECRET_KEY}}
+        spring.sql.init.mode: ${{ secrets.DATA_SQL_OPTION }}
+        spring.jpa.defer-datasource-initialization: ${{ secrets.DATA_INITALIZATION_OPTION }}
         
     # application.yml 파일 내용 확인
     - name: Display modified application.yml
@@ -71,24 +73,23 @@ jobs:
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
       
   run-docker-image-on-ec2:
-      # build-docker-image (위)과정이 완료되어야 실행됩니다.
-      needs: build-docker-image
-      runs-on: self-hosted
-  
-      steps:
-        # 1. 최신 이미지를 풀받습니다
-        - name: docker pull
-          run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+    # build-docker-image (위)과정이 완료되어야 실행됩니다.
+    needs: build-docker-image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.DEV_EC2_KEY }}
+
+    - name: Run deployment script
+      run: |
         
-        # 2. 기존의 컨테이너를 중지시킵니다
-        - name: docker stop container
-          run: sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
-  
-        # 3. 최신 이미지를 컨테이너화하여 실행시킵니다
-        - name: docker run new container
-          run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-  
-        # 4. 미사용 이미지를 정리합니다
-        - name: delete old docker image
-          run: sudo docker system prune -f
-          
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.DEV_EC2_IP }} << 'EOF'
+        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+        sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
+        sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+        sudo docker system prune -f 
+        EOF

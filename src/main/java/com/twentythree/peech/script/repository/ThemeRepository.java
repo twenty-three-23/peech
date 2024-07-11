@@ -8,4 +8,8 @@ public interface ThemeRepository extends JpaRepository<ThemeEntity, Long> {
 
     @Query("select t.userEntity.id from ThemeEntity t where t.themeId =: themeId ")
     Long findUserByThemeId(Long themeId);
+
+    @Query("select t from ThemeEntity t where t.userEntity.id = :userId")
+    List<ThemeEntity> findAllThemesByUserId(Long userId);
+
 }

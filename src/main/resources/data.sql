@@ -2,8 +2,8 @@ INSERT INTO user (user_id, device_id, created_at, updated_at) VALUES
                                                                   (1, 'device_1', '2018-02-01', '2018-12-18');
 
 INSERT INTO theme (theme_id, user_id, created_at, updated_at, theme_title) VALUES
-                                                                                     (1, 1, '2022-11-08', '2021-02-24', 'Package Title 1');
-
+                                                                                     (1, 1, '2022-11-08', '2021-02-24', 'Package Title 1'),
+                                                                                     (2, 1, '2023-03-03', null, 'Package Title 2');
 INSERT INTO version (major_version, minor_version, theme_id, created_at) VALUES
                                                                                (1, 0, 1, '2021-01-08'),
                                                                                (1, 1, 1, '2021-01-11'),
