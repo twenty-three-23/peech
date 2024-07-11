@@ -1,14 +1,9 @@
 package com.twentythree.peech.config;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.stereotype.Component;
 
-
-@NoArgsConstructor
 public class ScriptRedisTemplate {
 
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -24,6 +19,4 @@ public class ScriptRedisTemplate {
 
         return redisTemplate;
     }
-
-
 }

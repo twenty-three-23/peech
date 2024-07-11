@@ -1,9 +1,11 @@
 package com.twentythree.peech.script.service;
 
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
-import com.twentythree.peech.script.dto.SaveRedisSentenceInfoDto;
+import com.twentythree.peech.script.dto.RedisSentenceDTO;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,11 +13,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ScriptRedisTemplateImplTest {
 
     @Autowired
@@ -24,9 +28,18 @@ public class ScriptRedisTemplateImplTest {
     @Autowired
     private RedisTemplateImpl redisTemplateImpl;
 
+    // 전체 테스트로 돌릴 시 기존의 데이터가 남아있어서 테스트가 꼬일 수 있으므로 데이터 초기화
+    @BeforeAll
+    public void setUp() {
+        // 모든 키를 가져와서 삭제
+        Set<String> keys = redisTemplate.keys("*");
+        if (keys != null) {
+            redisTemplate.delete(keys);
+        }
+    }
 
     @Test
-    public void userId에_해당하는_문장_리스트_저장() throws Exception {
+    public void userKey에_해당하는_문장_리스트_저장() throws Exception {
         String userId = "user1";
         List<Long> sentencesIdList = List.of(1L, 2L, 3L, 4L, 5L);
 
@@ -40,23 +53,49 @@ public class ScriptRedisTemplateImplTest {
     }
 
     @Test
-    @Disabled
     public void 문장_정보_저장() throws Exception {
-        List<SaveRedisSentenceInfoDto> sentencesInfoList = List.of(
-                new SaveRedisSentenceInfoDto(1L, 1L, 1L, "sentence1", 1L, LocalTime.of(0, 0, 12), false),
-                new SaveRedisSentenceInfoDto(2L, 1L, 1L, "sentence2", 2L, LocalTime.of(0, 0, 12), false),
-                new SaveRedisSentenceInfoDto(3L, 1L, 1L, "sentence3", 3L, LocalTime.of(0, 0, 12), false),
-                new SaveRedisSentenceInfoDto(4L, 1L, 1L, "sentence4", 4L, LocalTime.of(0, 0, 12), false),
-                new SaveRedisSentenceInfoDto(5L, 1L, 1L, "sentence5", 5L, LocalTime.of(0, 0, 12), false)
+        List<RedisSentenceDTO> sentenceInfomations = List.of(
+                new RedisSentenceDTO( 1L, 1L, 1L,"sentence1", LocalTime.of(0, 0, 12), false),
+                new RedisSentenceDTO( 1L, 1L, 2L,"sentence2", LocalTime.of(0, 0, 12), false),
+                new RedisSentenceDTO( 1L, 1L, 3L,"sentence3", LocalTime.of(0, 0, 12), false),
+                new RedisSentenceDTO( 1L, 1L, 3L,"sentence4", LocalTime.of(0, 0, 12), false),
+                new RedisSentenceDTO( 1L, 1L, 3L,"sentence5", LocalTime.of(0, 0, 12), false)
         );
 
-        redisTemplateImpl.saveSentenceInfo(sentencesInfoList);
+        redisTemplateImpl.saveSentenceInfo(1L, sentenceInfomations.get(0));
+        redisTemplateImpl.saveSentenceInfo(2L, sentenceInfomations.get(1));
+        redisTemplateImpl.saveSentenceInfo(3L, sentenceInfomations.get(2));
+        redisTemplateImpl.saveSentenceInfo(4L, sentenceInfomations.get(3));
+        redisTemplateImpl.saveSentenceInfo(5L, sentenceInfomations.get(4));
 
-        for (SaveRedisSentenceInfoDto sentenceInfo : sentencesInfoList) {
-            Map<Object, Object> savedSentenceInfo = redisTemplate.opsForHash().entries(sentenceInfo.sentenceId().toString());
+        long sentenceId = 1L;
+
+        for (RedisSentenceDTO sentenceInfo : sentenceInfomations) {
+            Map<Object, Object> savedSentenceInfo = redisTemplate.opsForHash().entries(sentenceInfo.toString());
+            sentenceId++;
 
             // 저장된 문장 정보가 예상한 결과와 일치하는지 확인
-            assertEquals(sentencesInfoList.size(), redisTemplate.keys("*").size());
+            assertEquals(sentenceInfomations.size(), redisTemplate.keys("*").size());
         }
+    }
+
+    @Test
+    public void userKey에_해당하는_문장_리스트_조회() throws Exception {
+
+        String userKey = "user1";
+
+        List<Long> sentenceIdsList = redisTemplateImpl.findAllByUserKey(userKey);
+
+        assertThat(sentenceIdsList).hasSize(5).containsExactly(1L, 2L, 3L, 4L, 5L);
+    }
+
+    @Test
+    public void 문장_정보_조회() throws Exception {
+
+        Long sentenceId = 1L;
+
+        RedisSentenceDTO redisSentenceDTO = redisTemplateImpl.findByKey(sentenceId);
+
+        assertThat(redisSentenceDTO).isEqualTo(new RedisSentenceDTO(1L, 1L, 1L, "sentence1", LocalTime.of(0, 0, 12), false));
     }
 }
