@@ -33,7 +33,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
             request.setAttribute("userId", userId);
             return true;
-        } catch (JwtException e) {
+        } catch (Exception e) {
             return true;
         }
     }

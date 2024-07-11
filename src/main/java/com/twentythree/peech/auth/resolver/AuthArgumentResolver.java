@@ -44,22 +44,14 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
             if (token.startsWith(BEARER)) {
                 credential = token.substring(BEARER.length());
-                if (credential.isEmpty()) {
+                if (credential.isEmpty() || credential.equals("x")) {
                     throw new UserAlreadyExistException("로그인을 다시 해주세요");
                 }
             } else {
                 throw new IllegalArgumentException("token의 type이 올바르지 않습니다.");
             }
 
-            if (credential.equals("x")) {
-                throw new UserAlreadyExistException("token이 없습니다.");
-            }
-
             Long userId = Long.parseLong(jwtUtils.parseJWT(credential).getPayload().get("userId").toString());
-
-            if (userId == null) {
-                throw new IllegalArgumentException("cookie의 userId가 잘 못 되었습니다");
-            }
 
             return new UserIdDTO(userId);
         } catch (JwtException e) {
