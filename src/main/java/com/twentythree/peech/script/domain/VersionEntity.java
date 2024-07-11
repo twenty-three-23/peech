@@ -22,7 +22,7 @@ public class VersionEntity extends BaseCreatedAtEntity {
     @Column(name = "minor_version")
     private Long minorVersion;
     @Id
-    @Column(name = "theme_id")
+    @Column(name = "theme_id", insertable = false, updatable = false)
     private Long themeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
