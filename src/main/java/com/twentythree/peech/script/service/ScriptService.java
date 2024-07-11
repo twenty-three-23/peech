@@ -57,9 +57,7 @@ public class ScriptService {
         ScriptEntity scriptEntity = ScriptEntity.ofCreateInputScript(versionEntity, script, expectedTime, InputAndSttType.INPUT);
 
         versionRepository.save(versionEntity);
-        log.info(" s_id {}, {}, {}", scriptEntity.getScriptId(), scriptEntity.getScriptContent(), scriptEntity.getTotalExpectTime());
         scriptRepository.save(scriptEntity);
-        log.info("okay");
 
         return new SaveScriptDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
     }
