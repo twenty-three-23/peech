@@ -67,5 +67,18 @@ public class SentenceEntity extends BaseCreatedAtEntity {
         return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceRealTime);
     }
 
+    public boolean sentenceEquals(String sentenceContent) {
+//        if (this.sentenceId.equals(sentence.sentenceId)) {
+//            return this.sentenceContent.equals(sentence.getSentenceContent());
+//        } else {
+//            return false
+//        }
+
+        return this.sentenceContent.equals(sentenceContent);
+    }
+
+    public String[] sliceSentences(String sentenceContent) {
+        return sentenceContent.split("\\.");
+    }
 
 }

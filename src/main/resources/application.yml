@@ -13,7 +13,7 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    defer-datasource-initialization: true # data.sql? ???? ??
+    defer-datasource-initialization: ${DATA_INITALIZATION_OPTION} # data.sql? ???? ??
     hibernate:
       ddl-auto: ${DDL_ENV}
     open-in-view: true
@@ -24,7 +24,7 @@ spring:
         default_batch_fetch_size: 100
   sql:
     init:
-      mode: always
+      mode: ${DATA_SQL_OPTION}
   data:
     redis:
       host: ${REDIS_HOST}
