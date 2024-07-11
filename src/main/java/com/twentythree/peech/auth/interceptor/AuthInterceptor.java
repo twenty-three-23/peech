@@ -34,6 +34,10 @@ public class AuthInterceptor implements HandlerInterceptor {
                 throw new IllegalArgumentException("token의 type이 올바르지 않습니다.");
             }
 
+            if (credential.equals("x")) {
+                throw new UserAlreadyExistException("token이 없습니다.");
+            }
+
             Long userId = Long.parseLong(jwtUtils.parseJWT(credential).getPayload().get("userId").toString());
 
             if (userId == null) {
