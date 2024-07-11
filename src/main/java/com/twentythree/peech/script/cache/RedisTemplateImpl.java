@@ -23,9 +23,17 @@ public class RedisTemplateImpl implements CacheService {
     @Override
     public void saveSentencesIdList(String userKey, List<Long> sentencesIdList){
 
+
+
         try{
             // Long 타입의 SentenceId List를 String 타입으로 변환
             List<String> sentenceIdListLongToString = sentencesIdList.stream().map(String::valueOf).toList();
+
+            // 만약 해당 userKey 이미 존재한다면 삭제
+            // 현재 방식이 overwrite되는 방식이 아니라서 해당 방식을 적용하고 추가로 수정할 예정
+            if(Boolean.TRUE.equals(redisTemplate.hasKey(userKey))){
+                redisTemplate.delete(userKey);
+            }
 
             for(String sentenceId : sentenceIdListLongToString) {
                 redisTemplate.opsForList().rightPush(userKey, sentenceId);
@@ -41,17 +49,19 @@ public class RedisTemplateImpl implements CacheService {
     public void saveSentenceInfo(Long sentenceId, RedisSentenceDTO redisSentence){
 
         try {
-                Map<String, String> sentenceInformations = new HashMap<>();
-                sentenceInformations.put("paragraphId", redisSentence.getParagraphId().toString());
-                sentenceInformations.put("paragraphOrder", redisSentence.getParagraphOrder().toString());
-                sentenceInformations.put("sentenceContent", redisSentence.getSentenceContent());
-                sentenceInformations.put("sentenceOrder", redisSentence.getSentenceOrder().toString());
-                sentenceInformations.put("sentenceTime", redisSentence.getTime().toString());
-                sentenceInformations.put("isChanged", redisSentence.toStringIsChanged());
 
-                // 해당 문장의 정보를 담아주는 Hash 저장
-                redisTemplate.opsForHash().putAll(sentenceId.toString(), sentenceInformations);
-                log.info("Successfully saved redisSentence: {}", redisSentence);
+            Map<String, String> sentenceInformations = new HashMap<>();
+            sentenceInformations.put("paragraphId", redisSentence.getParagraphId().toString());
+            sentenceInformations.put("paragraphOrder", redisSentence.getParagraphOrder().toString());
+            sentenceInformations.put("sentenceContent", redisSentence.getSentenceContent());
+            sentenceInformations.put("sentenceOrder", redisSentence.getSentenceOrder().toString());
+            sentenceInformations.put("sentenceTime", redisSentence.getTime().toString());
+            sentenceInformations.put("isChanged", redisSentence.toStringIsChanged());
+
+            // 해당 문장의 정보를 담아주는 Hash 저장
+            redisTemplate.opsForHash().putAll(sentenceId.toString(), sentenceInformations);
+            log.info("Successfully saved redisSentence: {}", redisSentence);
+
         }catch (Exception e) {
             log.error("Error saving redisSentence List: {}",sentenceId,e);
             throw new RuntimeException("Error saving redisSentence List: " + sentenceId);
