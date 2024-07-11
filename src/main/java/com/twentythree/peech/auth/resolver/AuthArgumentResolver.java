@@ -37,7 +37,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             String token = request.getHeader("Authorization");
 
             if (token.isEmpty()) {
-                throw new UserAlreadyExistException("로그인을 다시 해주세요");
+                throw new IllegalArgumentException("로그인을 다시 해주세요");
             }
 
             String credential;
@@ -46,6 +46,10 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                 credential = token.substring(BEARER.length());
             } else {
                 throw new IllegalArgumentException("token의 type이 올바르지 않습니다.");
+            }
+
+            if (credential.equals("x")) {
+                throw new UserAlreadyExistException("token이 없습니다.");
             }
 
             Long userId = Long.parseLong(jwtUtils.parseJWT(credential).getPayload().get("userId").toString());
