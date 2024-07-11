@@ -48,8 +48,6 @@ public class CreateSTTResultService {
         // paragraphDevideResponseDto에서 문단별로 나눈 index를 가져옴
         List<List<Integer>> paragraphNumber = paragraphDivideResponseDto.getResult().getSpan();
 
-       // List<List<String>> paragraphs = paragraphDivideResponseDto.getResult().getParagraphs();
-
         // 문단별 측정된 시간 저장
         List<LocalTime> paragraphRealTime = new ArrayList<>();
 

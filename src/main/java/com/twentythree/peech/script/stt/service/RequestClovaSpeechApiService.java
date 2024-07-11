@@ -47,7 +47,7 @@ public class RequestClovaSpeechApiService {
                         // HTTP 헤더 설정
                         HttpHeaders httpHeaders = new HttpHeaders();
                         httpHeaders.set("Accept", "application/json;UTF-8");
-                        httpHeaders.set("X-CLOVASPEECH-API-KEY", clovaSpeechApiUrl);
+                        httpHeaders.set("X-CLOVASPEECH-API-KEY", clovaSpeechApiSecret);
                         httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
 
                         // HTTP body에 보낼 정보

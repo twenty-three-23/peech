@@ -40,9 +40,7 @@ public class ProcessSTTService {
 
     //private final RedisTemplateImpl redisTemplateImpl;
 
-    public Mono<STTResultResponseDto> createSTTResult(STTRequestDto request, Long themeId) {
-
-        Long userId = themeRepository.findUserByThemeId(themeId);
+    public Mono<STTResultResponseDto> createSTTResult(STTRequestDto request, Long themeId, Long userId) {
 
         // redis key에 들어갈 부분은 user + userId 형태임
         String userKey = "user"+userId.toString();
@@ -50,37 +48,37 @@ public class ProcessSTTService {
         Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(request);
 
         return clovaResponseDtoMono.flatMap(clovaResponseDto -> {List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList = editClovaSpeechResponseService.editClovaSpeechResponseSentences(clovaResponseDto);
-                    String totalText = sentenceAndRealTimeList
-                            .stream().map(EditClovaSpeechSentenceVO::sentenceContent)
-                            .collect(Collectors.joining("\\n"));
 
-                    Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
-                    return paragraphDivideResponseDtoMono.flatMap(
-                            paragraphDivideResponseDto -> {
-                                // Script Entity 저장
-                                Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, clovaResponseDto);
+            String totalText = sentenceAndRealTimeList
+                    .stream().map(EditClovaSpeechSentenceVO::sentenceContent)
+                    .collect(Collectors.joining("\\n"));
 
-                                // Sentence Entity 저장
-                                return saveSTTScriptVOMono.flatMap(
-                                        saveSTTScriptVO -> {
-                                            List<SentenceVO> sentenceList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                                            STTResultResponseDto sttResultResponseDto = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceAndRealTimeList, sentenceList, paragraphDivideResponseDto);
-                                            // Redis 저장 로직
-                                            List<Long> sentenceIdList = sentenceList.stream().map(sentenceVO -> sentenceVO.sentenceEntity().getSentenceId()).collect(Collectors.toList());
+            Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
+            return paragraphDivideResponseDtoMono.flatMap(
+                    paragraphDivideResponseDto -> {
+                        // Script Entity 저장
+                        Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, clovaResponseDto);
+
+                        // Sentence Entity 저장
+                        return saveSTTScriptVOMono.flatMap(
+                                saveSTTScriptVO -> {
+                                    List<SentenceVO> sentenceList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
+                                    STTResultResponseDto sttResultResponseDto = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceAndRealTimeList, sentenceList, paragraphDivideResponseDto);
+                                    // Redis 저장 로직
+                                    List<Long> sentenceIdList = sentenceList.stream().map(sentenceVO -> sentenceVO.sentenceEntity().getSentenceId()).collect(Collectors.toList());
 
 
-                                            // 최종 클라이언트 반환 DTO
-                                            return Mono.just(sttResultResponseDto);
-                                        });
+                                    // 최종 클라이언트 반환 DTO
+                                    return Mono.just(sttResultResponseDto);
+                                });
                             });
         });
 
 
     }
 
-    public Mono<STTResultResponseDto> createSTTResult(STTRequestDto request, Long themeId, Long scriptId) {
+    public Mono<STTResultResponseDto> createSTTResult(STTRequestDto request, Long themeId, Long scriptId, Long userId) {
 
-        Long userId = themeRepository.findUserByThemeId(themeId);
         // redis key에 들어갈 부분은 user + userId 형태임
         String userKey = "user"+userId.toString();
 

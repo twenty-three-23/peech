@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.context.Theme;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -63,6 +62,7 @@ public class ScriptService {
         return new SaveScriptDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
     }
 
+    @Transactional
     public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, Long scriptId, ClovaResponseDto clovaResponseDto) {
 
         ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
@@ -72,9 +72,10 @@ public class ScriptService {
         // 해당 스크립트의 MajorVersion과 MinorVersion을 가져옴
         Long majorVersion = scriptEntity.getVersion().getMajorVersion();
 
-        Long minorVersion = scriptEntity.getVersion().getMinorVersion();
+        // 입력받은 대본에서 가장 최신의 MinorVersion을 가져옴
+        Long latestMinorVersion = versionRepository.findByMaxMinorVersion(themeId, majorVersion);
 
-        VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersion(majorVersion, minorVersion, ThemeEntity);
+        VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersionAfterInput(majorVersion, latestMinorVersion, ThemeEntity);
 
 
         return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
@@ -103,7 +104,7 @@ public class ScriptService {
 
         ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
 
-        VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersion(ThemeEntity);
+        VersionEntity versionEntity = VersionEntity.ofCreateJustSTTScriptVersion(ThemeEntity);
 
         return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
     }

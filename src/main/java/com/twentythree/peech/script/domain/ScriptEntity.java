@@ -29,7 +29,7 @@ public class ScriptEntity extends BaseCreatedAtEntity {
     })
     private VersionEntity version;
 
-    @Column(name = "script_content", nullable = false )
+    @Column(name = "script_content", nullable = false, length = 65535, columnDefinition = "TEXT")
     private String scriptContent;
 
     @Column(name = "total_expect_time")
