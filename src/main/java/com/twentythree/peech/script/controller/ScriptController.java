@@ -2,6 +2,7 @@ package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.auth.dto.LoginUserId;
 import com.twentythree.peech.auth.dto.UserIdDTO;
+import com.twentythree.peech.script.dto.MinorScriptDTO;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
 import com.twentythree.peech.script.dto.response.*;
@@ -53,6 +54,14 @@ public class ScriptController implements SwaggerScriptInterface{
     @GetMapping("/api/v1/themes/{themeId}/scripts/{majorVersion}/minors")
     public MinorScriptsResponseDTO getMinorScripts(@PathVariable("themeId") Long themeId, @PathVariable("majorVersion") Long majorVersion) {
         return scriptService.getMinorScripts(themeId, majorVersion);
+    }
+
+    @Operation(summary = "측정(마이너) 대본 상세 가져오기",
+            description = "특정 주제의 themeId와 메이저 버전 major_version, 마이너 버전 minor version 을 모두 보내주면 해당 버전의 음성 스크립트를 응답한다.")
+    @Override
+    @GetMapping("/api/v1/themes/{themeId}/scripts/{majorVersion}/{minorVersion}")
+    public MinorScriptDTO getMinorScriptDetail(@PathVariable("themeId") Long themeId, @PathVariable("majorVersion") Long majorVersion, @PathVariable("minorVersion") Long minorVersion) {
+        return scriptService.getMinorScriptDetail(themeId, majorVersion, minorVersion);
     }
 
     @Operation(summary = "연습해서 나온 측정 대본 수정하기",
