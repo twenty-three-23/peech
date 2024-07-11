@@ -13,4 +13,8 @@ public interface SwaggerSTTController {
     @ApiResponse(responseCode = "201" , description = "성공", content = {@Content(schema = @Schema(implementation = STTResultResponseDto.class), mediaType = "application/json")})
     @ApiResponse(responseCode = "400" , description = "실패", content = {@Content(schema = @Schema(implementation = Error.class), mediaType = "application/json")})
     Mono<STTResultResponseDto>  responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable Long themeId, @PathVariable Long scriptId);
+
+    @ApiResponse(responseCode = "201" , description = "성공", content = {@Content(schema = @Schema(implementation = STTResultResponseDto.class), mediaType = "application/json")})
+    @ApiResponse(responseCode = "400" , description = "실패", content = {@Content(schema = @Schema(implementation = Error.class), mediaType = "application/json")})
+    Mono<STTResultResponseDto>  responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable Long themeId);
 }

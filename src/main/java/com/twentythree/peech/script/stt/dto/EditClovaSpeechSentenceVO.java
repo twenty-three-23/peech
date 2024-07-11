@@ -7,6 +7,6 @@ import java.time.LocalTime;
 public record EditClovaSpeechSentenceVO(
         Long sentenceOrder,
         String sentenceContent,
-        LocalTime sentenceDuration
+        int sentenceDuration
 ) {
 }

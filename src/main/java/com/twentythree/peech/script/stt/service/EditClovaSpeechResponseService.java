@@ -45,9 +45,8 @@ public class EditClovaSpeechResponseService {
                 if(text.contains(".")) {
                     endTimestamp = (int) word.get(1);
                     calculatedTime = endTimestamp - startTimestamp;
-                    clovaSpeechSentenceDtoList.add(new EditClovaSpeechSentenceVO(sentenceOrder++, currentSentence.toString(), RealTimeUtils.convertMsToTimeFormat(calculatedTime)));
+                    clovaSpeechSentenceDtoList.add(new EditClovaSpeechSentenceVO(sentenceOrder++, currentSentence.toString(), calculatedTime));
                     currentSentence.setLength(0);
-                    calculatedTime = 0;
                 }
             }
         }

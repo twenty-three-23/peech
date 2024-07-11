@@ -7,7 +7,8 @@ import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
 import com.twentythree.peech.script.repository.SentenceRepository;
 import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
-import com.twentythree.peech.script.stt.dto.SentenceListVO;
+import com.twentythree.peech.script.stt.dto.SentenceVO;
+import com.twentythree.peech.script.stt.utils.RealTimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,22 +48,23 @@ public class SentenceService {
     }
 
     @Transactional
-    public List<SentenceListVO> saveSTTSentences(ScriptEntity scriptEntity, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<List<Integer>> sentenceSpan) {
+    public List<SentenceVO> saveSTTSentences(ScriptEntity scriptEntity, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<List<Integer>> sentenceSpan) {
 
         Long paragraphId = 1L;
-        List<Long> sentenceIdList = new ArrayList<>();
+        List<SentenceVO> sentenceVOList = new ArrayList<>();
 
         for(List<Integer> paragraph : sentenceSpan) {
             for (Integer index : paragraph) {
                 EditClovaSpeechSentenceVO sentence = sentenceAndRealTimeList.get(index);
-                SentenceEntity sentenceEntity = SentenceEntity.ofCreateSTTSentence(scriptEntity, paragraphId, sentence.sentenceContent(), sentence.sentenceOrder(), sentence.sentenceDuration());
+                SentenceEntity sentenceEntity = SentenceEntity.ofCreateSTTSentence(scriptEntity, paragraphId, sentence.sentenceContent(), sentence.sentenceOrder(), RealTimeUtils.convertMsToTimeFormat(sentence.sentenceDuration()));
                 sentenceRepository.save(sentenceEntity);
-                sentenceIdList.add(sentenceEntity.getSentenceId());
+                SentenceVO sentenceVO = new SentenceVO(sentenceEntity);
+                sentenceVOList.add(sentenceVO);
             }
             paragraphId++;
         }
 
-        return sentenceIdList;
+        return sentenceVOList;
     }
 
     public List<paragraphIdToExpectedTime> getParagraphExpectedTime(Long scriptId) {

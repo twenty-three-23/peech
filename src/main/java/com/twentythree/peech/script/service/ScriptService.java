@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.context.Theme;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
 
 import java.time.LocalTime;
@@ -62,7 +63,7 @@ public class ScriptService {
         return new SaveScriptDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
     }
 
-    public SaveSTTScriptVO saveSTTScriptVO(Long themeId, Long scriptId, ClovaResponseDto clovaResponseDto) {
+    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, Long scriptId, ClovaResponseDto clovaResponseDto) {
 
         ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
 
@@ -76,7 +77,7 @@ public class ScriptService {
         VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersion(majorVersion, minorVersion, ThemeEntity);
 
 
-        return saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity);
+        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
     }
 
     @Transactional
@@ -94,7 +95,7 @@ public class ScriptService {
         return new SaveSTTScriptVO(sttScriptEntity, clovaResponseDto.getTotalRealTime());
     }
 
-    public SaveSTTScriptVO saveSTTScriptVO(Long themeId, ClovaResponseDto clovaResponseDto) {
+    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, ClovaResponseDto clovaResponseDto) {
 
         String script = clovaResponseDto.getFullText();
 
@@ -104,7 +105,7 @@ public class ScriptService {
 
         VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersion(ThemeEntity);
 
-        return saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity);
+        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
     }
 
     public LocalTime getInputExpectedScriptTime(Long scriptId) {

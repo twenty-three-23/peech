@@ -19,7 +19,7 @@ public class STTController implements SwaggerSTTController{
 
 
     @Operation(summary = "stt 결과 및 소요시간 반환",
-        description = "음성녹음을 STTRequestDTO에 담아 요청하면 Processing과정을 거쳐 STTResultResponseDTO에 담아 응답한다.")
+        description = "대본 입력없이 바로 음성녹음을 STTRequestDTO에 담아 요청하면 Processing과정을 거쳐 STTResultResponseDTO에 담아 응답한다.")
     @PostMapping(value ="/api/v1/themes/{themeId}/scripts/speech/script", consumes = "multipart/form-data")
     public Mono<STTResultResponseDto> responseSTTResult(STTRequestDto request,@PathVariable("themeId") Long themeId){
         return processSTTService.createSTTResult(request, themeId);
@@ -27,7 +27,7 @@ public class STTController implements SwaggerSTTController{
 
 
     @Operation(summary = "stt 결과 및 소요시간 반환",
-            description = "음성녹음을 STTRequestDTO에 담아 요청하면 Processing과정을 거쳐 STTResultResponseDTO에 담아 응답한다.")
+            description = "대본이 입력된 상태에서 음성녹음을 STTRequestDTO에 담아 요청하면 Processing과정을 거쳐 STTResultResponseDTO에 담아 응답한다.")
     @PostMapping(value ="/api/v1/themes/{themeId}/scripts/{scriptId}/speech/script", consumes = "multipart/form-data")
     @Override
     public Mono<STTResultResponseDto> responseSTTResult(STTRequestDto request,@PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId){
