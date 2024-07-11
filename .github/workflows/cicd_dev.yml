@@ -41,7 +41,8 @@ jobs:
         spring.data.redis.password: ${{secrets.REDIS_PASSWORD}}
         gpt.api.key: ${{secrets.GPT_API_KEY}}
         jwt.secret.key: ${{secrets.JWT_SECRET_KEY}}
-        sql.init.mode: ${{ secrets.DATA_SQL_OPTION }}
+        spring.sql.init.mode: ${{ secrets.DATA_SQL_OPTION }}
+        spring.jpa.defer-datasource-initialization: ${{ secrets.DATA_INITALIZATION_OPTION }}
         
     # application.yml 파일 내용 확인
     - name: Display modified application.yml
