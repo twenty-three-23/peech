@@ -4,10 +4,9 @@ import com.twentythree.peech.script.domain.ThemeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface ThemeRepository extends JpaRepository<ThemeEntity, Long> {
+import java.util.List;
 
-    @Query("select t.userEntity.id from ThemeEntity t where t.themeId =: themeId ")
-    Long findUserByThemeId(Long themeId);
+public interface ThemeRepository extends JpaRepository<ThemeEntity, Long> {
 
     @Query("select t from ThemeEntity t where t.userEntity.id = :userId")
     List<ThemeEntity> findAllThemesByUserId(Long userId);
