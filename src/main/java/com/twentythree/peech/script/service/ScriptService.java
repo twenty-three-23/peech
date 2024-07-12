@@ -39,7 +39,6 @@ public class ScriptService {
     private final ScriptRepository scriptRepository;
     private final ThemeRepository themeRepository;
     private final VersionRepository versionRepository;
-    private final SentenceRepository sentenceRepository;
     private final CacheService scriptRedisRepository;
 
     @Transactional
@@ -234,4 +233,11 @@ public class ScriptService {
         return paragraphs;
     }
 
+    // 특정 주제에 버전 값을 모두 입력받으면 해당 버전의 음성 스크립트를 응답한다.
+    public MinorScriptDTO getMinorScriptDetail(Long themeId, Long majorVersion, Long minorVersion) {
+
+        ScriptEntity minorDetailScriptEntity = scriptRepository.findMinorScriptDetailByThemeIAndMajorVersionAndMinorVersion(themeId, majorVersion, minorVersion);
+
+        return new MinorScriptDTO(minorDetailScriptEntity.getVersion().getMinorVersion(), minorDetailScriptEntity.getScriptContent(), minorDetailScriptEntity.getCreatedAt());
+    }
 }
