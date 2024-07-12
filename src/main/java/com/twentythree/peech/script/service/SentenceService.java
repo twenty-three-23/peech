@@ -10,6 +10,7 @@ import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
 import com.twentythree.peech.script.stt.dto.SentenceVO;
 import com.twentythree.peech.script.stt.utils.RealTimeUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,10 +36,10 @@ public class SentenceService {
         for (int paragraphId = 0; paragraphId < paragraphs.length; paragraphId++) {
             String paragraph = paragraphs[paragraphId];
 
-            String[] sentences = paragraph.split(".");
-
+            String[] sentences = paragraph.split("\\.\\s*");
             for (int sentenceOrder = 0; sentenceOrder < sentences.length; sentenceOrder++) {
-                String sentence = sentences[sentenceOrder];
+
+                String sentence = sentences[sentenceOrder]+".";
                 LocalTime expectedTime = ScriptUtils.calculateExpectedTime(sentence);
                 SentenceEntity sentenceEntity = sentenceRepository.save(SentenceEntity.ofCreateInputSentence(scriptEntity, (long) paragraphId, sentence, (long) sentenceOrder, expectedTime));
                 sentenceIds.add(sentenceEntity.getSentenceId());
