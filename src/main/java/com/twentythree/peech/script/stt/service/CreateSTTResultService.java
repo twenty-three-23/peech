@@ -1,6 +1,8 @@
 
 package com.twentythree.peech.script.stt.service;
 
+import com.twentythree.peech.script.cache.RedisTemplateImpl;
+import com.twentythree.peech.script.dto.RedisSentenceDTO;
 import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
 import com.twentythree.peech.script.stt.dto.STTResultSentenceDto;
 import com.twentythree.peech.script.stt.dto.SentenceVO;
@@ -20,10 +22,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CreateSTTResultService {
 
+    private final RedisTemplateImpl redisTemplateImpl;
+
     public STTResultResponseDto createSTTResultResponseDto(ClovaResponseDto clovaResponseDto, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<SentenceVO> sentenceVOList, ParagraphDivideResponseDto paragraphDivideResponseDto) {
 
         int timestamp;
         long paragraphId = 1L;
+        long paragrapshOrder = 1L;
 
         List<STTResultSentenceDto> sttResultSentenceDtoList = new ArrayList<>();
 
@@ -62,8 +67,10 @@ public class CreateSTTResultService {
                 String sentenceContent = sttResultSentenceDtoList.get(index).getContent();
                 timestamp += sttResultSentenceDtoList.get(index).getRealTime();
                 sentenceList.add(new STTResultResponseDto.Paragraph.Sentence(sentenceId, sentenceContent));
+                redisTemplateImpl.saveSentenceInformation(sentenceId, new RedisSentenceDTO(paragraphId, paragrapshOrder, Long.valueOf(index), sentenceContent, RealTimeUtils.convertMsToTimeFormat(timestamp), false));
             }
             paragraphList.add(new STTResultResponseDto.Paragraph(paragraphId++, sentenceList, RealTimeUtils.convertMsToTimeFormat(timestamp)));
+            paragrapshOrder++;
         }
 
         return new STTResultResponseDto(totalRealTime, paragraphList);
