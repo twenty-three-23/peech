@@ -62,7 +62,6 @@ public class SentenceEntity extends BaseCreatedAtEntity {
         if(scriptEntity.getDType() != InputAndSttType.INPUT) {
             throw new IllegalArgumentException("팩토리얼 함수를 잘못 사용했습니다.");
         }
-        log.info("여기까지는 됨 {}", paragraphId);
         return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceExpectTime);
     }
 
