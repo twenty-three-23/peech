@@ -30,7 +30,7 @@ public class RedisTemplateImpl implements CacheService {
             List<String> sentenceIdListLongToString = sentencesIdList.stream().map(String::valueOf).toList();
 
             // 만약 해당 userKey 이미 존재한다면 삭제
-            // 현재 방식이 overwrite되는 방식이 아니라서 해당 방식을 적용하고 추가로 수정할 예정
+            // 현재 방식이 overwrite되는 방식이 아니라서 해당 방식을 적용하고 추가로 수정할 예정 -> 없는 듯해서 대체방안까지 고려해야할듯 합니다 ㅠㅠ
             if(Boolean.TRUE.equals(redisTemplate.hasKey(userKey))){
                 redisTemplate.delete(userKey);
             }
@@ -46,7 +46,7 @@ public class RedisTemplateImpl implements CacheService {
     }
 
     @Override
-    public void saveSentenceInfo(Long sentenceId, RedisSentenceDTO redisSentence){
+    public void saveSentenceInformation(Long sentenceId, RedisSentenceDTO redisSentence){
 
         try {
 
@@ -71,7 +71,9 @@ public class RedisTemplateImpl implements CacheService {
     @Override
     public List<Long> findAllByUserKey(String userKey) {
 
-        List<Long> list = redisTemplate.opsForList().range(userKey, 0, -1).stream()
+        List<Long> list = Optional.ofNullable(redisTemplate.opsForList().range(userKey, 0, -1))
+                .orElseThrow( () -> new RuntimeException("해당 유저에 대한 대본이 존재하지 않습니다.: " + userKey))
+                .stream()
                 .map(String::valueOf)
                 .map(Long::parseLong)
                 .toList();
