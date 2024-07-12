@@ -3,8 +3,7 @@ jwt:
     key: ${SECRET_KEY}
 
 logging:
-  level:
-    com.com.twentythree.peech: debug
+  ${ LOGGING_SETTING }
 
 spring:
   datasource:

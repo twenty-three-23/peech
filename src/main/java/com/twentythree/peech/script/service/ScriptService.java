@@ -14,6 +14,7 @@ import com.twentythree.peech.script.repository.VersionRepository;
 import com.twentythree.peech.script.stt.dto.SaveSTTScriptVO;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -56,7 +57,7 @@ public class ScriptService {
 
         Long latestMajorVersion = scriptRepository.findByMaxMajorVersionInthemeId(themeId);
 
-        VersionEntity versionEntity = VersionEntity.ofCreateInputScriptVersion(latestMajorVersion, ThemeEntity);
+        VersionEntity versionEntity = VersionEntity.ofCreateInputScriptVersion(latestMajorVersion, themeId, ThemeEntity);
         ScriptEntity scriptEntity = ScriptEntity.ofCreateInputScript(versionEntity, script, expectedTime, InputAndSttType.INPUT);
 
         versionRepository.save(versionEntity);

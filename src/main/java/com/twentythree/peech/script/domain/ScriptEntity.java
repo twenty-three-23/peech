@@ -24,8 +24,8 @@ public class ScriptEntity extends BaseCreatedAtEntity {
 
     @OneToOne
     @JoinColumns(value = {
-            @JoinColumn(name = "major_version"),
-            @JoinColumn(name = "minor_version")
+            @JoinColumn(name = "major_version", referencedColumnName = "major_version"),
+            @JoinColumn(name = "minor_version", referencedColumnName = "minor_version")
     })
     private VersionEntity version;
 

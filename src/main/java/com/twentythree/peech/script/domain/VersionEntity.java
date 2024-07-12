@@ -21,20 +21,23 @@ public class VersionEntity extends BaseCreatedAtEntity {
     @Id
     @Column(name = "minor_version")
     private Long minorVersion;
+    @Id
+    @Column(name = "theme_id", insertable = false, updatable = false)
+    private Long themeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "theme_id")
+    @JoinColumn(nullable = false, name = "theme_id", insertable = false, updatable = false)
     private ThemeEntity ThemeEntity;
 
-    public static VersionEntity of(Long majorVersion, Long minorVersion, ThemeEntity ThemeEntity) {
-        return new VersionEntity(majorVersion, minorVersion, ThemeEntity);
+    public static VersionEntity of(Long majorVersion, Long minorVersion, Long themeId, ThemeEntity ThemeEntity) {
+        return new VersionEntity(majorVersion, minorVersion, themeId, ThemeEntity);
     }
 
-    public static VersionEntity ofCreateInputScriptVersion(Long latestMajorVersion, ThemeEntity ThemeEntity) {
+    public static VersionEntity ofCreateInputScriptVersion(Long latestMajorVersion, Long themeId, ThemeEntity ThemeEntity) {
         if (latestMajorVersion == null) {
-            return VersionEntity.of(1L, 0L, ThemeEntity);
+            return VersionEntity.of(1L, 0L, themeId, ThemeEntity);
         } else {
-            return VersionEntity.of(latestMajorVersion + 1L, 0L, ThemeEntity);
+            return VersionEntity.of(latestMajorVersion + 1L, 0L, themeId, ThemeEntity);
         }
     }
 
