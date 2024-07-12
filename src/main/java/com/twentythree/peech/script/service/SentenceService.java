@@ -7,6 +7,7 @@ import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
 import com.twentythree.peech.script.repository.SentenceRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +33,10 @@ public class SentenceService {
         for (int paragraphId = 0; paragraphId < paragraphs.length; paragraphId++) {
             String paragraph = paragraphs[paragraphId];
 
-            String[] sentences = paragraph.split(".");
-
+            String[] sentences = paragraph.split("\\.\\s*");
             for (int sentenceOrder = 0; sentenceOrder < sentences.length; sentenceOrder++) {
-                String sentence = sentences[sentenceOrder];
+
+                String sentence = sentences[sentenceOrder]+".";
                 LocalTime expectedTime = ScriptUtils.calculateExpectedTime(sentence);
                 SentenceEntity sentenceEntity = sentenceRepository.save(SentenceEntity.ofCreateInputSentence(scriptEntity, (long) paragraphId, sentence, (long) sentenceOrder, expectedTime));
                 sentenceIds.add(sentenceEntity.getSentenceId());

@@ -6,8 +6,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalTime;
 
+@Slf4j
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,7 +43,11 @@ public class SentenceEntity extends BaseCreatedAtEntity {
     private LocalTime sentenceRealTime;
 
     private SentenceEntity(ScriptEntity scriptEntity, Long paragraphId, String sentenceContent, Long sentenceOrder, LocalTime time){
-        if(scriptEntity.getDType() == InputAndSttType.INPUT){
+        this.scriptEntity = scriptEntity;
+        this.paragraphId = paragraphId;
+        this.sentenceContent = sentenceContent;
+        this.sentenceOrder = sentenceOrder;
+        if(scriptEntity.getDType() == InputAndSttType.INPUT) {
             this.sentenceExpectTime = time;
         } else if(scriptEntity.getDType() == InputAndSttType.STT){
             this.sentenceRealTime = time;
@@ -55,6 +62,7 @@ public class SentenceEntity extends BaseCreatedAtEntity {
         if(scriptEntity.getDType() != InputAndSttType.INPUT) {
             throw new IllegalArgumentException("팩토리얼 함수를 잘못 사용했습니다.");
         }
+        log.info("여기까지는 됨 {}", paragraphId);
         return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceExpectTime);
     }
 
