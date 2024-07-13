@@ -2,13 +2,15 @@ package com.twentythree.peech.script.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalTime;
+
 
 @Data
 @AllArgsConstructor
-public class RedisSentenceDTO implements Serializable {
+@NoArgsConstructor
+public class RedisSentenceDTO {
 
     private Long paragraphId;
     private Long paragraphOrder;
@@ -31,3 +33,4 @@ public class RedisSentenceDTO implements Serializable {
     }
 
 }
+

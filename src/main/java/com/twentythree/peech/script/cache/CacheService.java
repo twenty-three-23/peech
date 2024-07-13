@@ -8,7 +8,7 @@ public interface CacheService {
     // User의 문장 리스트를 저장
     void saveSentencesIdList(String userKey, List<Long> sentencesIds);
     // 문장 정보를 저장
-    void saveSentenceInfo(Long sentenceId, RedisSentenceDTO redisSentence);
+    void saveSentenceInformation(Long sentenceId, RedisSentenceDTO redisSentence);
 
     List<Long> findAllByUserKey(String userKey);
 

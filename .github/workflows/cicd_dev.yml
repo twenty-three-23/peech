@@ -43,6 +43,11 @@ jobs:
         jwt.secret.key: ${{secrets.JWT_SECRET_KEY}}
         spring.sql.init.mode: ${{ secrets.DATA_SQL_OPTION }}
         spring.jpa.defer-datasource-initialization: ${{ secrets.DATA_INITALIZATION_OPTION }}
+        clova.speech-api.secret: ${{ secrets.CLOVA_SPEECH_SECRET_KEY }}
+        clova.speech-api.url: ${{ secrets.CLOVA_SPEECH_URL }}
+        clova.divide-sentence-api.key: ${{ secrets.CLOVASTUDIO_API_KEY }}
+        clova.divide-sentence-api.gw-key: ${{ secrets.CLOVASTUDIO_APIGW_API_KEY }}
+        clova.divide-sentence-api.url: ${{ secrets.CLOVASTUDIO_API_URL }}
         
     # application.yml 파일 내용 확인
     - name: Display modified application.yml

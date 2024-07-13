@@ -54,6 +54,9 @@ public class SentenceEntity extends BaseCreatedAtEntity {
         } else {
             throw new IllegalArgumentException("InputAndSttType이 올바르지 않게 입력 되었다.");
         }
+        this.paragraphId = paragraphId;
+        this.sentenceContent = sentenceContent;
+        this.sentenceOrder = sentenceOrder;
     }
 
     public static SentenceEntity ofCreateInputSentence(ScriptEntity scriptEntity,
