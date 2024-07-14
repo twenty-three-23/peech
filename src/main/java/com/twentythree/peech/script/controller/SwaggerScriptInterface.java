@@ -31,7 +31,7 @@ public interface SwaggerScriptInterface {
     MinorScriptsResponseDTO getMinorScripts(@PathVariable Long majorVersion, @PathVariable Long themeId);
 
     @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = MinorScriptDTO.class), mediaType = "application/json")})
-    MinorScriptDTO getMinorScriptDetail(@PathVariable Long themeId, @PathVariable Long majorVersion, @PathVariable Long minorVersion);
+    MinorDetailScriptDTO getMinorScriptDetail(@PathVariable Long themeId, @PathVariable Long majorVersion, @PathVariable Long minorVersion);
 
     @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = ModifyScriptResponseDTO.class), mediaType = "application/json")})
     ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request, @LoginUserId UserIdDTO userId);

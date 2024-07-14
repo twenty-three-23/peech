@@ -60,8 +60,8 @@ public class ScriptController implements SwaggerScriptInterface{
             description = "특정 주제의 themeId와 메이저 버전 major_version, 마이너 버전 minor version 을 모두 보내주면 해당 버전의 음성 스크립트를 응답한다.")
     @Override
     @GetMapping("/api/v1/themes/{themeId}/scripts/{majorVersion}/{minorVersion}")
-    public MinorScriptDTO getMinorScriptDetail(@PathVariable("themeId") Long themeId, @PathVariable("majorVersion") Long majorVersion, @PathVariable("minorVersion") Long minorVersion) {
-        return scriptService.getMinorScriptDetail(themeId, majorVersion, minorVersion);
+    public MinorDetailScriptDTO getMinorScriptDetail(@PathVariable("themeId") Long themeId, @PathVariable("majorVersion") Long majorVersion, @PathVariable("minorVersion") Long minorVersion) {
+        return scriptSentenceFacade.getMinorScriptAndSentence(themeId, majorVersion, minorVersion);
     }
 
     @Operation(summary = "연습해서 나온 측정 대본 수정하기",
