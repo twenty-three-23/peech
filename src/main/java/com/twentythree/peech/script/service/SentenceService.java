@@ -6,6 +6,9 @@ import com.twentythree.peech.script.domain.ScriptEntity;
 import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
 import com.twentythree.peech.script.repository.SentenceRepository;
+import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
+import com.twentythree.peech.script.stt.dto.SentenceVO;
+import com.twentythree.peech.script.stt.utils.RealTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,6 +48,26 @@ public class SentenceService {
         return sentenceIds;
     }
 
+    @Transactional
+    public List<SentenceVO> saveSTTSentences(ScriptEntity scriptEntity, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<List<Integer>> sentenceSpan) {
+
+        Long paragraphId = 1L;
+        List<SentenceVO> sentenceVOList = new ArrayList<>();
+
+        for(List<Integer> paragraph : sentenceSpan) {
+            for (Integer index : paragraph) {
+                EditClovaSpeechSentenceVO sentence = sentenceAndRealTimeList.get(index);
+                SentenceEntity sentenceEntity = SentenceEntity.ofCreateSTTSentence(scriptEntity, paragraphId, sentence.sentenceContent(), sentence.sentenceOrder(), RealTimeUtils.convertMsToTimeFormat(sentence.sentenceDuration()));
+                sentenceRepository.save(sentenceEntity);
+                SentenceVO sentenceVO = new SentenceVO(sentenceEntity);
+                sentenceVOList.add(sentenceVO);
+            }
+            paragraphId++;
+        }
+
+        return sentenceVOList;
+    }
+
     public List<paragraphIdToExpectedTime> getParagraphExpectedTime(Long scriptId) {
 
         List<paragraphIdToExpectedTime> results = new ArrayList<>();
@@ -71,5 +94,10 @@ public class SentenceService {
         }
 
         return results;
+    }
+
+
+    public List<SentenceEntity> getMinorScriptSentences(Long scriptId) {
+        return sentenceRepository.findBySentencesToScriptId(scriptId);
     }
 }

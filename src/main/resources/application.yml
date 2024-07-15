@@ -29,9 +29,24 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 gpt:
   model: gpt-3.5-turbo
   api:
     key:  ${GPT_API_KEY}
     url: https://api.openai.com/v1/chat/completions
+
+clova:
+  speech-api:
+    secret: ${CLOVA_SPEECH_SECRET_KEY}
+    url: ${CLOVA_SPEECH_URL}
+    callback: ${CLOVA_SPEECH_CALLBACK_URL}
+
+  divide-sentence-api:
+    key: ${CLOVASTUDIO_API_KEY}
+    gw-key: ${CLOVASTUDIO_APIGW_API_KEY}
+    url: ${CLOVASTUDIO_API_URL}

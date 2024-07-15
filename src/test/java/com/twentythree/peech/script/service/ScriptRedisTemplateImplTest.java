@@ -3,7 +3,6 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
 import com.twentythree.peech.script.dto.RedisSentenceDTO;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +61,11 @@ public class ScriptRedisTemplateImplTest {
                 new RedisSentenceDTO( 1L, 1L, 3L,"sentence5", LocalTime.of(0, 0, 12), false)
         );
 
-        redisTemplateImpl.saveSentenceInfo(1L, sentenceInfomations.get(0));
-        redisTemplateImpl.saveSentenceInfo(2L, sentenceInfomations.get(1));
-        redisTemplateImpl.saveSentenceInfo(3L, sentenceInfomations.get(2));
-        redisTemplateImpl.saveSentenceInfo(4L, sentenceInfomations.get(3));
-        redisTemplateImpl.saveSentenceInfo(5L, sentenceInfomations.get(4));
+        redisTemplateImpl.saveSentenceInformation(1L, sentenceInfomations.get(0));
+        redisTemplateImpl.saveSentenceInformation(2L, sentenceInfomations.get(1));
+        redisTemplateImpl.saveSentenceInformation(3L, sentenceInfomations.get(2));
+        redisTemplateImpl.saveSentenceInformation(4L, sentenceInfomations.get(3));
+        redisTemplateImpl.saveSentenceInformation(5L, sentenceInfomations.get(4));
 
         long sentenceId = 1L;
 

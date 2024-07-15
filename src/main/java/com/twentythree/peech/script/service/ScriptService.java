@@ -11,12 +11,16 @@ import com.twentythree.peech.script.dto.response.ModifyScriptResponseDTO;
 import com.twentythree.peech.script.dto.response.ParagraphsResponseDTO;
 import com.twentythree.peech.script.repository.*;
 import com.twentythree.peech.common.utils.ScriptUtils;
+import com.twentythree.peech.script.repository.VersionRepository;
+import com.twentythree.peech.script.stt.dto.SaveSTTScriptVO;
+import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
 
 import java.time.LocalTime;
@@ -37,7 +41,6 @@ public class ScriptService {
     private final ScriptRepository scriptRepository;
     private final ThemeRepository themeRepository;
     private final VersionRepository versionRepository;
-    private final SentenceRepository sentenceRepository;
     private final CacheService scriptRedisRepository;
 
     @Transactional
@@ -58,6 +61,54 @@ public class ScriptService {
         scriptRepository.save(scriptEntity);
 
         return new SaveScriptDTO(scriptEntity, ScriptUtils.calculateExpectedTime(script));
+    }
+
+    @Transactional
+    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, Long scriptId, ClovaResponseDto clovaResponseDto) {
+
+        ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
+
+        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+
+        // 해당 스크립트의 MajorVersion과 MinorVersion을 가져옴
+        Long majorVersion = scriptEntity.getVersion().getMajorVersion();
+
+        // 입력받은 대본에서 가장 최신의 MinorVersion을 가져옴
+        Long latestMinorVersion = versionRepository.findByMaxMinorVersion(themeId, majorVersion);
+
+        VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersionAfterInput(majorVersion, latestMinorVersion, ThemeEntity);
+
+
+        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
+    }
+
+    @Transactional
+    // Version과 SCRIPT Entity 저장 로직은 공통이므로 묶어서 처리
+    public SaveSTTScriptVO saveSTTScriptEntity(Long themeId, ClovaResponseDto clovaResponseDto, VersionEntity versionEntity) {
+
+
+        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+
+        ScriptEntity sttScriptEntity = ScriptEntity.ofCreateSTTScript(versionEntity, clovaResponseDto.getFullText(), clovaResponseDto.getTotalRealTime(), InputAndSttType.STT);
+
+        versionRepository.save(versionEntity);
+        scriptRepository.save(sttScriptEntity);
+
+        return new SaveSTTScriptVO(sttScriptEntity, clovaResponseDto.getTotalRealTime());
+    }
+
+    @Transactional
+    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, ClovaResponseDto clovaResponseDto) {
+
+        String script = clovaResponseDto.getFullText();
+
+        LocalTime totalRealTime = clovaResponseDto.getTotalRealTime();
+
+        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+
+        VersionEntity versionEntity = VersionEntity.ofCreateJustSTTScriptVersion(ThemeEntity);
+
+        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
     }
 
     public LocalTime getInputExpectedScriptTime(Long scriptId) {
@@ -206,7 +257,7 @@ public class ScriptService {
                 Long newSentenceId = redisSentenceMap.getKey().getSentenceId();
                 RedisSentenceDTO newSentence = redisSentenceMap.getValue();
 
-                scriptRedisRepository.saveSentenceInfo(newSentenceId, newSentence);
+                scriptRedisRepository.saveSentenceInformation(newSentenceId, newSentence);
                 newSentenceIds.add(newSentenceId);
 
             }
@@ -256,4 +307,9 @@ public class ScriptService {
         return paragraphs;
     }
 
+    // 특정 주제에 버전 값을 모두 입력받으면 해당 버전의 음성 스크립트를 응답한다.
+    public ScriptEntity getMinorScriptDetail(Long themeId, Long majorVersion, Long minorVersion) {
+
+        return scriptRepository.findMinorScriptDetailByThemeIAndMajorVersionAndMinorVersion(themeId, majorVersion, minorVersion);
+    }
 }
