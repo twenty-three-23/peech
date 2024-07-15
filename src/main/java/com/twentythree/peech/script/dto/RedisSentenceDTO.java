@@ -17,19 +17,15 @@ public class RedisSentenceDTO {
     private Long sentenceOrder;
     private String sentenceContent;
     private LocalTime time;
-    private boolean isChanged;
+    private NowStatus nowStatus;
 
-    public String toStringIsChanged() {
-        return isChanged ? "true" : "false";
-    }
-
-    public RedisSentenceDTO(String paragraphId, String paragraphOrder, String sentenceOrder, String sentenceContent, String time, String isChanged) {
+    public RedisSentenceDTO(String paragraphId, String paragraphOrder, String sentenceOrder, String sentenceContent, String time, String nowStatus) {
         this.paragraphId = Long.parseLong(paragraphId);
         this.paragraphOrder = Long.parseLong(paragraphOrder);
         this.sentenceOrder = Long.parseLong(sentenceOrder);
         this.sentenceContent = sentenceContent;
         this.time = LocalTime.parse(time);
-        this.isChanged = Boolean.parseBoolean(isChanged);
+        this.nowStatus = NowStatus.parse(nowStatus);
     }
 
 }

@@ -3,12 +3,11 @@ package com.twentythree.peech.script.stt.service;
 
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
 import com.twentythree.peech.script.dto.RedisSentenceDTO;
+import com.twentythree.peech.script.stt.dto.response.NowStatus;
 import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
 import com.twentythree.peech.script.stt.dto.STTResultSentenceDto;
 import com.twentythree.peech.script.stt.dto.SentenceVO;
-import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
-import com.twentythree.peech.script.stt.dto.response.ParagraphDivideResponseDto;
-import com.twentythree.peech.script.stt.dto.response.STTResultResponseDto;
+import com.twentythree.peech.script.stt.dto.response.*;
 import com.twentythree.peech.script.stt.utils.RealTimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,11 +23,11 @@ public class CreateSTTResultService {
 
     private final RedisTemplateImpl redisTemplateImpl;
 
-    public STTResultResponseDto createSTTResultResponseDto(ClovaResponseDto clovaResponseDto, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<SentenceVO> sentenceVOList, ParagraphDivideResponseDto paragraphDivideResponseDto) {
+    public STTScriptResponseDTO createSTTResultResponseDto(ClovaResponseDto clovaResponseDto, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<SentenceVO> sentenceVOList, ParagraphDivideResponseDto paragraphDivideResponseDto) {
 
         int timestamp;
-        long paragraphId = 1L;
-        long paragrapshOrder = 1L;
+        Long paragraphId = 0L;
+        Long paragraphOrder = 0L;
 
         List<STTResultSentenceDto> sttResultSentenceDtoList = new ArrayList<>();
 
@@ -44,9 +43,10 @@ public class CreateSTTResultService {
             SentenceVO sentenceVO = sentenceVOList.get(i);
 
             Long id = sentenceVO.sentenceEntity().getSentenceId();
+            Long order = sentenceVO.sentenceEntity().getSentenceOrder();
             String content = sentenceVO.sentenceEntity().getSentenceContent();
 
-            STTResultSentenceDto sttResultSentenceDto = new STTResultSentenceDto(id, content, sentencesRealTimeList.get(i));
+            STTResultSentenceDto sttResultSentenceDto = new STTResultSentenceDto(id, order, content, sentencesRealTimeList.get(i));
             sttResultSentenceDtoList.add(sttResultSentenceDto);
         }
 
@@ -56,24 +56,25 @@ public class CreateSTTResultService {
         // 문단별 측정된 시간 저장
         List<LocalTime> paragraphRealTime = new ArrayList<>();
 
-        List<STTResultResponseDto.Paragraph> paragraphList = new ArrayList<>();
+        List<STTParagraphDTO> paragraphList = new ArrayList<>();
 
         for (List<Integer> paragraph : paragraphNumber) {
-            List<STTResultResponseDto.Paragraph.Sentence> sentenceList = new ArrayList<>();
+            List<SentenceDTO> sentenceList = new ArrayList<>();
             timestamp = 0;
             for (Integer index : paragraph) {
 
                 Long sentenceId = sttResultSentenceDtoList.get(index).getSentenceId();
+                Long sentenceOrder = sttResultSentenceDtoList.get(index).getSentenceOrder();
                 String sentenceContent = sttResultSentenceDtoList.get(index).getContent();
+
                 timestamp += sttResultSentenceDtoList.get(index).getRealTime();
-                sentenceList.add(new STTResultResponseDto.Paragraph.Sentence(sentenceId, sentenceContent));
-                redisTemplateImpl.saveSentenceInformation(sentenceId, new RedisSentenceDTO(paragraphId, paragrapshOrder, Long.valueOf(index), sentenceContent, RealTimeUtils.convertMsToTimeFormat(timestamp), false));
+                sentenceList.add(new SentenceDTO(sentenceId, sentenceOrder, sentenceContent));
+                redisTemplateImpl.saveSentenceInformation(sentenceId, new RedisSentenceDTO(paragraphId, paragraphOrder, Long.valueOf(index), sentenceContent, RealTimeUtils.convertMsToTimeFormat(timestamp), com.twentythree.peech.script.dto.NowStatus.RealTime));
             }
-            paragraphList.add(new STTResultResponseDto.Paragraph(paragraphId++, sentenceList, RealTimeUtils.convertMsToTimeFormat(timestamp)));
-            paragrapshOrder++;
+            paragraphList.add(new STTParagraphDTO(paragraphId++, paragraphOrder++, RealTimeUtils.convertMsToTimeFormat(timestamp), NowStatus.RealTime, sentenceList));
         }
 
-        return new STTResultResponseDto(totalRealTime, paragraphList);
+        return new STTScriptResponseDTO(paragraphList);
     }
 
 }

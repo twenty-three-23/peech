@@ -1,4 +1,4 @@
-package com.twentythree.peech.script.dto;
+package com.twentythree.peech.script.stt.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalTime;
 import java.util.List;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class ModifiedParagraphDTO {
+public class STTParagraphDTO {
+
     private Long paragraphId;
     private Long paragraphOrder;
     private LocalTime time;

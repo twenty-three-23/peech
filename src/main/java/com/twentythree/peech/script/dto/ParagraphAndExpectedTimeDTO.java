@@ -1,6 +1,6 @@
 package com.twentythree.peech.script.dto;
 
-import lombok.Data;
+import com.twentythree.peech.script.stt.dto.response.NowStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +12,7 @@ import java.util.List;
 public class ParagraphAndExpectedTimeDTO extends ParagraphDTO {
 
     private LocalTime expectedTime;
-    private boolean isCalculated;
+    private NowStatus nowStatus;
 
     public ParagraphAndExpectedTimeDTO(Long paragraphId, Long paragraphOrder, List<SentenceDTO> sentences, LocalTime expectedTime) {
         super(paragraphId, paragraphOrder, sentences);
