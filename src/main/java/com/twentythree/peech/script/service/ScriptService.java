@@ -121,9 +121,11 @@ public class ScriptService {
 
     public MajorScriptsResponseDTO getMajorScripts(Long themeId) {
         List<ScriptEntity> scripts = scriptRepository.findMajorScriptByThemeId(themeId);
+
         List<MajorScriptDTO> majorScript = new ArrayList<>();
         for (ScriptEntity script : scripts) {
-            majorScript.add(new MajorScriptDTO(script.getScriptId(), script.getVersion().getMajorVersion(), script.getScriptContent(), script.getCreatedAt()));
+            int minorScriptsCountPerMajorScript = versionRepository.findMinorScriptsCount(script.getVersion().getMajorVersion());
+            majorScript.add(new MajorScriptDTO(script.getScriptId(), script.getVersion().getMajorVersion(), script.getScriptContent(), script.getCreatedAt(), minorScriptsCountPerMajorScript));
         }
 
         return new MajorScriptsResponseDTO(majorScript);
