@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twentythree.peech.script.stt.dto.request.STTRequestDto;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RequestClovaSpeechApiService {
 
         @Value("${clova.speech-api.url}")
@@ -34,6 +36,11 @@ public class RequestClovaSpeechApiService {
 
         public Mono<ClovaResponseDto> requestClovaSpeechApi(STTRequestDto request){
                 // client에서 받은 파일을 임시파일로 변환
+
+                // request media가 null일 경우 예외처리
+                if (request.media() == null) {
+                        throw new IllegalArgumentException("파일이 유효하지 않습니다.");
+                }
                 File tempFile;
                 try {
                         String originalFilename = request.media().getOriginalFilename();
