@@ -8,6 +8,7 @@ import com.twentythree.peech.script.dto.*;
 import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
 import com.twentythree.peech.script.dto.response.MinorScriptsResponseDTO;
 import com.twentythree.peech.script.dto.response.ModifyScriptResponseDTO;
+import com.twentythree.peech.script.dto.response.ParagraphsResponseDTO;
 import com.twentythree.peech.script.repository.*;
 import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.script.repository.VersionRepository;
@@ -23,10 +24,7 @@ import reactor.core.publisher.Mono;
 
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -270,6 +268,30 @@ public class ScriptService {
         }
         return new ModifyScriptResponseDTO(modifiedParagraphList);
     }
+
+    public ParagraphsResponseDTO getParagraphsByScriptId(Long scriptId) {
+        ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
+
+        List<SentenceEntity> sentences = scriptEntity.getSentenceEntities();
+        sentences.sort(Comparator.comparingLong(SentenceEntity::getParagraphId).thenComparingLong(SentenceEntity::getSentenceOrder));
+        List<ParagraphContent> paragraphs = new ArrayList<>();
+
+        Long paragraphId = 0L;
+        String paragraphContent = "";
+        for (SentenceEntity sentence : sentences) {
+            Long paragraphIdBySentence = sentence.getParagraphId();
+            if (paragraphIdBySentence != paragraphId) {
+                paragraphs.add(new ParagraphContent(paragraphContent));
+                paragraphId = paragraphIdBySentence;
+                paragraphContent = sentence.getSentenceContent();
+            } else {
+                paragraphContent += sentence.getSentenceContent();
+            }
+        }
+        paragraphs.add(new ParagraphContent(paragraphContent));
+        return new ParagraphsResponseDTO(paragraphs);
+    }
+
 
     // GPT
 

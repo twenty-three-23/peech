@@ -71,4 +71,10 @@ public class ScriptController implements SwaggerScriptInterface{
     public ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request, @LoginUserId UserIdDTO userId) {
         return scriptService.modifyScriptService(request.getParagraphs(), scriptId, userId.userId());
     }
+
+    @Operation(summary = "")
+    @Override
+    public ParagraphsResponseDTO getParagraphsByScriptId(Long themeId, Long scriptId) {
+        return scriptService.getParagraphsByScriptId(scriptId);
+    }
 }
