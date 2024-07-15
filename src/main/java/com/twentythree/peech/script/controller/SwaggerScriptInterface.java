@@ -1,10 +1,11 @@
 package com.twentythree.peech.script.controller;
 
+import com.twentythree.peech.auth.dto.LoginUserId;
+import com.twentythree.peech.auth.dto.UserIdDTO;
+import com.twentythree.peech.script.dto.MinorScriptDTO;
+import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
-import com.twentythree.peech.script.dto.response.ExpectedTimeResponseDTO;
-import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
-import com.twentythree.peech.script.dto.response.MinorScriptsResponseDTO;
-import com.twentythree.peech.script.dto.response.SaveScriptAndSentencesResponseDTO;
+import com.twentythree.peech.script.dto.response.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,4 +29,10 @@ public interface SwaggerScriptInterface {
 
     @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = MajorScriptsResponseDTO.class), mediaType = "application/json")})
     MinorScriptsResponseDTO getMinorScripts(@PathVariable Long majorVersion, @PathVariable Long themeId);
+
+    @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = MinorScriptDTO.class), mediaType = "application/json")})
+    MinorDetailScriptDTO getMinorScriptDetail(@PathVariable Long themeId, @PathVariable Long majorVersion, @PathVariable Long minorVersion);
+
+    @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = ModifyScriptResponseDTO.class), mediaType = "application/json")})
+    ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request, @LoginUserId UserIdDTO userId);
 }

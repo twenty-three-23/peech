@@ -24,12 +24,13 @@ public class ScriptEntity extends BaseCreatedAtEntity {
 
     @OneToOne
     @JoinColumns(value = {
-            @JoinColumn(name = "major_version"),
-            @JoinColumn(name = "minor_version")
+            @JoinColumn(name = "major_version", referencedColumnName = "major_version"),
+            @JoinColumn(name = "minor_version", referencedColumnName = "minor_version"),
+            @JoinColumn(name = "theme_id", referencedColumnName = "theme_id")
     })
     private VersionEntity version;
 
-    @Column(name = "script_content", nullable = false )
+    @Column(name = "script_content", nullable = false, length = 65535, columnDefinition = "TEXT")
     private String scriptContent;
 
     @Column(name = "total_expect_time")

@@ -6,8 +6,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalTime;
 
+@Slf4j
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,13 +43,20 @@ public class SentenceEntity extends BaseCreatedAtEntity {
     private LocalTime sentenceRealTime;
 
     private SentenceEntity(ScriptEntity scriptEntity, Long paragraphId, String sentenceContent, Long sentenceOrder, LocalTime time){
-        if(scriptEntity.getDType() == InputAndSttType.INPUT){
+        this.scriptEntity = scriptEntity;
+        this.paragraphId = paragraphId;
+        this.sentenceContent = sentenceContent;
+        this.sentenceOrder = sentenceOrder;
+        if(scriptEntity.getDType() == InputAndSttType.INPUT) {
             this.sentenceExpectTime = time;
         } else if(scriptEntity.getDType() == InputAndSttType.STT){
             this.sentenceRealTime = time;
         } else {
             throw new IllegalArgumentException("InputAndSttType이 올바르지 않게 입력 되었다.");
         }
+        this.paragraphId = paragraphId;
+        this.sentenceContent = sentenceContent;
+        this.sentenceOrder = sentenceOrder;
     }
 
     public static SentenceEntity ofCreateInputSentence(ScriptEntity scriptEntity,
@@ -67,5 +77,18 @@ public class SentenceEntity extends BaseCreatedAtEntity {
         return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceRealTime);
     }
 
+    public boolean sentenceEquals(String sentenceContent) {
+//        if (this.sentenceId.equals(sentence.sentenceId)) {
+//            return this.sentenceContent.equals(sentence.getSentenceContent());
+//        } else {
+//            return false
+//        }
+
+        return this.sentenceContent.equals(sentenceContent);
+    }
+
+    public String[] sliceSentences(String sentenceContent) {
+        return sentenceContent.split("\\.");
+    }
 
 }
