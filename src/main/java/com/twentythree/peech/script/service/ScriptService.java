@@ -99,6 +99,7 @@ public class ScriptService {
         return new SaveSTTScriptVO(sttScriptEntity, clovaResponseDto.getTotalRealTime());
     }
 
+    @Transactional
     public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, ClovaResponseDto clovaResponseDto) {
 
         String script = clovaResponseDto.getFullText();
@@ -258,7 +259,7 @@ public class ScriptService {
                 Long newSentenceId = redisSentenceMap.getKey().getSentenceId();
                 RedisSentenceDTO newSentence = redisSentenceMap.getValue();
 
-                scriptRedisRepository.saveSentenceInfo(newSentenceId, newSentence);
+                scriptRedisRepository.saveSentenceInformation(newSentenceId, newSentence);
                 newSentenceIds.add(newSentenceId);
 
             }
@@ -285,10 +286,8 @@ public class ScriptService {
     }
 
     // 특정 주제에 버전 값을 모두 입력받으면 해당 버전의 음성 스크립트를 응답한다.
-    public MinorScriptDTO getMinorScriptDetail(Long themeId, Long majorVersion, Long minorVersion) {
+    public ScriptEntity getMinorScriptDetail(Long themeId, Long majorVersion, Long minorVersion) {
 
-        ScriptEntity minorDetailScriptEntity = scriptRepository.findMinorScriptDetailByThemeIAndMajorVersionAndMinorVersion(themeId, majorVersion, minorVersion);
-
-        return new MinorScriptDTO(minorDetailScriptEntity.getVersion().getMinorVersion(), minorDetailScriptEntity.getScriptContent(), minorDetailScriptEntity.getCreatedAt());
+        return scriptRepository.findMinorScriptDetailByThemeIAndMajorVersionAndMinorVersion(themeId, majorVersion, minorVersion);
     }
 }

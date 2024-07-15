@@ -97,4 +97,7 @@ public class SentenceService {
     }
 
 
+    public List<SentenceEntity> getMinorScriptSentences(Long scriptId) {
+        return sentenceRepository.findBySentencesToScriptId(scriptId);
+    }
 }
