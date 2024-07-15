@@ -259,7 +259,7 @@ public class ScriptService {
                 Long newSentenceId = redisSentenceMap.getKey().getSentenceId();
                 RedisSentenceDTO newSentence = redisSentenceMap.getValue();
 
-                scriptRedisRepository.saveSentenceInfo(newSentenceId, newSentence);
+                scriptRedisRepository.saveSentenceInformation(newSentenceId, newSentence);
                 newSentenceIds.add(newSentenceId);
 
             }
