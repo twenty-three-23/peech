@@ -21,13 +21,11 @@ public class ScriptUtils {
 
         int second = (int) time;
 
-        int minute = (int) (second / 60);
-        int hour = (int) (second / (60 * 60));
+        int hour = second / 3600;
+        int minute = (second % 3600) / 60;
+        int secondSet = (second % 3600) % 60;
 
-        int minuteSet = minute - (hour * 60);
-        int secondSet = second - (minuteSet * 60);
-
-        return LocalTime.of(hour, minuteSet, secondSet);
+        return LocalTime.of(hour, minute, secondSet);
     }
 
     public static LocalTime sumLocalTime(LocalTime time1, LocalTime time2) {
