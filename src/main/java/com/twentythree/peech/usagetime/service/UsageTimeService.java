@@ -1,9 +1,11 @@
 package com.twentythree.peech.usagetime.service;
 
-import com.twentythree.peech.auth.dto.UserIdDTO;
+import com.twentythree.peech.common.utils.ScriptUtils;
+import com.twentythree.peech.usagetime.constant.ConstantValue;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
+import com.twentythree.peech.usagetime.dto.RemainingTimeDTO;
 import com.twentythree.peech.usagetime.dto.response.CheckRemainingTimeResponseDTO;
-import com.twentythree.peech.usagetime.dto.response.RemainingTimeResponseDTO;
+import com.twentythree.peech.usagetime.dto.response.TextAndSecondTimeResponseDTO;
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import java.io.File;
+import java.time.LocalTime;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,11 +64,35 @@ public class UsageTimeService {
         return remainingTime;
     }
 
-    public RemainingTimeResponseDTO getUsageTime(Long userId) {
+    public TextAndSecondTimeResponseDTO getUsageTime(Long userId) {
         UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).
                 orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
         log.info("remaining Time: {}", usageTime.getRemainingTime());
-        return new RemainingTimeResponseDTO(usageTime.getRemainingTime());
+
+        Long remainingTimeToSecond = usageTime.getRemainingTime();
+
+        LocalTime remainingTimeToLocalTime = ScriptUtils.transferSeoondToLocalTime(remainingTimeToSecond);
+        log.info("remaining Time LocalTime: {}", remainingTimeToLocalTime.getSecond());
+
+        int hour = remainingTimeToLocalTime.getHour();
+        int minute = remainingTimeToLocalTime.getMinute();
+        int second = remainingTimeToLocalTime.getSecond();
+
+        String remainingTimeToText = "";
+
+        if (hour != 0) {
+            remainingTimeToText = remainingTimeToText.concat(hour + "시간 ");
+        }
+        if (minute != 0) {
+            remainingTimeToText = remainingTimeToText.concat(minute + "분 ");
+        }
+        if (second != 0) {
+            remainingTimeToText = remainingTimeToText.concat(second + "초 ");
+        }
+
+        remainingTimeToText = remainingTimeToText.trim();
+
+        return new TextAndSecondTimeResponseDTO(new RemainingTimeDTO(remainingTimeToText, remainingTimeToSecond));
     }
 
     public CheckRemainingTimeResponseDTO checkRemainingTime(Long userId, Long audioTime) {
@@ -73,5 +100,30 @@ public class UsageTimeService {
                 orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
         Long remainingTime = usageTime.getRemainingTime();
         return (remainingTime >= audioTime) ? new CheckRemainingTimeResponseDTO("성공") : new CheckRemainingTimeResponseDTO("사용 시간이 부족합니다.");
+    }
+
+    public TextAndSecondTimeResponseDTO getMaxAudioTime() {
+        Long maxAudioTimeToSecond = ConstantValue.MAX_AUDIO_TIME;
+        LocalTime maxAudioTimeToLocalTime = ScriptUtils.transferSeoondToLocalTime(maxAudioTimeToSecond);
+
+        int hour = maxAudioTimeToLocalTime.getHour();
+        int minute = maxAudioTimeToLocalTime.getMinute();
+        int second = maxAudioTimeToLocalTime.getSecond();
+
+        String maxAudioTimeToText = "";
+
+        if (hour != 0) {
+            maxAudioTimeToText = maxAudioTimeToText.concat(hour + "시간 ");
+        }
+        if (minute != 0) {
+            maxAudioTimeToText = maxAudioTimeToText.concat(minute + "분 ");
+        }
+        if (second != 0) {
+            maxAudioTimeToText = maxAudioTimeToText.concat(second + "초 ");
+        }
+
+        maxAudioTimeToText = maxAudioTimeToText.trim();
+
+        return new TextAndSecondTimeResponseDTO(new RemainingTimeDTO(maxAudioTimeToText, maxAudioTimeToSecond));
     }
 }
