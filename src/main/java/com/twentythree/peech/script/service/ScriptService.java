@@ -201,7 +201,7 @@ public class ScriptService {
 
             //기존에 존재하던 문단
 
-            NowStatus nowStatus = NowStatus.ExpectedTime;
+            NowStatus nowStatus = NowStatus.RealTime;
             LocalTime timePerParagraph = LocalTime.of(0,0,0,0);
 
             for (SentenceDTO modifiedSentence : modifiedSentences) {
