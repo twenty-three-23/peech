@@ -2,8 +2,8 @@
 package com.twentythree.peech.script.stt.service;
 
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
+import com.twentythree.peech.script.dto.NowStatus;
 import com.twentythree.peech.script.dto.RedisSentenceDTO;
-import com.twentythree.peech.script.stt.dto.response.NowStatus;
 import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
 import com.twentythree.peech.script.stt.dto.STTResultSentenceDto;
 import com.twentythree.peech.script.stt.dto.SentenceVO;
@@ -69,7 +69,7 @@ public class CreateSTTResultService {
 
                 timestamp += sttResultSentenceDtoList.get(index).getRealTime();
                 sentenceList.add(new SentenceDTO(sentenceId, sentenceOrder, sentenceContent));
-                redisTemplateImpl.saveSentenceInformation(sentenceId, new RedisSentenceDTO(paragraphId, paragraphOrder, Long.valueOf(index), sentenceContent, RealTimeUtils.convertMsToTimeFormat(timestamp), com.twentythree.peech.script.dto.NowStatus.RealTime));
+                redisTemplateImpl.saveSentenceInformation(sentenceId, new RedisSentenceDTO(paragraphId, paragraphOrder, Long.valueOf(index), sentenceContent, RealTimeUtils.convertMsToTimeFormat(timestamp), NowStatus.RealTime));
             }
             paragraphList.add(new STTParagraphDTO(paragraphId++, paragraphOrder++, RealTimeUtils.convertMsToTimeFormat(timestamp), NowStatus.RealTime, sentenceList));
         }

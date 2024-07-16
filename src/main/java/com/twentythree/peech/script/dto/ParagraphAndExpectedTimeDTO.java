@@ -1,6 +1,5 @@
 package com.twentythree.peech.script.dto;
 
-import com.twentythree.peech.script.stt.dto.response.NowStatus;
 import lombok.Getter;
 import lombok.Setter;
 

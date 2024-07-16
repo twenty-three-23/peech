@@ -35,8 +35,6 @@ public class ProcessSTTService {
 
     private final CreateSTTResultService createSTTResultService;
 
-    private final ThemeRepository themeRepository;
-
     private final RedisTemplateImpl redisTemplateImpl;
 
     public Mono<STTScriptResponseDTO> createSTTResult(STTRequestDto request, Long themeId, Long userId) {

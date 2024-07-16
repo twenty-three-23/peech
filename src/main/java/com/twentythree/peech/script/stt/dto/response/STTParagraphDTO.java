@@ -1,5 +1,6 @@
 package com.twentythree.peech.script.stt.dto.response;
 
+import com.twentythree.peech.script.dto.NowStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
