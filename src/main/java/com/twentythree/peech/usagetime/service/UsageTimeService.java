@@ -101,4 +101,29 @@ public class UsageTimeService {
         Long remainingTime = usageTime.getRemainingTime();
         return (remainingTime >= audioTime) ? new CheckRemainingTimeResponseDTO("성공") : new CheckRemainingTimeResponseDTO("사용 시간이 부족합니다.");
     }
+
+    public TextAndSecondTimeResponseDTO getMaxAudioTime() {
+        Long maxAudioTimeToSecond = ConstantValue.MAX_AUDIO_TIME;
+        LocalTime maxAudioTimeToLocalTime = ScriptUtils.transferSeoondToLocalTime(maxAudioTimeToSecond);
+
+        int hour = maxAudioTimeToLocalTime.getHour();
+        int minute = maxAudioTimeToLocalTime.getMinute();
+        int second = maxAudioTimeToLocalTime.getSecond();
+
+        String maxAudioTimeToText = "";
+
+        if (hour != 0) {
+            maxAudioTimeToText = maxAudioTimeToText.concat(hour + "시간 ");
+        }
+        if (minute != 0) {
+            maxAudioTimeToText = maxAudioTimeToText.concat(minute + "분 ");
+        }
+        if (second != 0) {
+            maxAudioTimeToText = maxAudioTimeToText.concat(second + "초 ");
+        }
+
+        maxAudioTimeToText = maxAudioTimeToText.trim();
+
+        return new TextAndSecondTimeResponseDTO(new RemainingTimeDTO(maxAudioTimeToText, maxAudioTimeToSecond));
+    }
 }

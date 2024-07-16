@@ -15,4 +15,6 @@ public interface SwaggerUsageTimeController {
     @GetMapping("api/v1/usage-time")
     TextAndSecondTimeResponseDTO getUsageTime(@LoginUserId UserIdDTO userId);
 
+    TextAndSecondTimeResponseDTO getMaxAudioTime();
+
 }

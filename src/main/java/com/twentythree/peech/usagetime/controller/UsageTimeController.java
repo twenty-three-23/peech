@@ -26,4 +26,10 @@ public class UsageTimeController implements SwaggerUsageTimeController{
     public TextAndSecondTimeResponseDTO getUsageTime(UserIdDTO userId) {
         return usageTimeService.getUsageTime(userId.userId());
     }
+
+    @Override
+    @GetMapping("api/v1/max-audio-time")
+    public TextAndSecondTimeResponseDTO getMaxAudioTime() {
+        return usageTimeService.getMaxAudioTime();
+    }
 }
