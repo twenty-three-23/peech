@@ -2,18 +2,22 @@ package com.twentythree.peech.user.service;
 
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
+import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
+import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
 import com.twentythree.peech.user.domain.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JWTUtils jwtUtils;
+    private final UsageTimeRepository usageTimeRepository;
 
     @Override
     @Transactional
@@ -24,6 +28,10 @@ public class UserServiceImpl implements UserService {
 
             Long userId = userRepository.save(user).getId();
             String jwt = jwtUtils.createJWT(userId);
+
+            UsageTimeEntity usageTime = new UsageTimeEntity(user);
+            usageTimeRepository.save(usageTime);
+
             return jwt;
         } else {
             throw new UserAlreadyExistException("이미 가입된 유저 입니다");
