@@ -20,10 +20,12 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long> {
 
     @Query("select s from ScriptEntity s " +
             "join fetch VersionEntity v " +
-            "on s.version.majorVersion = v.majorVersion and s.version.minorVersion = v.minorVersion " +
+            "on s.version.majorVersion = v.majorVersion " +
+            "and s.version.minorVersion = v.minorVersion " +
+            "and s.version.themeId = v.ThemeEntity.themeId " +
+            "and v.majorVersion = :majorVersion " +
             "where v.minorVersion != 0 " +
-            "and v.ThemeEntity.themeId = :themeId " +
-            "and v.majorVersion = :majorVersion")
+            "and v.ThemeEntity.themeId = :themeId ")
     List<ScriptEntity> findMinorScriptByThemeIdAndMajorVersion(Long themeId, Long majorVersion);
 
     @Query("select s from ScriptEntity s where s.version.themeId = :themeId and s.version.majorVersion = :majorVersion and s.version.minorVersion = :minorVersion")
