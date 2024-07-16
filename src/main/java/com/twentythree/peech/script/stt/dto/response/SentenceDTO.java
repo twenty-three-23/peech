@@ -1,15 +1,16 @@
-package com.twentythree.peech.script.stt.dto;
+package com.twentythree.peech.script.stt.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class STTResultSentenceDto {
+@NoArgsConstructor
+public class SentenceDTO {
+
     private Long sentenceId;
     private Long sentenceOrder;
-    private String content;
-    private int realTime;
+    private String sentenceContent;
+
 }

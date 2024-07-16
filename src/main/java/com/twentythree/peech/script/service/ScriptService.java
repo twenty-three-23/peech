@@ -151,7 +151,7 @@ public class ScriptService {
             RedisSentenceDTO                  sentence                     = scriptRedisRepository.findByKey(sentenceId);
             Map<SentenceId, RedisSentenceDTO> redisSentencesPerParagraphId = redisSentences.get(new ParagraphId(sentence.getParagraphId()));
 
-            redisSentencesPerParagraphId.put(new SentenceId(sentenceId), new RedisSentenceDTO(sentence.getParagraphId(), sentence.getParagraphOrder(), sentence.getSentenceOrder(), sentence.getSentenceContent(), sentence.getTime(), sentence.isChanged()));
+            redisSentencesPerParagraphId.put(new SentenceId(sentenceId), new RedisSentenceDTO(sentence.getParagraphId(), sentence.getParagraphOrder(), sentence.getSentenceOrder(), sentence.getSentenceContent(), sentence.getTime(), sentence.getNowStatus()));
         }
 
         List<ModifiedParagraphDTO> modifiedParagraphList = new ArrayList<>(); // ResponseDTO를 만들기 위함
@@ -184,7 +184,7 @@ public class ScriptService {
                                                                 modifiedSentenceOrder,
                                                                 modifiedSentenceContent,
                                                                 modifiedSentenceExpectedTime,
-                                                                true));
+                                                                NowStatus.ExpectedTime));
 
                     SentenceDTO sentenceDTO = new SentenceDTO(modifiedSentenceId, modifiedSentenceOrder, modifiedSentenceContent);
                     modifiedSentenceList.add(sentenceDTO);
@@ -194,14 +194,14 @@ public class ScriptService {
                 modifiedParagraphList.add(new ModifiedParagraphDTO(modifiedParagraphId,
                                                                    modifiedParagraphOrder,
                                                                    expectedTimePerParagraph,
-                                                                   true,
+                                                                   NowStatus.ExpectedTime,
                                                                    modifiedSentenceList));
                 continue; // 새로운 문단을 생성했다면 기존 문장과 비교할 필요가 없다.
             }
 
             //기존에 존재하던 문단
 
-            boolean isCalculated = false;
+            NowStatus nowStatus = NowStatus.RealTime;
             LocalTime timePerParagraph = LocalTime.of(0,0,0,0);
 
             for (SentenceDTO modifiedSentence : modifiedSentences) {
@@ -218,27 +218,27 @@ public class ScriptService {
 
                     temporaryRedisList.put(new SentenceId(modifiedSentenceId), new RedisSentenceDTO(modifiedParagraphId,
                                                                                                     modifiedParagraphOrder,
-                            modifiedSentenceOrder,
+                                                                                                    modifiedSentenceOrder,
                                                                                                     modifiedSentenceContent,
                                                                                                     modifiedSentenceExpectedTime,
-                                                                                                    true));
+                                                                                                    NowStatus.ExpectedTime));
 
                     timePerParagraph = ScriptUtils.sumLocalTime(timePerParagraph, modifiedSentenceExpectedTime);
                     modifiedSentenceList.add(new SentenceDTO(modifiedSentenceId, modifiedSentenceOrder, modifiedSentenceContent));
-                    isCalculated = true;
+                    nowStatus = NowStatus.RealAndExpectedTime;
                     continue; // 새로운 문장이 추가 된 것이면 기준 문장과 비교할 필요가 없다.
                 }
 
                 String redisSentenceContent = redisSentence.getSentenceContent();
                 
-                // 문장을 비교해서 같은 내요이면 수정이 안된것, 다른 내용이면 수정이 된것으로 예상시간을 계산해서 넣는다.
+                // 문장을 비교해서 같은 내용이면 수정이 안된것, 다른 내용이면 수정이 된것으로 예상시간을 계산해서 넣는다.
                 if (redisSentenceContent.equals(modifiedSentenceContent)) { // 이런 로직이 sentence domain에 들어있어야 하는 것 같다.
                     temporaryRedisList.put(new SentenceId(modifiedSentenceId), new RedisSentenceDTO(modifiedParagraphId,
                                                                                                     modifiedParagraphOrder,
                                                                                                     modifiedSentenceOrder,
                                                                                                     redisSentenceContent,
                                                                                                     redisSentence.getTime(),
-                                                                                                    false));
+                                                                                                    NowStatus.RealTime));
                     timePerParagraph = ScriptUtils.sumLocalTime(timePerParagraph, redisSentence.getTime());
                 } else {
                     temporaryRedisList.put(new SentenceId(modifiedSentenceId), new RedisSentenceDTO(modifiedParagraphId, // 위의 class 생성 부분과 겹치는게 많은데 이런것도 공통화를 하고 setter로 다른 부분만 넣어줘야하나?
@@ -246,12 +246,12 @@ public class ScriptService {
                                                                                                     modifiedSentenceOrder,
                                                                                                     modifiedSentenceContent,
                                                                                                     ScriptUtils.calculateExpectedTime(modifiedSentenceContent),
-                                                                                                    true));
+                                                                                                    NowStatus.ExpectedTime));
                     timePerParagraph = ScriptUtils.sumLocalTime(timePerParagraph, ScriptUtils.calculateExpectedTime(modifiedSentenceContent));
                 }
                 modifiedSentenceList.add(new SentenceDTO(modifiedSentenceId, modifiedSentenceOrder, modifiedSentenceContent));
             }
-            modifiedParagraphList.add(new ModifiedParagraphDTO(modifiedParagraphId, modifiedParagraphOrder, timePerParagraph, isCalculated, modifiedSentenceList));
+            modifiedParagraphList.add(new ModifiedParagraphDTO(modifiedParagraphId, modifiedParagraphOrder, timePerParagraph, nowStatus, modifiedSentenceList));
 
             List<Long> newSentenceIds = new ArrayList<>();
 

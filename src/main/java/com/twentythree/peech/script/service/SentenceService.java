@@ -10,7 +10,6 @@ import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
 import com.twentythree.peech.script.stt.dto.SentenceVO;
 import com.twentythree.peech.script.stt.utils.RealTimeUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +50,7 @@ public class SentenceService {
     @Transactional
     public List<SentenceVO> saveSTTSentences(ScriptEntity scriptEntity, List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList, List<List<Integer>> sentenceSpan) {
 
-        Long paragraphId = 1L;
+        Long paragraphId = 0L;
         List<SentenceVO> sentenceVOList = new ArrayList<>();
 
         for(List<Integer> paragraph : sentenceSpan) {
