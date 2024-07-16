@@ -38,18 +38,18 @@ public class RequestClovaSpeechApiService {
                 // client에서 받은 파일을 임시파일로 변환
 
                 // request media가 null일 경우 예외처리
-                if (request.media() == null) {
+                if (request.file() == null) {
                         throw new IllegalArgumentException("파일이 유효하지 않습니다.");
                 }
                 File tempFile;
                 try {
-                        String originalFilename = request.media().getOriginalFilename();
+                        String originalFilename = request.file().getOriginalFilename();
                         if (originalFilename == null) {
                                 throw new IllegalArgumentException("파일 이름이 유효하지 않습니다.");
                         }
 
                         tempFile = File.createTempFile("temp", originalFilename);
-                        request.media().transferTo(tempFile);
+                        request.file().transferTo(tempFile);
                 } catch (IOException e) {
                         // IO 예외 처리
                         e.printStackTrace();
