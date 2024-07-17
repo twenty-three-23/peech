@@ -26,8 +26,6 @@ public class ProcessSTTService {
 
     private final RequestClovaSpeechApiService requestClovaSpeechApiService;
 
-    //private final EditClovaSpeechResponseService editClovaSpeechResponseService;
-
     private final AddRealTimeToSentenceService addRealTimeToSentenceService;
 
     private final CreateParagraghService createParagraghService;
