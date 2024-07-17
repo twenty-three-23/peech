@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Check;
+
 import java.time.LocalTime;
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class ScriptEntity extends BaseCreatedAtEntity {
     private LocalTime totalRealTime;
 
     @Column(name = "d_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private InputAndSttType DType;
 
     @OneToMany(mappedBy = "scriptEntity")
