@@ -24,7 +24,7 @@ public class UsageTimeEntity extends BaseTimeEntity {
     private Long usageTimeId;
 
 
-    @Column(name = "reamining_time") @ColumnDefault("9000")
+    @Column(name = "remaining_time") @ColumnDefault("9000")
     private Long remainingTime;
 
     @OneToOne(fetch = FetchType.LAZY)
