@@ -3,10 +3,8 @@ package com.twentythree.peech.usagetime.service;
 import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.usagetime.constant.ConstantValue;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
-import com.twentythree.peech.usagetime.dto.TextAndSecondDTO;
+import com.twentythree.peech.usagetime.dto.response.TextAndSecondResponseDTO;
 import com.twentythree.peech.usagetime.dto.response.CheckRemainingTimeResponseDTO;
-import com.twentythree.peech.usagetime.dto.response.MaxAudioTimeResponseDTO;
-import com.twentythree.peech.usagetime.dto.response.TextAndSecondTimeResponseDTO;
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +63,7 @@ public class UsageTimeService {
         return remainingTime;
     }
 
-    public TextAndSecondTimeResponseDTO getUsageTime(Long userId) {
+    public TextAndSecondResponseDTO getUsageTime(Long userId) {
         UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).
                 orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
         log.info("remaining Time: {}", usageTime.getRemainingTime());
@@ -93,7 +91,7 @@ public class UsageTimeService {
 
         remainingTimeToText = remainingTimeToText.trim();
 
-        return new TextAndSecondTimeResponseDTO(new TextAndSecondDTO(remainingTimeToText, remainingTimeToSecond));
+        return new TextAndSecondResponseDTO(remainingTimeToText, remainingTimeToSecond);
     }
 
     public CheckRemainingTimeResponseDTO checkRemainingTime(Long userId, Long audioTime) {
@@ -103,7 +101,7 @@ public class UsageTimeService {
         return (remainingTime >= audioTime) ? new CheckRemainingTimeResponseDTO("성공") : new CheckRemainingTimeResponseDTO("사용 시간이 부족합니다.");
     }
 
-    public MaxAudioTimeResponseDTO getMaxAudioTime() {
+    public TextAndSecondResponseDTO getMaxAudioTime() {
         Long maxAudioTimeToSecond = ConstantValue.MAX_AUDIO_TIME;
         LocalTime maxAudioTimeToLocalTime = ScriptUtils.transferSeoondToLocalTime(maxAudioTimeToSecond);
 
@@ -125,6 +123,6 @@ public class UsageTimeService {
 
         maxAudioTimeToText = maxAudioTimeToText.trim();
 
-        return new MaxAudioTimeResponseDTO(new TextAndSecondDTO(maxAudioTimeToText, maxAudioTimeToSecond));
+        return new TextAndSecondResponseDTO(maxAudioTimeToText, maxAudioTimeToSecond);
     }
 }
