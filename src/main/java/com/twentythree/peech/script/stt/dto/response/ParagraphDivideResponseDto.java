@@ -21,9 +21,9 @@ public class ParagraphDivideResponseDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Result {
 
-        @JsonProperty("paragraphs")
+        @JsonProperty("paragraphList")
         @JsonAlias("topicSeg")
-        private List<List<String>> paragraphs;
+        private List<List<String>> paragraphList;
 
         @JsonProperty("span")
         private List<List<Integer>> span;

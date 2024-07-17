@@ -1,10 +1,11 @@
 package com.twentythree.peech.script.stt.service;
 
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
+import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.script.service.ScriptService;
 import com.twentythree.peech.script.service.SentenceService;
-import com.twentythree.peech.script.stt.dto.EditClovaSpeechSentenceVO;
+import com.twentythree.peech.script.stt.dto.AddSentenceInformationVO;
 import com.twentythree.peech.script.stt.dto.SaveSTTScriptVO;
 import com.twentythree.peech.script.stt.dto.SentenceVO;
 import com.twentythree.peech.script.stt.dto.request.STTRequestDto;
@@ -25,7 +26,7 @@ public class ProcessSTTService {
 
     private final RequestClovaSpeechApiService requestClovaSpeechApiService;
 
-    private final EditClovaSpeechResponseService editClovaSpeechResponseService;
+    private final AddRealTimeToSentenceService addRealTimeToSentenceService;
 
     private final CreateParagraghService createParagraghService;
 
@@ -46,23 +47,24 @@ public class ProcessSTTService {
 
             return clovaResponseDtoMono
                     .flatMap(clovaResponseDto -> {
-                        List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList = editClovaSpeechResponseService.editClovaSpeechResponseSentences(clovaResponseDto);
-                        String totalText = sentenceAndRealTimeList
-                                .stream().map(EditClovaSpeechSentenceVO::sentenceContent)
-                                .collect(Collectors.joining("\\n"));
+
+                        String totalText = clovaResponseDto.getFullText();
 
                         Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
                         return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
+
+                            List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
+
                             // Script Entity 저장
                             Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, clovaResponseDto);
-
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
-                                List<SentenceVO> sentenceList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceAndRealTimeList, sentenceList, paragraphDivideResponseDto);
+
+                                List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
                                 // Redis 저장 로직
-                                List<Long> sentenceIds = sentenceList.stream().map(sentenceVO -> sentenceVO.sentenceEntity().getSentenceId()).toList();
-                                redisTemplateImpl.saveSentencesIdList(userKey, sentenceIds);
+                                List<Long> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
+                                redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
                             });
@@ -93,23 +95,22 @@ public class ProcessSTTService {
 
             return clovaResponseDtoMono
                     .flatMap(clovaResponseDto -> {
-                        List<EditClovaSpeechSentenceVO> sentenceAndRealTimeList = editClovaSpeechResponseService.editClovaSpeechResponseSentences(clovaResponseDto);
-                        String totalText = sentenceAndRealTimeList
-                                .stream().map(EditClovaSpeechSentenceVO::sentenceContent)
-                                .collect(Collectors.joining("\\n"));
+                        String totalText = clovaResponseDto.getFullText();
 
                         Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
                         return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
+
+                            List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
                             // Script Entity 저장
                             Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, scriptId, clovaResponseDto);
 
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
-                                List<SentenceVO> sentenceList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceAndRealTimeList, sentenceList, paragraphDivideResponseDto);
+                                List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
                                 // Redis 저장 로직
-                                List<Long> sentenceIds = sentenceList.stream().map(sentenceVO -> sentenceVO.sentenceEntity().getSentenceId()).toList();
-                                redisTemplateImpl.saveSentencesIdList(userKey, sentenceIds);
+                                List<Long> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
+                                redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
                             });

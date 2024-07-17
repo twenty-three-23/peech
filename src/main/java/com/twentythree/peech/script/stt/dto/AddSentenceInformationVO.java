@@ -4,7 +4,7 @@ package com.twentythree.peech.script.stt.dto;
 
 import java.time.LocalTime;
 
-public record EditClovaSpeechSentenceVO(
+public record AddSentenceInformationVO(
         Long sentenceOrder,
         String sentenceContent,
         int sentenceDuration
