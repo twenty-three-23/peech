@@ -8,7 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter @AllArgsConstructor
-public class TextAndSecondTimeResponseDTO {
+public class MaxAudioTimeResponseDTO {
 
-    private TextAndSecondDTO remainingTime;
+    private TextAndSecondDTO maxAudioTime;
 }
+

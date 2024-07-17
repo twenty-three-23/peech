@@ -2,6 +2,7 @@ package com.twentythree.peech.usagetime.controller;
 
 import com.twentythree.peech.auth.dto.UserIdDTO;
 import com.twentythree.peech.usagetime.dto.response.CheckRemainingTimeResponseDTO;
+import com.twentythree.peech.usagetime.dto.response.MaxAudioTimeResponseDTO;
 import com.twentythree.peech.usagetime.dto.response.TextAndSecondTimeResponseDTO;
 import com.twentythree.peech.usagetime.service.UsageTimeService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class UsageTimeController implements SwaggerUsageTimeController{
 
     @Override
     @GetMapping("api/v1/max-audio-time")
-    public TextAndSecondTimeResponseDTO getMaxAudioTime() {
+    public MaxAudioTimeResponseDTO getMaxAudioTime() {
         return usageTimeService.getMaxAudioTime();
     }
 }
