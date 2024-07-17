@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter @AllArgsConstructor
-public class RemainingTimeDTO {
+public class TextAndSecondDTO {
 
     private String text;
     private Long second;
