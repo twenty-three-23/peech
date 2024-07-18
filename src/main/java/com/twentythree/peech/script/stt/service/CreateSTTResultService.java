@@ -47,7 +47,7 @@ public class CreateSTTResultService {
                     .reduce(LocalTime.of(0,0,0),
                             ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour()).plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond())));
 
-            STTParagraphDTO sttParagraphDTO = new STTParagraphDTO(sentenceEntry.getKey(), sentenceEntry.getKey(), realTimePerParagraph, NowStatus.RealTime, sentenceDTOList);
+            STTParagraphDTO sttParagraphDTO = new STTParagraphDTO(sentenceEntry.getKey(), sentenceEntry.getKey(), realTimePerParagraph, NowStatus.REALTIME, sentenceDTOList);
             paragraphList.add(sttParagraphDTO);
         }
 
