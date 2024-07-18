@@ -51,12 +51,12 @@ public class RedisTemplateImpl implements CacheService {
         try {
 
             Map<String, String> sentenceInformations = new HashMap<>();
-            sentenceInformations.put("paragraphId", redisSentence.getParagraphId().toString());
-            sentenceInformations.put("paragraphOrder", redisSentence.getParagraphOrder().toString());
-            sentenceInformations.put("sentenceContent", redisSentence.getSentenceContent());
-            sentenceInformations.put("sentenceOrder", redisSentence.getSentenceOrder().toString());
-            sentenceInformations.put("sentenceTime", redisSentence.getTime().toString());
-            sentenceInformations.put("nowStatus", redisSentence.getNowStatus().toString());
+            sentenceInformations.put("paragraph_id", redisSentence.getParagraphId().toString());
+            sentenceInformations.put("paragraph_order", redisSentence.getParagraphOrder().toString());
+            sentenceInformations.put("sentence_content", redisSentence.getSentenceContent());
+            sentenceInformations.put("sentence_order", redisSentence.getSentenceOrder().toString());
+            sentenceInformations.put("sentence_time", redisSentence.getTime().toString());
+            sentenceInformations.put("now_status", redisSentence.getNowStatus().toString());
 
             // 해당 문장의 정보를 담아주는 Hash 저장
             redisTemplate.opsForHash().putAll(sentenceId.toString(), sentenceInformations);
@@ -87,12 +87,12 @@ public class RedisTemplateImpl implements CacheService {
     public RedisSentenceDTO findByKey(Long sentenceId) {
         Map<Object, Object> sentenceInformation = redisTemplate.opsForHash().entries(sentenceId.toString());
 
-        return new RedisSentenceDTO(sentenceInformation.get("paragraphId").toString(),
-                sentenceInformation.get("paragraphOrder").toString(),
-                sentenceInformation.get("sentenceOrder").toString(),
-                sentenceInformation.get("sentenceContent").toString(),
-                sentenceInformation.get("sentenceTime").toString(),
-                sentenceInformation.get("nowStatus").toString());
+        return new RedisSentenceDTO(sentenceInformation.get("paragraph_id").toString(),
+                sentenceInformation.get("paragraph_order").toString(),
+                sentenceInformation.get("sentence_order").toString(),
+                sentenceInformation.get("sentence_content").toString(),
+                sentenceInformation.get("sentence_time").toString(),
+                sentenceInformation.get("now_status").toString());
     }
 }
 
