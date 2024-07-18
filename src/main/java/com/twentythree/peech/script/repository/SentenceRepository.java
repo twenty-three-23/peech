@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface SentenceRepository extends JpaRepository<SentenceEntity, Long> {
+public interface SentenceRepository extends JpaRepository<SentenceEntity, String> {
 
     @Query("select s from SentenceEntity s where s.scriptEntity.scriptId = :scriptId")
     List<SentenceEntity> findBySentencesToScriptId(@Param("scriptId") Long scriptId);

@@ -26,9 +26,9 @@ public class SentenceService {
     private final SentenceRepository sentenceRepository;
 
     @Transactional
-    public List<Long> saveInputSentencesByParagraphs(ScriptEntity scriptEntity, String[] paragraphs) {
+    public List<String> saveInputSentencesByParagraphs(ScriptEntity scriptEntity, String[] paragraphs) {
 
-        List<Long> sentenceIds = new ArrayList<>();
+        List<String> sentenceIds = new ArrayList<>();
 
 
         for (int paragraphId = 0; paragraphId < paragraphs.length; paragraphId++) {

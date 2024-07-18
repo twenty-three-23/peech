@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Slf4j
 @Entity
@@ -19,9 +20,8 @@ import java.time.LocalTime;
 public class SentenceEntity extends BaseCreatedAtEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sentence_id")
-    private Long sentenceId;
+    private String sentenceId;
 
     @ManyToOne
     @JoinColumn(name = "script_id")
@@ -43,6 +43,7 @@ public class SentenceEntity extends BaseCreatedAtEntity {
     private LocalTime sentenceRealTime;
 
     private SentenceEntity(ScriptEntity scriptEntity, Long paragraphId, String sentenceContent, Long sentenceOrder, LocalTime time){
+        this.sentenceId = UUID.randomUUID().toString();
         this.scriptEntity = scriptEntity;
         this.paragraphId = paragraphId;
         this.sentenceContent = sentenceContent;

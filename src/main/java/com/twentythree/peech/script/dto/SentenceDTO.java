@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class SentenceDTO {
 
-    private Long sentenceId;
+    private String sentenceId;
     private Long sentenceOrder;
     private String sentenceContent;
 
