@@ -1,15 +1,15 @@
 package com.twentythree.peech.script.dto;
 
 public enum NowStatus {
-    RealTime, ExpectedTime, RealAndExpectedTime;
+    REALTIME, EXPECTEDTIME, REALANDEXPECTEDTIME;
 
     public static NowStatus parse(String status) {
         if (status.equals("RealTime")) {
-            return RealTime;
+            return REALTIME;
         } else if (status.equals("ExpectedTime")) {
-            return ExpectedTime;
+            return EXPECTEDTIME;
         } else if (status.equals("RealAndExpectedTime")) {
-            return RealAndExpectedTime;
+            return REALANDEXPECTEDTIME;
         } else {
             throw new IllegalArgumentException("유효하지 않은 상태입니다.");
         }

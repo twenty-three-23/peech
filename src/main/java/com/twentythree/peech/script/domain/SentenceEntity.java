@@ -30,7 +30,7 @@ public class SentenceEntity extends BaseCreatedAtEntity {
     @Column(name = "paragraph_id", nullable = false)
     private Long paragraphId;
 
-    @Column(name = "sentence_content", nullable = false)
+    @Column(name = "sentence_content", nullable = false, length = 65535, columnDefinition = "TEXT")
     private String sentenceContent;
 
     @Column(name = "sentence_order", nullable = false)

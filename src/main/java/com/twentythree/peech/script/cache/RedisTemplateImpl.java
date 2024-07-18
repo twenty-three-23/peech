@@ -55,7 +55,7 @@ public class RedisTemplateImpl implements CacheService {
             sentenceInformations.put("paragraph_order", redisSentence.getParagraphOrder().toString());
             sentenceInformations.put("sentence_content", redisSentence.getSentenceContent());
             sentenceInformations.put("sentence_order", redisSentence.getSentenceOrder().toString());
-            sentenceInformations.put("sentence_time", redisSentence.getTime().toString());
+            sentenceInformations.put("time", redisSentence.getTime().toString());
             sentenceInformations.put("now_status", redisSentence.getNowStatus().toString());
 
             // 해당 문장의 정보를 담아주는 Hash 저장
@@ -91,7 +91,7 @@ public class RedisTemplateImpl implements CacheService {
                 sentenceInformation.get("paragraph_order").toString(),
                 sentenceInformation.get("sentence_order").toString(),
                 sentenceInformation.get("sentence_content").toString(),
-                sentenceInformation.get("sentence_time").toString(),
+                sentenceInformation.get("time").toString(),
                 sentenceInformation.get("now_status").toString());
     }
 }
