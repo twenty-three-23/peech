@@ -26,7 +26,7 @@ public class ScriptSentenceFacade {
     @Transactional
     public Long createScriptAndSentences(Long themeId, String[] paragraphs) {
         SaveScriptDTO saveScripDTO = scriptService.saveInputScript(themeId, paragraphs);
-        List<Long> sentenceIds = sentenceService.saveInputSentencesByParagraphs(saveScripDTO.scriptEntity(), paragraphs);
+        List<String> sentenceIds = sentenceService.saveInputSentencesByParagraphs(saveScripDTO.scriptEntity(), paragraphs);
 
         return saveScripDTO.scriptEntity().getScriptId();
     }

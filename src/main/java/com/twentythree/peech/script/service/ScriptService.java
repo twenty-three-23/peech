@@ -145,9 +145,9 @@ public class ScriptService {
     public ModifyScriptResponseDTO modifyScriptService(List<ParagraphDTO> modifiedParagraphs, Long scriptId, Long userId) {
         
         Map<ParagraphId, Map<SentenceId, RedisSentenceDTO>> redisSentences = new HashMap<>(); // Redis에서 문단 id별로 문장들을 저장하기 위한 map
-        List<Long>                                          sentenceIds    = scriptRedisRepository.findAllByUserKey("user"+userId);
+        List<String>                                          sentenceIds    = scriptRedisRepository.findAllByUserKey("user"+userId);
 
-        for (Long sentenceId : sentenceIds) { // Redis에서 가져온 문장들을 문단별로 분리
+        for (String sentenceId : sentenceIds) { // Redis에서 가져온 문장들을 문단별로 분리
             RedisSentenceDTO                  sentence                     = scriptRedisRepository.findByKey(sentenceId);
             Map<SentenceId, RedisSentenceDTO> redisSentencesPerParagraphId = redisSentences.get(new ParagraphId(sentence.getParagraphId()));
 
@@ -174,7 +174,7 @@ public class ScriptService {
                 LocalTime expectedTimePerParagraph = LocalTime.of(0,0,0,0);
 
                 for (SentenceDTO modifiedSentence : modifiedSentences) {
-                    Long      modifiedSentenceId           = modifiedSentence.getSentenceId();
+                    String      modifiedSentenceId           = modifiedSentence.getSentenceId();
                     Long      modifiedSentenceOrder        = modifiedSentence.getSentenceOrder();
                     String    modifiedSentenceContent      = modifiedSentence.getSentenceContent();
                     LocalTime modifiedSentenceExpectedTime = ScriptUtils.calculateExpectedTime(modifiedSentenceContent);
@@ -206,7 +206,7 @@ public class ScriptService {
 
             for (SentenceDTO modifiedSentence : modifiedSentences) {
 
-                Long             modifiedSentenceId      = modifiedSentence.getSentenceId();
+                String             modifiedSentenceId      = modifiedSentence.getSentenceId();
                 String           modifiedSentenceContent = modifiedSentence.getSentenceContent();
                 Long             modifiedSentenceOrder   = modifiedSentence.getSentenceOrder();
 
@@ -253,10 +253,10 @@ public class ScriptService {
             }
             modifiedParagraphList.add(new ModifiedParagraphDTO(modifiedParagraphId, modifiedParagraphOrder, timePerParagraph, nowStatus, modifiedSentenceList));
 
-            List<Long> newSentenceIds = new ArrayList<>();
+            List<String> newSentenceIds = new ArrayList<>();
 
             for (Map.Entry<SentenceId, RedisSentenceDTO> redisSentenceMap : temporaryRedisList.entrySet()) {
-                Long newSentenceId = redisSentenceMap.getKey().getSentenceId();
+                String newSentenceId = redisSentenceMap.getKey().getSentenceId();
                 RedisSentenceDTO newSentence = redisSentenceMap.getValue();
 
                 scriptRedisRepository.saveSentenceInformation(newSentenceId, newSentence);

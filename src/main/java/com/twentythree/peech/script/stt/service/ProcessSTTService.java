@@ -63,7 +63,7 @@ public class ProcessSTTService {
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
                                 STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
                                 // Redis 저장 로직
-                                List<Long> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
+                                List<String> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
@@ -109,7 +109,7 @@ public class ProcessSTTService {
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
                                 STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
                                 // Redis 저장 로직
-                                List<Long> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
+                                List<String> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
