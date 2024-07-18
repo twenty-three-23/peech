@@ -16,6 +16,8 @@ public class STTParagraphDTO {
     private Long paragraphId;
     private Long paragraphOrder;
     private LocalTime time;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private NowStatus nowStatus;
     private List<SentenceDTO> sentences;
 }

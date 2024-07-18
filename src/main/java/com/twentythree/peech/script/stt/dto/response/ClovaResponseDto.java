@@ -35,7 +35,7 @@ public class ClovaResponseDto {
         // 마지막 문장의 마지막 단어 객체가져오기
         List<Object> lastWord = lastSegment.words.get(lastSegment.words.size()-1);
 
-        return RealTimeUtils.convertMsToTimeFormat((int) lastWord.get(1));
+        return RealTimeUtils.convertTimeStampToTimeFormat((int) lastWord.get(1));
     }
 
     @Getter

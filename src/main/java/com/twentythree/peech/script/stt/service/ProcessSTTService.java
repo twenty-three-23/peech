@@ -61,7 +61,7 @@ public class ProcessSTTService {
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
 
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList);
                                 // Redis 저장 로직
                                 List<Long> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
@@ -107,7 +107,7 @@ public class ProcessSTTService {
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList);
                                 // Redis 저장 로직
                                 List<Long> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
