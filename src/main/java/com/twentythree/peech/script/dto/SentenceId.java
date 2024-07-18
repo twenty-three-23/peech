@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class SentenceId {
-    private Long sentenceId;
+    private String sentenceId;
 }

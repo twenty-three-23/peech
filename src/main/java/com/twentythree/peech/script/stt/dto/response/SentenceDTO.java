@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SentenceDTO {
 
-    private Long sentenceId;
+    private String sentenceId;
     private Long sentenceOrder;
     private String sentenceContent;
 

@@ -21,7 +21,7 @@ public class RedisTemplateImpl implements CacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public void saveSentencesIdList(String userKey, List<Long> sentencesIdList){
+    public void saveSentencesIdList(String userKey, List<String> sentencesIdList){
 
 
 
@@ -46,7 +46,7 @@ public class RedisTemplateImpl implements CacheService {
     }
 
     @Override
-    public void saveSentenceInformation(Long sentenceId, RedisSentenceDTO redisSentence){
+    public void saveSentenceInformation(String sentenceId, RedisSentenceDTO redisSentence){
 
         try {
 
@@ -69,22 +69,21 @@ public class RedisTemplateImpl implements CacheService {
     }
 
     @Override
-    public List<Long> findAllByUserKey(String userKey) {
+    public List<String> findAllByUserKey(String userKey) {
 
-        List<Long> list = Optional.ofNullable(redisTemplate.opsForList().range(userKey, 0, -1))
+        List<String> list = Optional.ofNullable(redisTemplate.opsForList().range(userKey, 0, -1))
                 .orElseThrow( () -> new RuntimeException("해당 유저에 대한 대본이 존재하지 않습니다.: " + userKey))
                 .stream()
                 .map(String::valueOf)
-                .map(Long::parseLong)
                 .toList();
 
-        List<Long> sentenceIdsList = Optional.ofNullable(list).orElseThrow( () -> new RuntimeException("해당 유저에 대한 대본이 존재하지 않습니다.: " + userKey));
+        List<String> sentenceIdsList = Optional.ofNullable(list).orElseThrow( () -> new RuntimeException("해당 유저에 대한 대본이 존재하지 않습니다.: " + userKey));
 
         return sentenceIdsList;
     }
 
     @Override
-    public RedisSentenceDTO findByKey(Long sentenceId) {
+    public RedisSentenceDTO findByKey(String sentenceId) {
         Map<Object, Object> sentenceInformation = redisTemplate.opsForHash().entries(sentenceId.toString());
 
         return new RedisSentenceDTO(sentenceInformation.get("paragraph_id").toString(),
