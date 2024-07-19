@@ -7,6 +7,9 @@ import java.time.LocalTime;
 public record AddSentenceInformationVO(
         Long sentenceOrder,
         String sentenceContent,
-        int sentenceDuration
+        int sentenceDuration,
+        LocalTime startTime,
+        LocalTime endTime
+
 ) {
 }

@@ -4,9 +4,11 @@ import com.twentythree.peech.script.stt.dto.AddSentenceInformationVO;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import com.twentythree.peech.script.stt.dto.response.ParagraphDivideResponseDto;
 import com.twentythree.peech.script.stt.utils.MergeWordListUtils;
+import com.twentythree.peech.script.stt.utils.RealTimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,16 +32,19 @@ public class AddRealTimeToSentenceService {
         int endStamp = 0;
         long sentenceOrder = 0L;
 
+
         // 문장의 단어 개수를 기반으로 문장의 시작 시간과 종료 시간을 계산
         for(String sentence : sentenceList){
             startStamp = (int) wordList.get(startIndex).get(0);
+            LocalTime startTime = RealTimeUtils.convertTimeStampToTimeFormat(startStamp);
             // 해당 문장의 단어 개수를 알아야함
             int wordCount = sentence.split(" ").length;
             endIndex = startIndex + wordCount - 1;
             endStamp = (int) wordList.get(endIndex).get(1);
+            LocalTime endTime = RealTimeUtils.convertTimeStampToTimeFormat(endStamp);
             int duration = endStamp - startStamp;
 
-            AddSentenceInformationVO AddSentenceInformationVO = new AddSentenceInformationVO(++sentenceOrder, sentence, duration);
+            AddSentenceInformationVO AddSentenceInformationVO = new AddSentenceInformationVO(++sentenceOrder, sentence, duration, startTime, endTime);
             AddSentenceInformationVOList.add(AddSentenceInformationVO);
             startIndex = endIndex + 1;
         }

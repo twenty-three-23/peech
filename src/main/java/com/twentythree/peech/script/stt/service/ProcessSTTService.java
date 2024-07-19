@@ -60,8 +60,10 @@ public class ProcessSTTService {
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
 
+                                // 생성된 scriptId 가져오기
+                                long scriptId = saveSTTScriptVO.scriptEntity().getScriptId();
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, scriptId);
                                 // Redis 저장 로직
                                 List<String> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
@@ -106,8 +108,10 @@ public class ProcessSTTService {
 
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
+
+                                long newScriptId = saveSTTScriptVO.scriptEntity().getScriptId();
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList);
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, newScriptId);
                                 // Redis 저장 로직
                                 List<String> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
