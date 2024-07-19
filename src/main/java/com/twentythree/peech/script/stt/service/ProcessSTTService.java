@@ -2,12 +2,12 @@ package com.twentythree.peech.script.stt.service;
 
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
 import com.twentythree.peech.script.domain.SentenceEntity;
-import com.twentythree.peech.script.repository.ThemeRepository;
+import com.twentythree.peech.script.dto.NowStatus;
+import com.twentythree.peech.script.dto.RedisSentenceDTO;
 import com.twentythree.peech.script.service.ScriptService;
 import com.twentythree.peech.script.service.SentenceService;
 import com.twentythree.peech.script.stt.dto.AddSentenceInformationVO;
 import com.twentythree.peech.script.stt.dto.SaveSTTScriptVO;
-import com.twentythree.peech.script.stt.dto.SentenceVO;
 import com.twentythree.peech.script.stt.dto.request.STTRequestDto;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import com.twentythree.peech.script.stt.dto.response.ParagraphDivideResponseDto;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 // STT 결과를 클라이언트에게 전달할 VO 생성
 @Service
@@ -67,6 +67,28 @@ public class ProcessSTTService {
                                 // Redis 저장 로직
                                 List<String> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
+
+                                for (String sentenceId : sentenceIdList) {
+                                    RedisSentenceDTO redisSentenceDTO = new RedisSentenceDTO();
+                                    Optional<SentenceEntity> sentenceEntityOptional = sentenceEntityList.stream()
+                                            .filter(sentenceInformation -> sentenceInformation.getSentenceId().equals(sentenceId))
+                                            .findFirst();
+
+                                    if (sentenceEntityOptional.isPresent()) {
+                                        SentenceEntity sentenceEntity = sentenceEntityOptional.get();
+                                        redisSentenceDTO.setParagraphId(sentenceEntity.getParagraphId());
+                                        redisSentenceDTO.setParagraphOrder(sentenceEntity.getParagraphId()); // Assuming this is correct, though it sets the same value as paragraphId
+                                        redisSentenceDTO.setSentenceContent(sentenceEntity.getSentenceContent());
+                                        redisSentenceDTO.setSentenceOrder(sentenceEntity.getSentenceOrder());
+                                        redisSentenceDTO.setTime(sentenceEntity.getSentenceRealTime());
+                                        redisSentenceDTO.setNowStatus(NowStatus.REALTIME);
+
+                                        redisTemplateImpl.saveSentenceInformation(sentenceId, redisSentenceDTO);
+                                    } else {
+                                        // Handle the case where the sentenceEntity is not found. For example, log an error or continue.
+                                        System.out.println("SentenceEntity not found for sentenceId: " + sentenceId);
+                                    }
+                                }
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
                             });
@@ -115,6 +137,29 @@ public class ProcessSTTService {
                                 // Redis 저장 로직
                                 List<String> sentenceIdList = sentenceEntityList.stream().map(SentenceEntity::getSentenceId).toList();
                                 redisTemplateImpl.saveSentencesIdList(userKey, sentenceIdList);
+
+                                for (String sentenceId : sentenceIdList) {
+                                    RedisSentenceDTO redisSentenceDTO = new RedisSentenceDTO();
+                                    Optional<SentenceEntity> sentenceEntityOptional = sentenceEntityList.stream()
+                                            .filter(sentenceInformation -> sentenceInformation.getSentenceId().equals(sentenceId))
+                                            .findFirst();
+
+                                    if (sentenceEntityOptional.isPresent()) {
+                                        SentenceEntity sentenceEntity = sentenceEntityOptional.get();
+                                        redisSentenceDTO.setParagraphId(sentenceEntity.getParagraphId());
+                                        redisSentenceDTO.setParagraphOrder(sentenceEntity.getParagraphId()); // Assuming this is correct, though it sets the same value as paragraphId
+                                        redisSentenceDTO.setSentenceContent(sentenceEntity.getSentenceContent());
+                                        redisSentenceDTO.setSentenceOrder(sentenceEntity.getSentenceOrder());
+                                        redisSentenceDTO.setTime(sentenceEntity.getSentenceRealTime());
+                                        redisSentenceDTO.setNowStatus(NowStatus.REALTIME);
+
+                                        redisTemplateImpl.saveSentenceInformation(sentenceId, redisSentenceDTO);
+                                    } else {
+                                        // Handle the case where the sentenceEntity is not found. For example, log an error or continue.
+                                        System.out.println("SentenceEntity not found for sentenceId: " + sentenceId);
+                                    }
+                                }
+
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
                             });
