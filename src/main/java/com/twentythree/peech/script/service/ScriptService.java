@@ -106,7 +106,10 @@ public class ScriptService {
 
         ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
 
-        VersionEntity versionEntity = VersionEntity.ofCreateJustSTTScriptVersion(ThemeEntity);
+        Long latestMajorVersion = scriptRepository.findByMaxMajorVersionInthemeId(themeId);
+
+        // 대본 입력이 없는 경우에는 해당 스크립트를 Input script 취급
+        VersionEntity versionEntity = VersionEntity.ofCreateInputScriptVersion(latestMajorVersion, themeId, ThemeEntity);
 
         return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
     }
