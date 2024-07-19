@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CreateSTTResultService {
 
-    public STTScriptResponseDTO createSTTResultResponseDto(ClovaResponseDto clovaResponseDto, List<SentenceEntity> sentenceEntityList, List<AddSentenceInformationVO> sentenceAndRealTimeList) {
+    public STTScriptResponseDTO createSTTResultResponseDto(ClovaResponseDto clovaResponseDto, List<SentenceEntity> sentenceEntityList, List<AddSentenceInformationVO> sentenceAndRealTimeList, Long scriptId) {
 
         // 문단별로 그룹핑
         Map<Long, List<SentenceEntity>> sentenceListGroupByParagraph = sentenceEntityList.stream().collect(Collectors.groupingBy(SentenceEntity::getParagraphId));
@@ -61,7 +61,7 @@ public class CreateSTTResultService {
             paragraphList.add(sttParagraphDTO);
         }
 
-        return new STTScriptResponseDTO(clovaResponseDto.getTotalRealTime(), paragraphList);
+        return new STTScriptResponseDTO(scriptId, clovaResponseDto.getTotalRealTime(), paragraphList);
     }
 }
 

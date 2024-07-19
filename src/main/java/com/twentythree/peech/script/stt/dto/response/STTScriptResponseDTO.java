@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class STTScriptResponseDTO {
 
+    Long scriptId;
     LocalTime totalRealTime;
     List<STTParagraphDTO> script;
 }
