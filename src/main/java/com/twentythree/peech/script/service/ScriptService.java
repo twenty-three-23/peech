@@ -141,7 +141,7 @@ public class ScriptService {
         return new MinorScriptsResponseDTO(minorScripts);
     }
 
-    @Transactional // Redis는 분산 락을 걸어야 하나?
+    @Transactional
     public ModifyScriptResponseDTO modifyScriptService(List<ParagraphDTO> modifiedParagraphs, Long scriptId, Long userId) {
         
         Map<ParagraphId, Map<SentenceId, RedisSentenceDTO>> redisSentences = new HashMap<>(); // Redis에서 문단 id별로 문장들을 저장하기 위한 map
@@ -166,7 +166,7 @@ public class ScriptService {
         log.info("redisSentences: {}", redisSentences);
         List<ModifiedParagraphDTO> modifiedParagraphList = new ArrayList<>(); // ResponseDTO를 만들기 위함
         
-        // 이러면 paragraph domain을 만드는게 맞지 않을까요..
+        // TODO 이러면 paragraph domain을 만드는게 맞지 않을까요..
         for (ParagraphDTO modifiedParagraph : modifiedParagraphs) {
                 
             List<SentenceDTO> modifiedSentenceList = new ArrayList<>(); // ResponseDTO를 만들기 위함
@@ -282,7 +282,14 @@ public class ScriptService {
             scriptRedisRepository.saveSentencesIdList("user"+userId, newSentenceIds);
             
         }
-        return new ModifyScriptResponseDTO(modifiedParagraphList);
+
+        LocalTime totalTime = LocalTime.of(0, 0, 0, 0);
+
+        for (ModifiedParagraphDTO modifiedParagraph : modifiedParagraphList) {
+            totalTime = ScriptUtils.sumLocalTime(totalTime, modifiedParagraph.getTime());
+        }
+
+        return new ModifyScriptResponseDTO(scriptId, totalTime, modifiedParagraphList);
     }
 
     public ParagraphsResponseDTO getParagraphsByScriptId(Long scriptId) {
