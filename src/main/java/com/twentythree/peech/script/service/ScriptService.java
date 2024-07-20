@@ -299,7 +299,9 @@ public class ScriptService {
             // start: 변화 사항을 redis에 반영 및 덮어쓰기
 
             List<String> newSentenceIds = new ArrayList<>();
+            log.info("temporaryRedisList: {}", temporaryRedisList);
 
+            // start: key: sentenceId, value: RedisSentenceDTO 로 저장
             for (Map.Entry<SentenceId, RedisSentenceDTO> redisSentenceMap : temporaryRedisList.entrySet()) {
                 String newSentenceId = redisSentenceMap.getKey().getSentenceId();
                 RedisSentenceDTO newSentence = redisSentenceMap.getValue();
@@ -307,9 +309,14 @@ public class ScriptService {
                 log.info("redisSentenceMap: {}", redisSentenceMap);
                 scriptRedisRepository.saveSentenceInformation(newSentenceId, newSentence);
                 newSentenceIds.add(newSentenceId);
-
             }
-            scriptRedisRepository.saveSentencesIdList("user"+userId, newSentenceIds);
+            // end: key: sentenceId, value: RedisSentenceDTO 로 저장
+
+            // start: key: user+userId, value: sentenceId 로 저장
+            log.info("newSentenceIds: {}", newSentenceIds);
+            scriptRedisRepository.rightPushSentenceIdList("user"+userId, newSentenceIds);
+            // end: key: user+userId, value: sentenceId 로 저장
+
             // end: 변화 사항을 redis에 반영 및 덮어쓰기
             
         }
