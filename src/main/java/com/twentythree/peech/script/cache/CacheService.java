@@ -12,6 +12,8 @@ public interface CacheService {
 
     void rightPushSentenceIdList(String userKey, List<String> sentenceIds);
 
+    void delete(String key);
+
     List<String> findAllByUserKey(String userKey);
 
     RedisSentenceDTO findByKey(String sentenceId);

@@ -90,6 +90,11 @@ public class RedisTemplateImpl implements CacheService {
     }
 
     @Override
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
+
+    @Override
     public List<String> findAllByUserKey(String userKey) {
 
         List<String> list = Optional.ofNullable(redisTemplate.opsForList().range(userKey, 0, -1))
