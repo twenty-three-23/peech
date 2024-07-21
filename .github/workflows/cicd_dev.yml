@@ -4,7 +4,8 @@ name: Spring CI/CD with Gradle and Docker
 on:
   push:
     branches: [ "dev" ]
-    pull_request: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
 permissions:
   contents: read
   
