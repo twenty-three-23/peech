@@ -4,7 +4,7 @@ name: Spring CI/CD with Gradle and Docker
 on:
   push:
     branches: [ "dev" ]
-
+    pull_request: [ "dev" ]
 permissions:
   contents: read
   
@@ -93,6 +93,8 @@ jobs:
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
         sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
         sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
-        sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+        sudo mkdir logs
+        sudo chmode logs 777
+        sudo docker run --name github-actions-demo -v logs:/logs --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
         sudo docker system prune -f 
         EOF
