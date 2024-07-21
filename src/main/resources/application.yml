@@ -4,6 +4,7 @@ jwt:
 
 logging:
   level.com.twentythree.peech: debug
+  config: ""
 
 spring:
   datasource:
