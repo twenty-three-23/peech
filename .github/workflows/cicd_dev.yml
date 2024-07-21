@@ -38,7 +38,8 @@ jobs:
         spring.data.redis.host: ${{secrets.REDIS_HOST}}
         spring.data.redis.port: ${{secrets.REDIS_PORT}}
         spring.data.redis.password: ${{secrets.REDIS_PASSWORD}}
-        logging.config: classpath:logback-spring.xml
+        logging.level.com.twentythree.peech: off
+        logging.config: classpath:spring-logback.xml
         gpt.api.key: ${{secrets.GPT_API_KEY}}
         jwt.secret.key: ${{secrets.JWT_SECRET_KEY}}
         spring.sql.init.mode: ${{ secrets.DATA_SQL_OPTION }}
