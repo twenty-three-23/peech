@@ -26,7 +26,7 @@ public class VersionEntity extends BaseCreatedAtEntity {
     private Long themeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "theme_id", insertable = false, updatable = false)
+    @JoinColumn(nullable = false, name = "theme_id")
     private ThemeEntity ThemeEntity;
 
     public static VersionEntity of(Long majorVersion, Long minorVersion, Long themeId, ThemeEntity ThemeEntity) {

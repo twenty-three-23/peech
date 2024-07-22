@@ -45,9 +45,6 @@ public class ScriptEntity extends BaseCreatedAtEntity {
     @Enumerated(EnumType.STRING)
     private InputAndSttType DType;
 
-    @OneToMany(mappedBy = "scriptEntity")
-    private List<SentenceEntity> sentenceEntities;
-
 
     private ScriptEntity(VersionEntity version, String scriptContent, LocalTime time, InputAndSttType DType) {
         this.version = version;

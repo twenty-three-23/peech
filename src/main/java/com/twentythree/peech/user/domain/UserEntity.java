@@ -26,9 +26,6 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "device_id", unique=true)
     private String deviceId;
 
-    @OneToMany(mappedBy = "userEntity")
-    private List<ThemeEntity> themes;
-
     public UserEntity(String device_id) {
         this.deviceId = device_id;
     }
