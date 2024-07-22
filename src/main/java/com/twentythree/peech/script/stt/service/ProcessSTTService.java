@@ -43,15 +43,12 @@ public class ProcessSTTService {
 
         File tempFile = saveTempFile(request);
 
-        long remainingTime = 0;
-        try {
-            remainingTime = usageTimeService.getAudioLength(userId, tempFile);
-            if (remainingTime < 0) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        long remainingTime = usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
+        if (remainingTime < 0) {
+            throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
         }
+
+
         System.out.println("checkTime = " + remainingTime);
 
         Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
@@ -92,14 +89,9 @@ public class ProcessSTTService {
 
         File tempFile = saveTempFile(request);
 
-        long remainingTime = 0;
-        try {
-            remainingTime = usageTimeService.getAudioLength(userId, tempFile);
-            if (remainingTime < 0) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        long remainingTime = usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
+        if (remainingTime < 0) {
+            throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
         }
         System.out.println("checkTime = " + remainingTime);
 
