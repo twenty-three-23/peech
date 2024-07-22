@@ -8,13 +8,20 @@ import com.twentythree.peech.usagetime.dto.response.CheckRemainingTimeResponseDT
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioSystem;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalTime;
 
 @Slf4j
@@ -26,30 +33,40 @@ public class UsageTimeService {
     private final UsageTimeRepository usageTimeRepository;
 
     @Transactional
-    public Long subUsageTimeByAudio(Long userId, MultipartFile audioFile) {
+    public long getAudioLength(Long userId, File file) throws IOException {
 
+        long calculatedTime = 0;
+
+        Metadata metadata = new Metadata();
+        ContentHandler handler = new BodyContentHandler();
+        ParseContext parseContext = new ParseContext();
+        AutoDetectParser autoDetectParser = new AutoDetectParser();
+
+        FileInputStream inputStream = new FileInputStream(file);
         try {
-            // 음성 파일의 시간을 가져오는 로직
-            File tempFile = File.createTempFile("audio", null);
-            audioFile.transferTo(tempFile);
-
-            AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(tempFile);
-            long audioFileLength = tempFile.length();
-            int frameSize = fileFormat.getFormat().getFrameSize();
-            float frameRate = fileFormat.getFormat().getFrameRate();
-            float durationInSeconds = (audioFileLength / (frameSize * frameRate));
-
-            UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).
-                    orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
-            Long remainingTime = usageTime.getRemainingTime();
-            remainingTime -= (long) durationInSeconds;
-
-            usageTimeRepository.updateRemainingTime(userId, remainingTime);
-            return remainingTime;
-
-        } catch (Exception e) {
-            throw new RuntimeException("파일 저장에 실패하였습니다.");
+            autoDetectParser.parse(inputStream, handler, metadata, parseContext);
+        } catch (SAXException | TikaException e) {
+            throw new RuntimeException(e);
         }
+
+        String duration = metadata.get("xmpDM:duration");
+        if (duration == null) {
+            throw new IOException("오디오 파일 시간 추출에 실패하였습니다.");
+        }
+
+        double durationDouble = Double.parseDouble(duration);
+
+        calculatedTime = (long) Math.floor(durationDouble);
+
+        UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).
+                orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
+        Long remainingTime = usageTime.getRemainingTime();
+        remainingTime -= (long) calculatedTime;
+        usageTimeRepository.updateRemainingTime(userId, remainingTime);
+
+        return remainingTime;
+
+
     }
 
     @Transactional
