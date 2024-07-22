@@ -22,11 +22,11 @@ public class VersionEntity extends BaseCreatedAtEntity {
     @Column(name = "minor_version")
     private Long minorVersion;
     @Id
-    @Column(name = "theme_id", insertable = false, updatable = false)
+    @Column(name = "theme_id")
     private Long themeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "theme_id")
+    @JoinColumn(nullable = false, name = "theme_id", insertable = false, updatable = false)
     private ThemeEntity ThemeEntity;
 
     public static VersionEntity of(Long majorVersion, Long minorVersion, Long themeId, ThemeEntity ThemeEntity) {
