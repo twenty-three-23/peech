@@ -13,6 +13,6 @@ public interface ThemeRepository extends JpaRepository<ThemeEntity, Long> {
     @Query("select t from ThemeEntity t where t.userEntity.id = :userId")
     List<ThemeEntity> findAllThemesByUserId(Long userId);
 
-    @Query("select v from VersionEntity v where v.ThemeEntity.themeId = :themeId")
+    @Query("select v from VersionEntity v where v.themeEntity.themeId = :themeId")
     Optional<List<VersionEntity>> findAllVersionsByThemeId(Long themeId);
 }

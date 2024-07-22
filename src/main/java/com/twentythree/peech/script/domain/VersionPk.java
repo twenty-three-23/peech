@@ -15,5 +15,5 @@ import java.io.Serializable;
 public class VersionPk implements Serializable {
     private Long majorVersion;
     private Long minorVersion;
-    private Long themeId;
+    private Long themeEntity;
 }

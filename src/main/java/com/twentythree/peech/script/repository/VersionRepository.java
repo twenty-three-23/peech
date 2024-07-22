@@ -12,6 +12,6 @@ public interface VersionRepository extends JpaRepository<VersionEntity, Long> {
     int findMinorScriptsCount(Long majorVersion);
 
 
-    @Query(value = "select v.minorVersion from VersionEntity v where v.ThemeEntity.themeId = :themeId and v.majorVersion = :majorVersion order by v.minorVersion desc limit 1")
+    @Query(value = "select v.minorVersion from VersionEntity v where v.themeEntity.themeId = :themeId and v.majorVersion = :majorVersion order by v.minorVersion desc limit 1")
     public Long findByMaxMinorVersion(Long themeId, Long majorVersion);
 }
