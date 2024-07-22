@@ -3,6 +3,7 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.cache.CacheService;
+import com.twentythree.peech.script.cache.RedisTemplateImpl;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.*;
 import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
@@ -33,6 +34,7 @@ import static com.twentythree.peech.common.utils.ScriptUtils.*;
 @Transactional(readOnly = true)
 public class ScriptService {
 
+    private final RedisTemplateImpl redisTemplateImpl;
     @Value("${gpt.model}")
     private String model;
 
@@ -171,6 +173,7 @@ public class ScriptService {
             }
         }
         log.info("redisAllSentencesPerParagraphId: {}", redisAllSentencesPerParagraphId);
+        redisTemplateImpl.delete("user"+userId); // redis에 저장된 문장들을 삭제, 밑에 새로 저장하는 부분에서 값을 다시 채워준다.
         // end: redis에서 user가 수정 할 수 있는 문장들을 가져온뒤 문단별로 합치기
 
         List<ModifiedParagraphDTO> modifiedParagraphListForResponseDTO = new ArrayList<>();
@@ -299,7 +302,9 @@ public class ScriptService {
             // start: 변화 사항을 redis에 반영 및 덮어쓰기
 
             List<String> newSentenceIds = new ArrayList<>();
+            log.info("temporaryRedisList: {}", temporaryRedisList);
 
+            // start: key: sentenceId, value: RedisSentenceDTO 로 저장
             for (Map.Entry<SentenceId, RedisSentenceDTO> redisSentenceMap : temporaryRedisList.entrySet()) {
                 String newSentenceId = redisSentenceMap.getKey().getSentenceId();
                 RedisSentenceDTO newSentence = redisSentenceMap.getValue();
@@ -307,9 +312,14 @@ public class ScriptService {
                 log.info("redisSentenceMap: {}", redisSentenceMap);
                 scriptRedisRepository.saveSentenceInformation(newSentenceId, newSentence);
                 newSentenceIds.add(newSentenceId);
-
             }
-            scriptRedisRepository.saveSentencesIdList("user"+userId, newSentenceIds);
+            // end: key: sentenceId, value: RedisSentenceDTO 로 저장
+
+            // start: key: user+userId, value: sentenceId 로 저장
+            log.info("newSentenceIds: {}", newSentenceIds);
+            scriptRedisRepository.rightPushSentenceIdList("user"+userId, newSentenceIds);
+            // end: key: user+userId, value: sentenceId 로 저장
+
             // end: 변화 사항을 redis에 반영 및 덮어쓰기
             
         }

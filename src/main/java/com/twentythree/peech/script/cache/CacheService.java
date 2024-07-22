@@ -10,6 +10,10 @@ public interface CacheService {
     // 문장 정보를 저장
     void saveSentenceInformation(String sentenceId, RedisSentenceDTO redisSentence);
 
+    void rightPushSentenceIdList(String userKey, List<String> sentenceIds);
+
+    void delete(String key);
+
     List<String> findAllByUserKey(String userKey);
 
     RedisSentenceDTO findByKey(String sentenceId);
