@@ -1,7 +1,6 @@
 
 package com.twentythree.peech.script.stt.service;
 
-import com.twentythree.peech.script.cache.RedisTemplateImpl;
 import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.dto.NowStatus;
 import com.twentythree.peech.script.stt.dto.AddSentenceInformationVO;
@@ -37,14 +36,19 @@ public class CreateSTTResultService {
             String firstSentence = sentenceEntry.getValue().get(0).getSentenceContent();
             String lastSentence = sentenceEntry.getValue().get(sentenceEntry.getValue().size() - 1).getSentenceContent();
 
-            LocalTime startTime = sentenceAndRealTimeList.stream().filter(sentence -> sentence.sentenceContent().equals(firstSentence))
-                    .findFirst().map(AddSentenceInformationVO::startTime).orElseThrow(() -> new NoSuchElementException("해당하는 문장이 없습니다."));
-            LocalTime endTime = sentenceAndRealTimeList.stream().filter(sentence -> sentence.sentenceContent().equals(lastSentence))
-                    .findFirst().map(AddSentenceInformationVO::endTime).orElseThrow(() -> new NoSuchElementException("해당하는 문장이 없습니다."));
+            LocalTime startTime = sentenceAndRealTimeList.stream()
+                    .filter(sentence -> sentence.sentenceContent().equals(firstSentence))
+                    .findFirst().map(AddSentenceInformationVO::startTime)
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 문장이 없습니다."));
+            LocalTime endTime = sentenceAndRealTimeList.stream()
+                    .filter(sentence -> sentence.sentenceContent().equals(lastSentence))
+                    .findFirst().map(AddSentenceInformationVO::endTime)
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 문장이 없습니다."));
 
 
             for(SentenceEntity sentenceEntity : sentenceEntry.getValue()) {
-                SentenceDTO sentenceDTO = new SentenceDTO(sentenceEntity.getSentenceId(), sentenceEntity.getSentenceOrder(), sentenceEntity.getSentenceContent());
+                SentenceDTO sentenceDTO = new SentenceDTO(sentenceEntity.getSentenceId(),
+                        sentenceEntity.getSentenceOrder(), sentenceEntity.getSentenceContent());
                 sentenceDTOList.add(sentenceDTO);
             }
 
@@ -55,7 +59,8 @@ public class CreateSTTResultService {
             LocalTime realTimePerParagraph = sentenceList.stream()
                     .map(SentenceEntity::getSentenceRealTime)
                     .reduce(LocalTime.of(0,0,0, 0),
-                            ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour()).plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond()).plusNanos(localTime2.getNano())));
+                            ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour())
+                                    .plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond()).plusNanos(localTime2.getNano())));
 
             STTParagraphDTO sttParagraphDTO = new STTParagraphDTO(sentenceEntry.getKey(), sentenceEntry.getKey(), realTimePerParagraph, startTime, endTime, NowStatus.REALTIME, sentenceDTOList);
             paragraphList.add(sttParagraphDTO);
