@@ -2,14 +2,16 @@ package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.auth.dto.LoginUserId;
 import com.twentythree.peech.auth.dto.UserIdDTO;
-import com.twentythree.peech.script.dto.MinorScriptDTO;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
 import com.twentythree.peech.script.dto.response.*;
+import com.twentythree.peech.script.service.SaveModifyScriptService;
 import com.twentythree.peech.script.service.ScriptSentenceFacade;
 import com.twentythree.peech.script.service.ScriptService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +20,7 @@ public class ScriptController implements SwaggerScriptInterface{
 
     private final ScriptSentenceFacade scriptSentenceFacade;
     private final ScriptService scriptService;
+    private final SaveModifyScriptService redisScriptSentenceFacade;
 
     @Operation(summary = "새로운 대본 생성",
             description = "특정 주제를 themeId로 path에 넣고, 스크립트를 문단들로 나누어 RequestBody에 입력하면 새로운 버전, 대본, 문장 생성 및 저장.")
@@ -70,6 +73,13 @@ public class ScriptController implements SwaggerScriptInterface{
     @PostMapping("/api/v1/themes/{themeId}/scripts/{scriptId}")
     public ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request, @LoginUserId UserIdDTO userId) {
         return scriptService.modifyScriptService(request.getParagraphs(), scriptId, userId.userId());
+    }
+
+    @Override
+    @PutMapping("api/v1/themes/{themeId}/scripts/{scriptId}")
+    public ResponseEntity<String> saveModifyScript(@PathVariable Long themeId,@PathVariable Long scriptId,@LoginUserId UserIdDTO userId) {
+        redisScriptSentenceFacade.saveModifyScript(themeId, scriptId, userId.userId());
+        return new ResponseEntity<>("대본 저장에 성공하였습니다", HttpStatus.OK);
     }
 
     @Operation(summary = "")
