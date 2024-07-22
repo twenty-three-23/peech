@@ -55,9 +55,18 @@ public class SentenceEntity extends BaseCreatedAtEntity {
         } else {
             throw new IllegalArgumentException("InputAndSttType이 올바르지 않게 입력 되었다.");
         }
-        this.paragraphId = paragraphId;
         this.sentenceContent = sentenceContent;
+    }
+
+    // 대본 없이 녹음을 시작하면 해당 스크립트는 입력 대본이면서 STT 대본이기에 예상시간, 실제시간 둘다 필요하다.
+    public SentenceEntity(ScriptEntity scriptEntity, Long paragraphId, String sentenceContent, Long sentenceOrder, LocalTime realTime, LocalTime expectedTime) {
+        this.sentenceId = UUID.randomUUID().toString();
+        this.scriptEntity = scriptEntity;
+        this.sentenceContent = sentenceContent;
+        this.paragraphId = paragraphId;
         this.sentenceOrder = sentenceOrder;
+        this.sentenceRealTime = realTime;
+        this.sentenceExpectTime = expectedTime;
     }
 
     public static SentenceEntity ofCreateInputSentence(ScriptEntity scriptEntity,
@@ -76,6 +85,12 @@ public class SentenceEntity extends BaseCreatedAtEntity {
             throw new IllegalArgumentException("팩토리얼 함수를 잘못 사용했습니다.");
         }
         return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceRealTime);
+    }
+
+    public static SentenceEntity ofCreateInputAndSTTSentence(ScriptEntity scriptEntity,
+                                                             Long paragraphId, String sentenceContent, Long sentenceOrder,
+                                                             LocalTime realTime, LocalTime expectedTime) {
+        return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, realTime, expectedTime);
     }
 
     public boolean sentenceEquals(String sentenceContent) {

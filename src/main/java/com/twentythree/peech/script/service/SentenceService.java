@@ -55,7 +55,9 @@ public class SentenceService {
         for(List<Integer> paragraph : sentenceSpan) {
             for (Integer index : paragraph) {
                 AddSentenceInformationVO sentence = sentenceAndRealTimeList.get(index);
-                SentenceEntity sentenceEntity = SentenceEntity.ofCreateSTTSentence(scriptEntity, paragraphId, sentence.sentenceContent(), sentence.sentenceOrder(), RealTimeUtils.convertTimeStampToTimeFormat(sentence.sentenceDuration()));
+                LocalTime expectedTime = ScriptUtils.calculateExpectedTime(sentence.sentenceContent());
+                SentenceEntity sentenceEntity = SentenceEntity.ofCreateInputAndSTTSentence(scriptEntity, paragraphId,
+                        sentence.sentenceContent(), sentence.sentenceOrder(), RealTimeUtils.convertTimeStampToTimeFormat(sentence.sentenceDuration()), expectedTime);
                 sentenceRepository.save(sentenceEntity);
                 sentenceEntityList.add(sentenceEntity);
             }
