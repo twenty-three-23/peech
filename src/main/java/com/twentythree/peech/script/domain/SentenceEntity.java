@@ -23,8 +23,8 @@ public class SentenceEntity extends BaseCreatedAtEntity {
     @Column(name = "sentence_id")
     private String sentenceId;
 
-    @ManyToOne
-    @JoinColumn(name = "script_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "script_id", nullable = false)
     private ScriptEntity scriptEntity;
 
     @Column(name = "paragraph_id", nullable = false)
