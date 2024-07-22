@@ -24,11 +24,11 @@ public class ScriptEntity extends BaseCreatedAtEntity {
     @Column(name = "script_id")
     private Long scriptId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns(value = {
-            @JoinColumn(name = "major_version", referencedColumnName = "major_version"),
-            @JoinColumn(name = "minor_version", referencedColumnName = "minor_version"),
-            @JoinColumn(name = "theme_id", referencedColumnName = "theme_id")
+            @JoinColumn(name = "major_version", referencedColumnName = "major_version", nullable = false),
+            @JoinColumn(name = "minor_version", referencedColumnName = "minor_version", nullable = false),
+            @JoinColumn(name = "theme_id", referencedColumnName = "theme_id", nullable = false)
     })
     private VersionEntity version;
 
