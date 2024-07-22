@@ -1,11 +1,13 @@
 package com.twentythree.peech.script.repository;
 
 import com.twentythree.peech.script.domain.ScriptEntity;
+import com.twentythree.peech.script.domain.SentenceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ScriptRepository extends JpaRepository<ScriptEntity, Long> {
 
@@ -35,4 +37,7 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long> {
             "from ScriptEntity s where s.scriptId = :scriptId " +
             "order by s.version.minorVersion desc limit 1")
     Long findMaxMinorVersionByInputScriptId(Long scriptId);
+
+    @Query("select se from SentenceEntity se where se.scriptEntity.scriptId = :scriptId")
+    Optional<List<SentenceEntity>> findAllSentencesByScriptId(Long scriptId);
 }

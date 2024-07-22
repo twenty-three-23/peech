@@ -33,8 +33,6 @@ public class ThemeEntity extends BaseTimeEntity {
     @Column(name = "theme_title")
     private String themeTitle;
 
-    @OneToMany(mappedBy = "ThemeEntity")
-    private List<VersionEntity> versions = new ArrayList<>();
 
     private ThemeEntity(UserEntity userEntity, String themeTitle) {
         this.userEntity = userEntity;
