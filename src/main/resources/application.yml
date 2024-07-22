@@ -1,0 +1,54 @@
+jwt:
+  secret:
+    key: ${SECRET_KEY}
+
+logging:
+  level.com.twentythree.peech: debug
+  config: ""
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    defer-datasource-initialization: ${DATA_INITALIZATION_OPTION} # data.sql? ???? ??
+    hibernate:
+      ddl-auto: ${DDL_ENV}
+    open-in-view: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+  sql:
+    init:
+      mode: ${DATA_SQL_OPTION}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+
+gpt:
+  model: gpt-3.5-turbo
+  api:
+    key:  ${GPT_API_KEY}
+    url: https://api.openai.com/v1/chat/completions
+
+clova:
+  speech-api:
+    secret: ${CLOVA_SPEECH_SECRET_KEY}
+    url: ${CLOVA_SPEECH_URL}
+    callback: ${CLOVA_SPEECH_CALLBACK_URL}
+
+  divide-sentence-api:
+    key: ${CLOVASTUDIO_API_KEY}
+    gw-key: ${CLOVASTUDIO_APIGW_API_KEY}
+    url: ${CLOVASTUDIO_API_URL}
