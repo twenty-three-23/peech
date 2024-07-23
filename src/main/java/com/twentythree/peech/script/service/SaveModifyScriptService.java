@@ -57,22 +57,22 @@ public class SaveModifyScriptService {
         // 스크립트 저장
         // 스크립트 저장 전에 List<RedisSentenceDTO> 에서 SentenceContent를 합쳐서 전체 내용을 만들어야함
         String fullScript = addFullScript(redisSentenceInformationList);
+
         LocalTime totalScriptTime = addTotalScriptTime(redisSentenceInformationList);
 
         ScriptEntity scriptEntity = ScriptEntity
-                .ofCreateInputScript(versionEntity, fullScript, totalScriptTime, InputAndSttType.INPUT);
+                .ofCreateModifyScript(versionEntity, fullScript, totalScriptTime, InputAndSttType.MODIFY);
 
         ScriptEntity saveScript = scriptRepository.save(scriptEntity);
 
         // 문장 저장
         redisSentenceInformationList.forEach(redisSentenceDTO -> {
 
-            SentenceEntity sentenceEntity = SentenceEntity.ofCreateInputSentence(scriptEntity,
+            SentenceEntity sentenceEntity = SentenceEntity.ofCreateModifySentence(scriptEntity,
                     redisSentenceDTO.getParagraphId(), redisSentenceDTO.getSentenceContent(),
                     redisSentenceDTO.getSentenceOrder(), redisSentenceDTO.getTime());
 
             sentenceRepository.save(sentenceEntity);
-
         });
 
         return new SaveScriptAndSentencesResponseDTO(saveScript.getScriptId());
@@ -81,8 +81,8 @@ public class SaveModifyScriptService {
     private String addFullScript(List<RedisSentenceDTO> redisSentenceDTOList) {
 
         String[] sentenceContentList = redisSentenceDTOList.stream()
-                .sorted(Comparator.comparingLong(RedisSentenceDTO::getParagraphId))
-                .sorted(Comparator.comparingLong(RedisSentenceDTO::getSentenceOrder))
+                .sorted(Comparator.comparingLong(RedisSentenceDTO::getParagraphId)
+                        .thenComparing(RedisSentenceDTO::getSentenceOrder))
                 .map(RedisSentenceDTO::getSentenceContent).toArray(String[]::new);
 
         return String.join(" ", sentenceContentList);
