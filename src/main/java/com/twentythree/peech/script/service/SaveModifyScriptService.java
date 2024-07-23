@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -80,6 +81,7 @@ public class SaveModifyScriptService {
     private String addFullScript(List<RedisSentenceDTO> redisSentenceDTOList) {
 
         String[] sentenceContentList = redisSentenceDTOList.stream()
+                .sorted(Comparator.comparingLong(RedisSentenceDTO::getSentenceOrder))
                 .map(RedisSentenceDTO::getSentenceContent).toArray(String[]::new);
 
         return String.join(" ", sentenceContentList);
