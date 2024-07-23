@@ -119,7 +119,7 @@ public class UsageTimeService {
     }
 
     public TextAndSecondResponseDTO getMaxAudioTime() {
-        Long maxAudioTimeToSecond = ConstantValue.MAX_AUDIO_TIME;
+        Long maxAudioTimeToSecond = ConstantValue.MAX_AUDIO_TIME + ConstantValue.BUFFER_TIME;
         LocalTime maxAudioTimeToLocalTime = ScriptUtils.transferSeoondToLocalTime(maxAudioTimeToSecond);
 
         int hour = maxAudioTimeToLocalTime.getHour();
