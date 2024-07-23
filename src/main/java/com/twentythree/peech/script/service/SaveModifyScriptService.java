@@ -81,6 +81,7 @@ public class SaveModifyScriptService {
     private String addFullScript(List<RedisSentenceDTO> redisSentenceDTOList) {
 
         String[] sentenceContentList = redisSentenceDTOList.stream()
+                .sorted(Comparator.comparingLong(RedisSentenceDTO::getParagraphId))
                 .sorted(Comparator.comparingLong(RedisSentenceDTO::getSentenceOrder))
                 .map(RedisSentenceDTO::getSentenceContent).toArray(String[]::new);
 
