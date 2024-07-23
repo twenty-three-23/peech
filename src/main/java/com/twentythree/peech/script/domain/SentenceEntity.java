@@ -52,6 +52,8 @@ public class SentenceEntity extends BaseCreatedAtEntity {
             this.sentenceExpectTime = time;
         } else if(scriptEntity.getDType() == InputAndSttType.STT){
             this.sentenceRealTime = time;
+        } else if (scriptEntity.getDType() == InputAndSttType.MODIFY) {
+            this.sentenceRealTime = time;
         } else {
             throw new IllegalArgumentException("InputAndSttType이 올바르지 않게 입력 되었다.");
         }
@@ -76,6 +78,16 @@ public class SentenceEntity extends BaseCreatedAtEntity {
             throw new IllegalArgumentException("팩토리얼 함수를 잘못 사용했습니다.");
         }
         return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceExpectTime);
+    }
+  
+    // 추후 리팩토링 예정
+    public static SentenceEntity ofCreateModifySentence(ScriptEntity scriptEntity,
+                                                     Long paragraphId, String sentenceContent,
+                                                     Long sentenceOrder, LocalTime sentenceRealTime){
+        if(scriptEntity.getDType() != InputAndSttType.MODIFY) {
+            throw new IllegalArgumentException("팩토리얼 함수를 잘못 사용했습니다.");
+        }
+        return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceRealTime);
     }
 
     public static SentenceEntity ofCreateInputAndSTTSentence(ScriptEntity scriptEntity,
