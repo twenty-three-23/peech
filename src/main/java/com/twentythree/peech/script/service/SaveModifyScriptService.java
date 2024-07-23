@@ -3,6 +3,7 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.script.cache.CacheService;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.RedisSentenceDTO;
+import com.twentythree.peech.script.dto.response.SaveScriptAndSentencesResponseDTO;
 import com.twentythree.peech.script.repository.ScriptRepository;
 import com.twentythree.peech.script.repository.SentenceRepository;
 import com.twentythree.peech.script.repository.ThemeRepository;
@@ -26,7 +27,7 @@ public class SaveModifyScriptService {
     private final VersionRepository versionRepository;
 
     @Transactional
-    public void saveModifyScript(Long themeId, Long scriptId, Long userId) {
+    public SaveScriptAndSentencesResponseDTO saveModifyScript(Long themeId, Long scriptId, Long userId) {
 
         // 문장 리스트 가져오기
         List<String> sentenceIdList = cacheService.findAllByUserKey("user"+userId);
@@ -60,7 +61,7 @@ public class SaveModifyScriptService {
         ScriptEntity scriptEntity = ScriptEntity
                 .ofCreateInputScript(versionEntity, fullScript, totalScriptTime, InputAndSttType.INPUT);
 
-        scriptRepository.save(scriptEntity);
+        ScriptEntity saveScript = scriptRepository.save(scriptEntity);
 
         // 문장 저장
         redisSentenceInformationList.forEach(redisSentenceDTO -> {
@@ -70,7 +71,10 @@ public class SaveModifyScriptService {
                     redisSentenceDTO.getSentenceOrder(), redisSentenceDTO.getTime());
 
             sentenceRepository.save(sentenceEntity);
+
         });
+
+        return new SaveScriptAndSentencesResponseDTO(saveScript.getScriptId());
     }
     // 문장 합치기
     private String addFullScript(List<RedisSentenceDTO> redisSentenceDTOList) {

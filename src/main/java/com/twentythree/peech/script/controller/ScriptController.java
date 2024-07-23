@@ -77,9 +77,8 @@ public class ScriptController implements SwaggerScriptInterface{
 
     @Override
     @PutMapping("api/v1/themes/{themeId}/scripts/{scriptId}")
-    public ResponseEntity<String> saveModifyScript(@PathVariable Long themeId,@PathVariable Long scriptId,@LoginUserId UserIdDTO userId) {
-        redisScriptSentenceFacade.saveModifyScript(themeId, scriptId, userId.userId());
-        return new ResponseEntity<>("대본 저장에 성공하였습니다", HttpStatus.OK);
+    public SaveScriptAndSentencesResponseDTO saveModifyScript(@PathVariable Long themeId,@PathVariable Long scriptId,@LoginUserId UserIdDTO userId) {
+        return redisScriptSentenceFacade.saveModifyScript(themeId, scriptId, userId.userId());
     }
 
     @Operation(summary = "")
