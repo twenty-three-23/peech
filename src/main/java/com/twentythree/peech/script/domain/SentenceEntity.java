@@ -23,8 +23,8 @@ public class SentenceEntity extends BaseCreatedAtEntity {
     @Column(name = "sentence_id")
     private String sentenceId;
 
-    @ManyToOne
-    @JoinColumn(name = "script_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "script_id", nullable = false)
     private ScriptEntity scriptEntity;
 
     @Column(name = "paragraph_id", nullable = false)
@@ -79,16 +79,7 @@ public class SentenceEntity extends BaseCreatedAtEntity {
         }
         return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceExpectTime);
     }
-
-    public static SentenceEntity ofCreateSTTSentence(ScriptEntity scriptEntity,
-                                                     Long paragraphId, String sentenceContent,
-                                                       Long sentenceOrder, LocalTime sentenceRealTime){
-        if(scriptEntity.getDType() != InputAndSttType.STT) {
-            throw new IllegalArgumentException("팩토리얼 함수를 잘못 사용했습니다.");
-        }
-        return new SentenceEntity(scriptEntity, paragraphId, sentenceContent, sentenceOrder, sentenceRealTime);
-    }
-
+  
     // 추후 리팩토링 예정
     public static SentenceEntity ofCreateModifySentence(ScriptEntity scriptEntity,
                                                      Long paragraphId, String sentenceContent,

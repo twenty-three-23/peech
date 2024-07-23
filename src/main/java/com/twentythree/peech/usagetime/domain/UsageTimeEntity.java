@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
-import java.time.LocalTime;
-
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,12 +21,11 @@ public class UsageTimeEntity extends BaseTimeEntity {
     @Id @Column(name = "usage_time_id") @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long usageTimeId;
 
-
     @Column(name = "remaining_time") @ColumnDefault("9000")
     private Long remainingTime;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
     public void updateRemainingTime(Long remainingTime) {

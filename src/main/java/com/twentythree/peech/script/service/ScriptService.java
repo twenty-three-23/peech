@@ -339,7 +339,8 @@ public class ScriptService {
     public ParagraphsResponseDTO getParagraphsByScriptId(Long scriptId) {
         ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
 
-        List<SentenceEntity> sentences = scriptEntity.getSentenceEntities();
+        List<SentenceEntity> sentences = scriptRepository.findAllSentencesByScriptId(scriptId).orElseThrow(() -> new IllegalArgumentException("잘못된 대본 입니다."));
+
         sentences.sort(Comparator.comparingLong(SentenceEntity::getParagraphId).thenComparingLong(SentenceEntity::getSentenceOrder));
         List<ParagraphContent> paragraphs = new ArrayList<>();
 

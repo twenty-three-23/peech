@@ -11,7 +11,7 @@ public class ScriptUtils {
         int wordsCount = words.length;
 
         float expectedTimeToSecond = wordsCount * DEFAULT_TIME_PER_WORD_SECOND;
-
+        expectedTimeToSecond /= 3f;
         LocalTime expectedTime = transferSeoondToLocalTime(expectedTimeToSecond);
 
         return expectedTime;

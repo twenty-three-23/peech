@@ -1,6 +1,7 @@
 package com.twentythree.peech.script.domain;
 
 
+import com.drew.lang.annotations.NotNull;
 import com.twentythree.peech.common.domain.BaseTimeEntity;
 import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.user.domain.UserEntity;
@@ -27,14 +28,12 @@ public class ThemeEntity extends BaseTimeEntity {
     private Long themeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
-    @Column(name = "theme_title")
+    @Column(name = "theme_title", nullable = false)
     private String themeTitle;
 
-    @OneToMany(mappedBy = "ThemeEntity")
-    private List<VersionEntity> versions = new ArrayList<>();
 
     private ThemeEntity(UserEntity userEntity, String themeTitle) {
         this.userEntity = userEntity;

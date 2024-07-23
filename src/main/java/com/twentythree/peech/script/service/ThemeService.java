@@ -38,7 +38,7 @@ public class ThemeService {
         List<ThemeDTO> themesDTO = new ArrayList<>();
         for (ThemeEntity theme : themes) {
 
-            List<VersionEntity> versions = theme.getVersions();
+            List<VersionEntity> versions = themeRepository.findAllVersionsByThemeId(theme.getThemeId()).orElseThrow(() -> new IllegalArgumentException("존재하는 테마가 없습니다."));
 
             int majorVersionCnt = 0;
             for (VersionEntity version : versions) {
