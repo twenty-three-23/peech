@@ -40,8 +40,8 @@ public interface SwaggerScriptInterface {
     @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = ModifyScriptResponseDTO.class), mediaType = "application/json")})
     ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request, @LoginUserId UserIdDTO userId);
 
-    @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = ParagraphsResponseDTO.class), mediaType = "application/json")})
-    ResponseEntity<String> saveModifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @Parameter(hidden = true) @LoginUserId UserIdDTO userId);
+    @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = SaveScriptAndSentencesResponseDTO.class), mediaType = "application/json")})
+    SaveScriptAndSentencesResponseDTO saveModifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @Parameter(hidden = true) @LoginUserId UserIdDTO userId);
 
     @ApiResponse(responseCode = "200", description = "success", content = {@Content(schema = @Schema(implementation = ParagraphsResponseDTO.class), mediaType = "application/json")})
     @GetMapping("api/v1/themes/{themeId}/scripts/{scriptId}/paragraphs")
