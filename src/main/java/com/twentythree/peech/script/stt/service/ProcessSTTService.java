@@ -9,6 +9,7 @@ import com.twentythree.peech.script.stt.dto.request.STTRequestDto;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import com.twentythree.peech.script.stt.dto.response.ParagraphDivideResponseDto;
 import com.twentythree.peech.script.stt.dto.response.STTScriptResponseDTO;
+import com.twentythree.peech.usagetime.dto.response.CheckRemainingTimeResponseDTO;
 import com.twentythree.peech.usagetime.service.UsageTimeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,13 +44,13 @@ public class ProcessSTTService {
 
         File tempFile = saveTempFile(request);
 
-        long remainingTime = usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
-        if (remainingTime < 0) {
+        CheckRemainingTimeResponseDTO checkRemainingTimeResponseDTO = usageTimeService.checkRemainingTime(userId, request.time());
+
+        if (!checkRemainingTimeResponseDTO.isSuccess()) {
             throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
         }
 
-
-        System.out.println("checkTime = " + remainingTime);
+        usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
 
         Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
 
@@ -89,11 +90,13 @@ public class ProcessSTTService {
 
         File tempFile = saveTempFile(request);
 
-        long remainingTime = usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
-        if (remainingTime < 0) {
+        CheckRemainingTimeResponseDTO checkRemainingTimeResponseDTO = usageTimeService.checkRemainingTime(userId, request.time());
+
+        if (!checkRemainingTimeResponseDTO.isSuccess()) {
             throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
         }
-        System.out.println("checkTime = " + remainingTime);
+
+        usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
 
         try {
             Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);

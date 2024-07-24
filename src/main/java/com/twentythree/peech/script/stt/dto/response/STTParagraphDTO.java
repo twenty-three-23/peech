@@ -15,7 +15,8 @@ public class STTParagraphDTO {
 
     private Long paragraphId;
     private Long paragraphOrder;
-    private LocalTime time;
+    private String measurementResult;
+    private LocalTime realTime;
     private LocalTime startTime;
     private LocalTime endTime;
     private NowStatus nowStatus;

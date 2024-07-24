@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CreateSTTResultService {
 
-    public STTScriptResponseDTO createSTTResultResponseDto(ClovaResponseDto clovaResponseDto, List<SentenceEntity> sentenceEntityList, List<AddSentenceInformationVO> sentenceAndRealTimeList, Long scriptId) {
+    public STTScriptResponseDTO createSTTResultResponseDto(ClovaResponseDto clovaResponseDto, List<SentenceEntity> sentenceEntityList,
+                                                           List<AddSentenceInformationVO> sentenceAndRealTimeList, Long scriptId) {
 
         // 문단별로 그룹핑
         Map<Long, List<SentenceEntity>> sentenceListGroupByParagraph = sentenceEntityList.stream().collect(Collectors.groupingBy(SentenceEntity::getParagraphId));
@@ -62,11 +63,39 @@ public class CreateSTTResultService {
                             ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour())
                                     .plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond()).plusNanos(localTime2.getNano())));
 
-            STTParagraphDTO sttParagraphDTO = new STTParagraphDTO(sentenceEntry.getKey(), sentenceEntry.getKey(), realTimePerParagraph, startTime, endTime, NowStatus.REALTIME, sentenceDTOList);
+            LocalTime expectedTimePerParagraph = sentenceList.stream()
+                    .map(SentenceEntity::getSentenceExpectTime)
+                    .reduce(LocalTime.of(0,0,0, 0),
+                            ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour())
+                                    .plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond()).plusNanos(localTime2.getNano())));
+
+            String result = measurementSpeedResult(realTimePerParagraph, expectedTimePerParagraph);
+
+            STTParagraphDTO sttParagraphDTO = new STTParagraphDTO(sentenceEntry.getKey(), sentenceEntry.getKey(), result,
+                    realTimePerParagraph,startTime, endTime, NowStatus.REALTIME, sentenceDTOList);
             paragraphList.add(sttParagraphDTO);
         }
 
         return new STTScriptResponseDTO(scriptId, clovaResponseDto.getTotalRealTime(), paragraphList);
+    }
+
+    private String measurementSpeedResult(LocalTime realTimePerParagraph, LocalTime expectedTimePerParagraph) {
+
+        int realTimePerSecond = realTimePerParagraph.toSecondOfDay();
+        int expectedTimePerSecond = expectedTimePerParagraph.toSecondOfDay();
+
+        double bias = realTimePerSecond * 0.1;
+
+        int lowerBound = (int) Math.round(realTimePerSecond - bias);
+        int upperBound = (int) Math.round(realTimePerSecond + bias);
+
+        if (expectedTimePerSecond >= lowerBound && expectedTimePerSecond <= upperBound) {
+            return "적정";
+        } else if ( lowerBound > expectedTimePerSecond) {
+            return "느림";
+        } else {
+            return "빠름";
+        }
     }
 }
 

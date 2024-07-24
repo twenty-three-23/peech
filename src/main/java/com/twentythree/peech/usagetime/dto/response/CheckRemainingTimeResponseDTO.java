@@ -8,4 +8,5 @@ import lombok.Setter;
 @Getter @Setter @AllArgsConstructor
 public class CheckRemainingTimeResponseDTO {
     private String message;
+    private boolean success;
 }
