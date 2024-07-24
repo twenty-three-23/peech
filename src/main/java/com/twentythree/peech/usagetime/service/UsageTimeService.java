@@ -22,7 +22,10 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.channels.IllegalChannelGroupException;
 import java.time.LocalTime;
+
+import static com.twentythree.peech.usagetime.constant.ConstantValue.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -112,6 +115,11 @@ public class UsageTimeService {
     }
 
     public CheckRemainingTimeResponseDTO checkRemainingTime(Long userId, Long audioTime) {
+
+        if (audioTime > MAX_AUDIO_TIME + BUFFER_TIME) {
+            throw new IllegalArgumentException("최대 사용 시간을 초과하였습니다.");
+        }
+
         UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).
                 orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
         Long remainingTime = usageTime.getRemainingTime();
@@ -119,7 +127,7 @@ public class UsageTimeService {
     }
 
     public TextAndSecondResponseDTO getMaxAudioTime() {
-        Long maxAudioTimeToSecond = ConstantValue.MAX_AUDIO_TIME + ConstantValue.BUFFER_TIME;
+        Long maxAudioTimeToSecond = MAX_AUDIO_TIME;
         LocalTime maxAudioTimeToLocalTime = ScriptUtils.transferSeoondToLocalTime(maxAudioTimeToSecond);
 
         int hour = maxAudioTimeToLocalTime.getHour();
