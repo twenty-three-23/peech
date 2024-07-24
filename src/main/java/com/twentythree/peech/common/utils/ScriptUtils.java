@@ -24,7 +24,8 @@ public class ScriptUtils {
         int hour = second / 3600;
         int minute = (second % 3600) / 60;
         int secondSet = (second % 3600) % 60;
-        int milliSecond = (int) ((time - second) * 1_000_000_000);
+        int milliSecond = ((int)((time-second)*100)) * 10_000_000;
+
         return LocalTime.of(hour, minute, secondSet, milliSecond);
     }
 
