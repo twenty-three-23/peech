@@ -2,6 +2,7 @@ package com.twentythree.peech.script.service;
 
 import com.twentythree.peech.script.domain.ScriptEntity;
 import com.twentythree.peech.script.domain.SentenceEntity;
+import com.twentythree.peech.script.dto.RedisSentenceDTO;
 import com.twentythree.peech.script.dto.SaveScriptDTO;
 import com.twentythree.peech.script.dto.paragraphIdToExpectedTime;
 import com.twentythree.peech.script.dto.response.ExpectedTimeResponseDTO;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,13 +55,16 @@ public class ScriptSentenceFacade {
         for(Map.Entry<Long, List<SentenceEntity>> sentenceEntry : groupedSentences.entrySet()) {
 
             List<SentenceEntity> sentenceList = sentenceEntry.getValue();
-            List<String> sentenceContentList = sentenceEntry.getValue().stream().map(SentenceEntity::getSentenceContent).toList();
+            List<String> sentenceContentList = sentenceEntry.getValue().stream().sorted(Comparator.comparingLong(SentenceEntity::getSentenceOrder))
+                    .map(SentenceEntity::getSentenceContent).toList();
 
             // 문단에 해당하는 시간 합산
             LocalTime realTimePerParagraph = sentenceList.stream()
                     .map(SentenceEntity::getSentenceRealTime)
-                    .reduce(LocalTime.of(0,0,0),
-                            ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour()).plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond())));
+                    .reduce(LocalTime.of(0,0,0, 0),
+                            ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour())
+                                    .plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond())
+                                    .plusNanos(localTime2.getNano())));
 
             ParagraphDetail paragraphDetail = new ParagraphDetail(realTimePerParagraph, sentenceContentList);
             paragraphDetails.add(paragraphDetail);

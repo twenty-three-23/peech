@@ -10,8 +10,6 @@ import com.twentythree.peech.script.service.ScriptSentenceFacade;
 import com.twentythree.peech.script.service.ScriptService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +18,7 @@ public class ScriptController implements SwaggerScriptInterface{
 
     private final ScriptSentenceFacade scriptSentenceFacade;
     private final ScriptService scriptService;
-    private final SaveModifyScriptService redisScriptSentenceFacade;
+    private final SaveModifyScriptService saveModifyScriptService;
 
     @Operation(summary = "새로운 대본 생성",
             description = "특정 주제를 themeId로 path에 넣고, 스크립트를 문단들로 나누어 RequestBody에 입력하면 새로운 버전, 대본, 문장 생성 및 저장.")
@@ -78,7 +76,7 @@ public class ScriptController implements SwaggerScriptInterface{
     @Override
     @PutMapping("api/v1/themes/{themeId}/scripts/{scriptId}")
     public SaveScriptAndSentencesResponseDTO saveModifyScript(@PathVariable Long themeId,@PathVariable Long scriptId,@LoginUserId UserIdDTO userId) {
-        return redisScriptSentenceFacade.saveModifyScript(themeId, scriptId, userId.userId());
+        return saveModifyScriptService.saveModifyScript(themeId, scriptId, userId.userId());
     }
 
     @Operation(summary = "")
