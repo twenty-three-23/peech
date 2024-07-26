@@ -67,6 +67,19 @@ public class SentenceService {
         return sentenceEntityList;
     }
 
+    // 전체 예상시간을 가져오는 로직
+    public LocalTime getTotalExpectedTime (List<AddSentenceInformationVO> sentenceList) {
+        LocalTime totalExpectedTime = LocalTime.of(0, 0, 0);
+        for(AddSentenceInformationVO sentence : sentenceList){
+            LocalTime expectedTime = ScriptUtils.calculateExpectedTime(sentence.sentenceContent());
+            totalExpectedTime = totalExpectedTime.plusHours(expectedTime.getHour())
+                    .plusMinutes(expectedTime.getMinute())
+                    .plusSeconds(expectedTime.getSecond())
+                    .plusNanos(expectedTime.getNano());
+        }
+        return totalExpectedTime;
+    }
+
     public List<paragraphIdToExpectedTime> getParagraphExpectedTime(Long scriptId) {
 
         List<paragraphIdToExpectedTime> results = new ArrayList<>();
