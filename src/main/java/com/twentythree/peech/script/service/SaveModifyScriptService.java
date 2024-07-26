@@ -9,6 +9,8 @@ import com.twentythree.peech.script.repository.SentenceRepository;
 import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.script.repository.VersionRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 
 @RequiredArgsConstructor
 @Service
@@ -26,15 +29,19 @@ public class SaveModifyScriptService {
     private final ThemeRepository themeRepository;
     private final SentenceRepository sentenceRepository;
     private final VersionRepository versionRepository;
+    private final Logger log= LoggerFactory.getLogger(this.getClass().getName());
 
     @Transactional
     public SaveScriptAndSentencesResponseDTO saveModifyScript(Long themeId, Long scriptId, Long userId) {
 
         // 문장 리스트 가져오기
         List<String> sentenceIdList = cacheService.findAllByUserKey("user"+userId);
+        log.info("sentenceIdList: {}", sentenceIdList);
+
 
         // 문장 정보들 저장
         List<RedisSentenceDTO> redisSentenceInformationList = new ArrayList<>();
+        log.info("sentenceIdList: {}", sentenceIdList);
 
         for(String sentenceId : sentenceIdList) {
             // 문장 정보 가져오기
@@ -42,12 +49,14 @@ public class SaveModifyScriptService {
             redisSentenceInformationList.add(redisSentence);
         }
 
-        ScriptEntity sttScriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("해당 스크립트가 존재하지 않습니다."));
+        ScriptEntity sttScriptEntity = scriptRepository.findById(scriptId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 스크립트가 존재하지 않습니다."));
 
         Long majorVersion = sttScriptEntity.getVersion().getMajorVersion();
         Long minorVersion = sttScriptEntity.getVersion().getMinorVersion();
 
-        ThemeEntity themeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+        ThemeEntity themeEntity = themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
 
         // 최신 minorVersion 생성
         VersionEntity versionEntity = VersionEntity

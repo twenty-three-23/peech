@@ -67,7 +67,7 @@ public class ScriptService {
     }
 
     @Transactional
-    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, Long scriptId, ClovaResponseDto clovaResponseDto) {
+    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, Long scriptId, ClovaResponseDto clovaResponseDto, LocalTime totalExpectedTime) {
 
         ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
 
@@ -82,17 +82,17 @@ public class ScriptService {
         VersionEntity versionEntity = VersionEntity.ofCreateSTTScriptVersionAfterInput(majorVersion, latestMinorVersion, ThemeEntity);
 
 
-        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
+        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity, totalExpectedTime));
     }
 
     @Transactional
     // Version과 SCRIPT Entity 저장 로직은 공통이므로 묶어서 처리
-    public SaveSTTScriptVO saveSTTScriptEntity(Long themeId, ClovaResponseDto clovaResponseDto, VersionEntity versionEntity) {
+    public SaveSTTScriptVO saveSTTScriptEntity(Long themeId, ClovaResponseDto clovaResponseDto, VersionEntity versionEntity, LocalTime totalExpectedTime) {
 
 
         ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
 
-        ScriptEntity sttScriptEntity = ScriptEntity.ofCreateSTTScript(versionEntity, clovaResponseDto.getFullText(), clovaResponseDto.getTotalRealTime(), InputAndSttType.STT);
+        ScriptEntity sttScriptEntity = ScriptEntity.ofCreateSTTScript(versionEntity, clovaResponseDto.getFullText(), clovaResponseDto.getTotalRealTime(), totalExpectedTime,InputAndSttType.STT);
 
         versionRepository.save(versionEntity);
         scriptRepository.save(sttScriptEntity);
@@ -101,7 +101,7 @@ public class ScriptService {
     }
 
     @Transactional
-    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, ClovaResponseDto clovaResponseDto) {
+    public Mono<SaveSTTScriptVO> saveSTTScriptVO(Long themeId, ClovaResponseDto clovaResponseDto, LocalTime totalExpectedTime) {
 
         String script = clovaResponseDto.getFullText();
 
@@ -114,7 +114,7 @@ public class ScriptService {
         // 대본 입력이 없는 경우에는 해당 스크립트를 Input script 취급
         VersionEntity versionEntity = VersionEntity.ofCreateInputScriptVersion(latestMajorVersion, themeId, ThemeEntity);
 
-        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity));
+        return Mono.just(saveSTTScriptEntity(themeId, clovaResponseDto, versionEntity, totalExpectedTime));
     }
 
     public LocalTime getInputExpectedScriptTime(Long scriptId) {

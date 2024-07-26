@@ -123,7 +123,7 @@ public class UsageTimeService {
         UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).
                 orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
         Long remainingTime = usageTime.getRemainingTime();
-        return (remainingTime >= audioTime) ? new CheckRemainingTimeResponseDTO("성공", true) : new CheckRemainingTimeResponseDTO("사용 시간이 부족합니다.", false);
+        return (remainingTime >= audioTime) ? new CheckRemainingTimeResponseDTO("성공") : new CheckRemainingTimeResponseDTO("사용 시간이 부족합니다.");
     }
 
     public TextAndSecondResponseDTO getMaxAudioTime() {
@@ -149,5 +149,12 @@ public class UsageTimeService {
         maxAudioTimeToText = maxAudioTimeToText.trim();
 
         return new TextAndSecondResponseDTO(maxAudioTimeToText, maxAudioTimeToSecond);
+    }
+
+    // 사용자의 남은 시간을 가져오는 로직
+    public Long getRemainingTime(Long userId) {
+        UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).
+                orElseThrow(() -> new IllegalArgumentException("사용자 아이디가 잘 못 되었습니다."));
+        return usageTime.getRemainingTime();
     }
 }

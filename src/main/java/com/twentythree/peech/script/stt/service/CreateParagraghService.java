@@ -3,6 +3,8 @@ package com.twentythree.peech.script.stt.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twentythree.peech.script.stt.dto.response.ParagraphDivideResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,6 +30,8 @@ public class CreateParagraghService {
 
     private final WebClient.Builder webClientBuilder;
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     // 문단 나누기 api
     public CompletableFuture<ParagraphDivideResponseDto> requestClovaParagraphApi(String totalText) {
         // HTTP 헤더 설정
@@ -48,7 +52,7 @@ public class CreateParagraghService {
             throw new IllegalArgumentException("json 변환 중 오류가 발생했습니다.");
         }
 
-        System.out.println("jsonTexts = " + jsonTexts);
+        log.info("jsonTexts = " + jsonTexts);
 
         // Webclient를 이용한 비동기 통신 - 문단 나누기 api 호출
         return webClientBuilder.baseUrl("https://clovastudio.apigw.ntruss.com").build()
