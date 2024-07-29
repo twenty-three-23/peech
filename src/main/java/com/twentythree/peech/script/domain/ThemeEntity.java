@@ -1,19 +1,13 @@
 package com.twentythree.peech.script.domain;
 
 
-import com.drew.lang.annotations.NotNull;
 import com.twentythree.peech.common.domain.BaseTimeEntity;
-import com.twentythree.peech.script.repository.ThemeRepository;
-import com.twentythree.peech.user.domain.UserEntity;
+import com.twentythree.peech.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity

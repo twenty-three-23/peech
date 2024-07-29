@@ -5,14 +5,13 @@ import com.twentythree.peech.script.domain.VersionEntity;
 import com.twentythree.peech.script.dto.ThemeDTO;
 import com.twentythree.peech.script.dto.response.ThemesResponseDTO;
 import com.twentythree.peech.script.repository.ThemeRepository;
-import com.twentythree.peech.user.domain.UserEntity;
+import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
