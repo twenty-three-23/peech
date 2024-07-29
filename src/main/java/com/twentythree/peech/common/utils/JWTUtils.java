@@ -1,39 +1,81 @@
 package com.twentythree.peech.common.utils;
 
+import com.twentythree.peech.common.JwtProperties;
+import com.twentythree.peech.user.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
 
+@RequiredArgsConstructor
 @Component
 public class JWTUtils {
 
-    // constructor가 초기화 되고 값이 주입이 되기 떄문에 constructor의 secretString은 null이 들어 감
-    @Value("${jwt.secret.key}")
+    private final JwtProperties jwtProperties;
+
     private String secretString;
+    private String accessString;
+    private String refreshString;
 
     private SecretKey secretKey;
+    private SecretKey accessKey;
+    private SecretKey refreshKey;
+
 
     @PostConstruct
     public void init() {
+
+        secretString = jwtProperties.getSecretString();
+        accessString = jwtProperties.getAccessString();
+        refreshString = jwtProperties.getRefreshString();
+
         secretString = Base64.getEncoder().encodeToString(secretString.getBytes());
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
+
+        accessString = Base64.getEncoder().encodeToString(secretString.getBytes());
+        this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessString));
+
+        refreshString = Base64.getEncoder().encodeToString(secretString.getBytes());
+        this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshString));
     }
+
 
     public String createJWT(Long userId) {
         return Jwts.builder().
                 header().
                 and().
-                subject("LoginToken").
+                subject("Token").
                 claim("userId", userId).
                 signWith(secretKey, Jwts.SIG.HS256).
+                compact();
+    }
+
+    public String createAccessToken(Long userId, UserRole userRole) {
+        return Jwts.builder().
+                header().
+                and().
+                subject("AccessToken").
+                claim("userId", userId).
+                claim("userRole", userRole).
+                signWith(accessKey, Jwts.SIG.HS256).
+                compact();
+    }
+
+    public String createRefreshToken(Long userId, UserRole userRole) {
+        return Jwts.builder().
+                header().
+                and().
+                subject("RefreshToken").
+                claim("userId", userId).
+                claim("userRole", userRole).
+                signWith(refreshKey, Jwts.SIG.HS256).
                 compact();
     }
 
@@ -41,6 +83,24 @@ public class JWTUtils {
 
         Jws<Claims> claimsJws = Jwts.parser()
                 .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token);
+
+        return claimsJws;
+    }
+
+    public Jws<Claims> parseAccessToken(String token, Long userId) {
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(accessKey)
+                .build()
+                .parseSignedClaims(token);
+
+        return claimsJws;
+    }
+
+    public Jws<Claims> parseRefreshToken(String token, Long userId) {
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(refreshKey)
                 .build()
                 .parseSignedClaims(token);
 

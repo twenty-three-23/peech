@@ -41,6 +41,8 @@ jobs:
         logging.config: classpath:spring-logback.xml
         gpt.api.key: ${{secrets.GPT_API_KEY}}
         jwt.secret.key: ${{secrets.JWT_SECRET_KEY}}
+        jwt.access.key: ${{secrets.JWT_ACCESS_KEY}}
+        jwt.refresh.key: ${{secrets.JWT_REFRESH_KEY}}
         spring.sql.init.mode: ${{ secrets.DATA_SQL_OPTION }}
         spring.jpa.defer-datasource-initialization: ${{ secrets.DATA_INITALIZATION_OPTION }}
         clova.speech-api.secret: ${{ secrets.CLOVA_SPEECH_SECRET_KEY }}

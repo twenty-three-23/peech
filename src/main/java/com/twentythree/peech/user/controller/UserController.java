@@ -1,5 +1,6 @@
 package com.twentythree.peech.user.controller;
 
+import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.request.CreateUserRequestDTO;
 import com.twentythree.peech.user.dto.response.UserIdTokenResponseDTO;
 import com.twentythree.peech.user.service.UserService;
@@ -20,9 +21,19 @@ public class UserController implements SwaggerUserController{
             description = "deviceId를 RequestBody에 담아 요청하면 새로운 유저를 생성하고 생성된 UserId를 응답한다.")
     @Override
     @PostMapping("api/v1/user")
-    public UserIdTokenResponseDTO createUser(@RequestBody CreateUserRequestDTO request) {
-        String token = userService.createUser(request.getDeviceId());
-        return new UserIdTokenResponseDTO(token);
+    public UserIdTokenResponseDTO createUserByDeviceId(@RequestBody CreateUserRequestDTO request) {
+        String token = userService.createUserByDeviceId(request.getDeviceId());
+        return new UserIdTokenResponseDTO(token, token);
+    }
+
+    @Operation(summary = "카카오톡으로 회원 가입",
+            description = "카카오 톡으로 회원 가입")
+    @PostMapping("api/v2/user")
+    public UserIdTokenResponseDTO createUserBySocial(@RequestBody CreateUserRequestDTO request) {
+
+        AccessAndRefreshToken accessAndRefreshToken = userService.createUserBySocial(request.getSocialId(), request.getAuthorizationServer(), request.getFirstName(), request.getLastName(), request.getBirth(), request.getEmail(), request.getGender(), request.getNickName());
+
+        return new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken());
     }
 
     @Operation(summary = "유저 토큰 재발급",
@@ -31,6 +42,6 @@ public class UserController implements SwaggerUserController{
     @GetMapping("api/v1/user")
     public UserIdTokenResponseDTO reIssuanceUserToken(@RequestBody CreateUserRequestDTO request) {
         String token = userService.reIssuanceUserToken(request.getDeviceId());
-        return new UserIdTokenResponseDTO(token);
+        return new UserIdTokenResponseDTO(token, token);
     }
 }

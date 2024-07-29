@@ -5,10 +5,12 @@ import lombok.Data;
 
 @Data
 public class UserIdTokenResponseDTO {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 
     @JsonCreator
-    public UserIdTokenResponseDTO(String token) {
-        this.token = token;
+    public UserIdTokenResponseDTO(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

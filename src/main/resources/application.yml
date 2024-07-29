@@ -1,6 +1,10 @@
 jwt:
   secret:
     key: ${SECRET_KEY}
+  access:
+    key: ${ACCESS_KEY}
+  refresh:
+    key: ${REFRESH_KEY}
 
 logging:
   level.com.twentythree.peech: debug
