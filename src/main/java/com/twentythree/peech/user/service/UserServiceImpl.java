@@ -4,11 +4,21 @@ import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
-import com.twentythree.peech.user.domain.UserEntity;
+import com.twentythree.peech.user.AuthorizationIdentifier;
+import com.twentythree.peech.user.AuthorizationServer;
+import com.twentythree.peech.user.UserGender;
+import com.twentythree.peech.user.UserRole;
+import com.twentythree.peech.user.domain.UserCreator;
+import com.twentythree.peech.user.domain.UserDomain;
+import com.twentythree.peech.user.domain.UserMapper;
+import com.twentythree.peech.user.dto.AccessAndRefreshToken;
+import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -16,12 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final JWTUtils jwtUtils;
     private final UsageTimeRepository usageTimeRepository;
+    private final UserMapper userMapper;
+    private final UserCreator userCreator;
+    private final JWTUtils jwtUtils;
 
     @Override
     @Transactional
-    public String createUser(String deviceId) {
+    public String createUserByDeviceId(String deviceId) {
 
         if (validateDeviceId(deviceId)) {
             UserEntity user = UserEntity.ofNoLogin(deviceId);
@@ -36,6 +48,22 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UserAlreadyExistException("이미 가입된 유저 입니다");
         }
+    }
+
+    @Override
+    @Transactional
+    public AccessAndRefreshToken createUserBySocial( String socialId, AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, String email, UserGender gender, String nickName) {
+
+        AuthorizationIdentifier authorizationIdentifier = AuthorizationIdentifier.of(socialId, authorizationServer);
+
+        UserDomain userDomain = userCreator.createUser(authorizationIdentifier, firstName, lastName, birth, email, gender, nickName);
+        Long userId = userMapper.saveUserDomain(userDomain);
+        UserRole userRole = userDomain.getRole();
+
+        String accessToken = jwtUtils.createAccessToken(userId, userRole);
+        String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+
+        return new AccessAndRefreshToken(accessToken, refreshToken);
     }
 
     @Override
