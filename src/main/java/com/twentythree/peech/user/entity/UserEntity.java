@@ -4,6 +4,7 @@ import com.twentythree.peech.common.domain.BaseTimeEntity;
 import com.twentythree.peech.user.AuthorizationIdentifier;
 import com.twentythree.peech.user.UserGender;
 import com.twentythree.peech.user.UserRole;
+import com.twentythree.peech.user.UserStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -55,6 +56,10 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "role", nullable = false) @ColumnDefault("'COMMON'")
     private UserRole role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_status", nullable = false) @ColumnDefault("'ACTIVE'")
+    private UserStatus userStatus;
+
 
     public UserEntity(String device_id) {
         this.deviceId = device_id;
@@ -65,7 +70,7 @@ public class UserEntity extends BaseTimeEntity {
     }
 
     public static UserEntity of(Long id, String deviceId, AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName) {
-        return new UserEntity(id, authorizationIdentifier, deviceId,  firstName, lastName, birth, gender, email, nickName, UserRole.COMMON);
+        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, UserStatus.ACTIVE);
     }
 
     @Override
