@@ -60,6 +60,9 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "user_status", nullable = false) @ColumnDefault("'ACTIVE'")
     private UserStatus userStatus;
 
+    @Column(name = "delete_at")
+    private LocalDate deleteAt;
+
 
     public UserEntity(String device_id) {
         this.deviceId = device_id;
@@ -70,7 +73,7 @@ public class UserEntity extends BaseTimeEntity {
     }
 
     public static UserEntity of(Long id, String deviceId, AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName) {
-        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, UserStatus.ACTIVE);
+        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, UserStatus.ACTIVE, null);
     }
 
     @Override
