@@ -1,5 +1,5 @@
 package com.twentythree.peech.user;
 
 public enum UserRole {
-    COMMON, ADMIN
+    ROLE_COMMON, ROLE_ADMIN
 }

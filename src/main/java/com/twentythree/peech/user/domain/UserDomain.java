@@ -55,7 +55,7 @@ public class UserDomain {
     public static UserDomain ofCreateUser(AuthorizationIdentifier authorizationIdentifier, String firstName,
                                           String lastName, LocalDate birth, UserGender gender,
                                           String email, String nickName){
-        return new UserDomain(authorizationIdentifier, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, DEFAULT_USAGE_TIME, DEFAULT_USAGE_TIME);
+        return new UserDomain(authorizationIdentifier, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, DEFAULT_USAGE_TIME, DEFAULT_USAGE_TIME);
     }
 
 
