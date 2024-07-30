@@ -29,8 +29,8 @@ public class UserController implements SwaggerUserController{
         return new UserIdTokenResponseDTO(token, token);
     }
 
-    @Operation(summary = "카카오톡으로 회원 가입",
-            description = "카카오 톡으로 회원 가입")
+    @Operation(summary = "소셜로 회원 가입",
+            description = "소셜 계정으로 회원 가입")
     @PostMapping("api/v1.1/user")
     public ResponseEntity<UserIdTokenResponseDTO> loginBySocial(@RequestBody LoginBySocialRequestDTO request) {
 
@@ -38,9 +38,11 @@ public class UserController implements SwaggerUserController{
         AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
         AccessAndRefreshToken accessAndRefreshToken = userService.loginBySocial(token, authorizationServer);
-        
+
         return ResponseEntity.status(411).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }
+
+
 
     @Operation(summary = "유저 토큰 재발급",
             description = "deviceId를 전송하면 이미 가입된 유저라면 유저 토큰 재발급")
