@@ -11,5 +11,5 @@ import java.time.LocalDate;
 public interface UserService {
     String createUserByDeviceId(String deviceId) throws UserAlreadyExistException;
     String reIssuanceUserToken(String deviceId);
-    AccessAndRefreshToken createUserBySocial(String socialId, AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, String email, UserGender gender, String nickName);
+    AccessAndRefreshToken loginBySocial(String socialToken, AuthorizationServer authorizationServer);
 }
