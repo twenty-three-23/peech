@@ -1,5 +1,5 @@
 INSERT INTO user (birth, created_at, updated_at, social_id, user_id, device_id, email, first_name, last_name, nick_name, authorization_server, gender, role, user_status, sign_up_finished) VALUES
-    ('2018-02-01', '2018-02-01', '2018-12-18', '124123123', '1', 'device_1', 'asdf@naver.com', 'ex', 'ample', 'nick', 'KAKAO', 'MALE', 'COMMON', 'ACTIVE', 'PENDING');
+    ('2018-02-01', '2018-02-01', '2018-12-18', '124123123', '1', 'device_1', 'asdf@naver.com', 'ex', 'ample', 'nick', 'KAKAO', 'MALE', 'ROLE_COMMON', 'ACTIVE', 'PENDING');
 
 INSERT INTO usage_time(usage_time_id, user_id, created_at, updated_at, remaining_time) VALUES
     (1, 1, '2018-02-01', '2018-12-18', '9000');

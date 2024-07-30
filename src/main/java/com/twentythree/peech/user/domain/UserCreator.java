@@ -20,13 +20,13 @@ public class UserCreator {
 
     public UserDomain createUser(AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, String email, UserGender gender, String nickName) {
         if ( userValidator.NickNameIsNotDuplicated(nickName) ) {
-            return UserDomain.of( authorizationIdentifier,  firstName, lastName, birth, gender, email, nickName);
+            return UserDomain.ofCreateUser( authorizationIdentifier,  firstName, lastName, birth, gender, email, nickName);
         } else {
             throw new IllegalArgumentException("닉네임이 중복 되었습니다 : " + nickName);
         }
     }
 
     public UserDomain createUserByEmail(AuthorizationIdentifier authorizationIdentifier, String email, SignUpFinished signUpFinished) {
-        return UserDomain.ofEmail(authorizationIdentifier, email, UserRole.COMMON, UsageConstantValue.DEFAULT_USAGE_TIME, UsageConstantValue.DEFAULT_USAGE_TIME, signUpFinished);
+        return UserDomain.ofEmail(authorizationIdentifier, email, UserRole.ROLE_COMMON, UsageConstantValue.DEFAULT_USAGE_TIME, UsageConstantValue.DEFAULT_USAGE_TIME, signUpFinished);
     }
 }

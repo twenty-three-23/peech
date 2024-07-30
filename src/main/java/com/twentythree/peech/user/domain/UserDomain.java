@@ -4,16 +4,17 @@ import com.twentythree.peech.user.AuthorizationIdentifier;
 import com.twentythree.peech.user.SignUpFinished;
 import com.twentythree.peech.user.UserGender;
 import com.twentythree.peech.user.UserRole;
+import com.twentythree.peech.user.UserStatus;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 import static com.twentythree.peech.usagetime.constant.UsageConstantValue.DEFAULT_USAGE_TIME;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserDomain {
 
     private Long userId;
@@ -26,9 +27,11 @@ public class UserDomain {
     private String nickName;
     private UserRole role;
     private SignUpFinished signUpFinished;
+    private UserStatus userStatus;
 
     private Long usageTime;
     private Long remainingTime;
+    private LocalDate deleteAt;
 
     private UserDomain(AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName,
                        LocalDate birth, UserGender gender, String email,
@@ -54,10 +57,26 @@ public class UserDomain {
         this.signUpFinished = signUpFinished;
     }
 
-    public static UserDomain of(AuthorizationIdentifier authorizationIdentifier, String firstName,
+    public static UserDomain of(Long userId, AuthorizationIdentifier authorizationIdentifier, String firstName,
                                 String lastName, LocalDate birth, UserGender gender,
-                                String email, String nickName){
-        return new UserDomain(authorizationIdentifier, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, DEFAULT_USAGE_TIME, DEFAULT_USAGE_TIME);
+                                String email, String nickName, UserRole role, UserStatus userStatus, Long usageTime, Long remainingTime, LocalDate deleteAt, SignUpFinished signUpFinished ){
+        return new UserDomain(userId, authorizationIdentifier, firstName, lastName, birth, gender, email, nickName, role, signUpFinished, userStatus, usageTime, remainingTime, deleteAt);
+    }
+
+    public static UserDomain ofCreateUser(AuthorizationIdentifier authorizationIdentifier, String firstName,
+                                          String lastName, LocalDate birth, UserGender gender,
+                                          String email, String nickName){
+        return new UserDomain(authorizationIdentifier, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, DEFAULT_USAGE_TIME, DEFAULT_USAGE_TIME);
+    }
+
+
+    public void changeUserStatusToDelete() {
+        this.userStatus = UserStatus.DELETE;
+    }
+
+    public LocalDate setDeleteAt(LocalDate deleteAt) {
+        this.deleteAt = deleteAt;
+        return this.deleteAt;
     }
 
     public static UserDomain ofEmail(AuthorizationIdentifier authorizationIdentifier, String email, UserRole role, Long usageTime, Long remainingTime, SignUpFinished signUpFinished){
