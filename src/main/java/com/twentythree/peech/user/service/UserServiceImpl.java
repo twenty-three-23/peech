@@ -4,18 +4,16 @@ import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
-import com.twentythree.peech.user.AuthorizationIdentifier;
-import com.twentythree.peech.user.AuthorizationServer;
-import com.twentythree.peech.user.SignUpFinished;
-import com.twentythree.peech.user.UserRole;
 import com.twentythree.peech.user.client.KakaoLoginClient;
 import com.twentythree.peech.user.domain.*;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.response.KakaoGetUserEmailResponseDTO;
 import com.twentythree.peech.user.dto.response.KakaoTokenDecodeResponseDTO;
+import com.twentythree.peech.user.entity.AuthorizationIdentifier;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.validator.UserValidator;
+import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +36,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserValidator userValidator;
     private final JWTUtils jwtUtils;
+
 
     @Override
     @Transactional
@@ -109,10 +108,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDomain deleteUser(Long userId) {
         UserDomain userDomain = userFetcher.fetchUser(userId);
         LocalDate deleteAt = userDeleter.deleteUser(userDomain);
+        userMapper.saveUserDomain(userDomain);
         return userDomain;
+    }
+
+    @Override
+    @Transactional
+    public AccessAndRefreshToken completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender) {
+
+
+        UserDomain userDomain = userFetcher.fetchUser(userId);
+        UserDomain completedUserDomain = userCreator.completeUser(userDomain, userDomain.getAuthorizationIdentifier(), firstName, lastName, birth, gender, userDomain.getEmail(), nickName, userDomain.getRole(), userDomain.getUserStatus(), SignUpFinished.FINISHED, userDomain.getDeleteAt());
+        userId = userMapper.saveUserDomain(completedUserDomain);
+        UserRole userRole = userDomain.getRole();
+
+
+        String accessToken = jwtUtils.createAccessToken(userId, userRole);
+        String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+        return new AccessAndRefreshToken(accessToken, refreshToken);
     }
 
     @Override
