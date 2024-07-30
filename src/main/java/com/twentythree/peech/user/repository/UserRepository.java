@@ -1,7 +1,6 @@
 package com.twentythree.peech.user.repository;
 
-import com.twentythree.peech.user.AuthorizationIdentifier;
-import com.twentythree.peech.user.AuthorizationServer;
+import com.twentythree.peech.user.entity.AuthorizationIdentifier;
 import com.twentythree.peech.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

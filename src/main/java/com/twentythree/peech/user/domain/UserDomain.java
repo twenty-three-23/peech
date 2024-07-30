@@ -1,10 +1,10 @@
 package com.twentythree.peech.user.domain;
 
-import com.twentythree.peech.user.AuthorizationIdentifier;
-import com.twentythree.peech.user.SignUpFinished;
-import com.twentythree.peech.user.UserGender;
-import com.twentythree.peech.user.UserRole;
-import com.twentythree.peech.user.UserStatus;
+import com.twentythree.peech.user.entity.AuthorizationIdentifier;
+import com.twentythree.peech.user.value.SignUpFinished;
+import com.twentythree.peech.user.value.UserGender;
+import com.twentythree.peech.user.value.UserRole;
+import com.twentythree.peech.user.value.UserStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

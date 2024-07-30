@@ -1,7 +1,7 @@
 package com.twentythree.peech.user.entity;
 
 import com.twentythree.peech.common.domain.BaseTimeEntity;
-import com.twentythree.peech.user.*;
+import com.twentythree.peech.user.value.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

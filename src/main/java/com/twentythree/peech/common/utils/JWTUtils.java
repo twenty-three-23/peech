@@ -1,7 +1,7 @@
 package com.twentythree.peech.common.utils;
 
 import com.twentythree.peech.common.JwtProperties;
-import com.twentythree.peech.user.UserRole;
+import com.twentythree.peech.user.value.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

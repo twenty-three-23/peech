@@ -1,6 +1,6 @@
 package com.twentythree.peech.user.dto.request;
 
-import com.twentythree.peech.user.AuthorizationServer;
+import com.twentythree.peech.user.value.AuthorizationServer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
