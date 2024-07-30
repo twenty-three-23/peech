@@ -1,10 +1,7 @@
 package com.twentythree.peech.user.entity;
 
 import com.twentythree.peech.common.domain.BaseTimeEntity;
-import com.twentythree.peech.user.AuthorizationIdentifier;
-import com.twentythree.peech.user.UserGender;
-import com.twentythree.peech.user.UserRole;
-import com.twentythree.peech.user.UserStatus;
+import com.twentythree.peech.user.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,13 +30,13 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "device_id", unique=true)
     private String deviceId;
 
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "birth", nullable = false)
+    @Column(name = "birth")
     private LocalDate birth;
 
     @Enumerated(EnumType.STRING)
@@ -49,7 +46,7 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "nick_name", nullable = false)
+    @Column(name = "nick_name")
     private String nickName;
 
     @Enumerated(EnumType.STRING)
@@ -60,6 +57,10 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "user_status", nullable = false) @ColumnDefault("'ACTIVE'")
     private UserStatus userStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sign_up_finished", nullable = false)
+    private SignUpFinished signUpFinished;
+
 
     public UserEntity(String device_id) {
         this.deviceId = device_id;
@@ -69,8 +70,8 @@ public class UserEntity extends BaseTimeEntity {
         return new UserEntity(device_id);
     }
 
-    public static UserEntity of(Long id, String deviceId, AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName) {
-        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, UserStatus.ACTIVE);
+    public static UserEntity of(Long id, String deviceId, AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, SignUpFinished signUpFinished) {
+        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, UserStatus.ACTIVE, signUpFinished);
     }
 
     @Override
