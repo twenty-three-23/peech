@@ -1,5 +1,7 @@
 package com.twentythree.peech.user.validator;
 
+import com.twentythree.peech.user.AuthorizationIdentifier;
+import com.twentythree.peech.user.AuthorizationServer;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Component
 @RequiredArgsConstructor
+@Component
+@Transactional(readOnly = true)
 public class UserValidatorImpl implements UserValidator {
 
     private final UserRepository userRepository;
@@ -22,4 +25,22 @@ public class UserValidatorImpl implements UserValidator {
 
         return foundNickName.isEmpty();
     }
+
+    @Override
+    public boolean existUser(AuthorizationIdentifier authorizationIdentifier) {
+
+        Optional<UserEntity> user = userRepository.findByAuthorizationIdentifier(authorizationIdentifier);
+
+        if (user.isPresent()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean notExistUser(AuthorizationIdentifier authorizationIdentifier) {
+        return !existUser(authorizationIdentifier);
+    }
+
 }
