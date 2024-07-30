@@ -53,12 +53,15 @@ public class UserEntity extends BaseTimeEntity {
     private String nickName;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false) @ColumnDefault("'COMMON'")
+    @Column(name = "role", nullable = false) @ColumnDefault("'ROLE_COMMON'")
     private UserRole role;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status", nullable = false) @ColumnDefault("'ACTIVE'")
     private UserStatus userStatus;
+
+    @Column(name = "delete_at")
+    private LocalDate deleteAt;
 
 
     public UserEntity(String device_id) {
@@ -70,7 +73,7 @@ public class UserEntity extends BaseTimeEntity {
     }
 
     public static UserEntity of(Long id, String deviceId, AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName) {
-        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.COMMON, UserStatus.ACTIVE);
+        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, UserStatus.ACTIVE, null);
     }
 
     @Override

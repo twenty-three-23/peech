@@ -8,9 +8,7 @@ import com.twentythree.peech.user.AuthorizationIdentifier;
 import com.twentythree.peech.user.AuthorizationServer;
 import com.twentythree.peech.user.UserGender;
 import com.twentythree.peech.user.UserRole;
-import com.twentythree.peech.user.domain.UserCreator;
-import com.twentythree.peech.user.domain.UserDomain;
-import com.twentythree.peech.user.domain.UserMapper;
+import com.twentythree.peech.user.domain.*;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
@@ -29,6 +27,8 @@ public class UserServiceImpl implements UserService {
     private final UsageTimeRepository usageTimeRepository;
     private final UserMapper userMapper;
     private final UserCreator userCreator;
+    private final UserFetcher userFetcher;
+    private final UserDeleter userDeleter;
     private final JWTUtils jwtUtils;
 
     @Override
@@ -64,6 +64,13 @@ public class UserServiceImpl implements UserService {
         String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
 
         return new AccessAndRefreshToken(accessToken, refreshToken);
+    }
+
+    @Override
+    public UserDomain deleteUser(Long userId) {
+        UserDomain userDomain = userFetcher.fetchUser(userId);
+        LocalDate deleteAt = userDeleter.deleteUser(userDomain);
+        return userDomain;
     }
 
     @Override

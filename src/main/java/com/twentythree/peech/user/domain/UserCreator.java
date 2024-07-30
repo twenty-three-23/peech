@@ -17,7 +17,7 @@ public class UserCreator {
 
     public UserDomain createUser(AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, String email, UserGender gender, String nickName) {
         if ( userValidator.NickNameIsNotDuplicated(nickName) ) {
-            return UserDomain.of( authorizationIdentifier,  firstName, lastName, birth, gender, email, nickName);
+            return UserDomain.ofCreateUser( authorizationIdentifier,  firstName, lastName, birth, gender, email, nickName);
         } else {
             throw new IllegalArgumentException("닉네임이 중복 되었습니다 : " + nickName);
         }
