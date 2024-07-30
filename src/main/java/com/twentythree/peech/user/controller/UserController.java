@@ -1,11 +1,14 @@
 package com.twentythree.peech.user.controller;
 
+import com.twentythree.peech.user.AuthorizationServer;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.request.CreateUserRequestDTO;
+import com.twentythree.peech.user.dto.request.LoginBySocialRequestDTO;
 import com.twentythree.peech.user.dto.response.UserIdTokenResponseDTO;
 import com.twentythree.peech.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,12 +31,15 @@ public class UserController implements SwaggerUserController{
 
     @Operation(summary = "카카오톡으로 회원 가입",
             description = "카카오 톡으로 회원 가입")
-    @PostMapping("api/v2/user")
-    public UserIdTokenResponseDTO createUserBySocial(@RequestBody CreateUserRequestDTO request) {
+    @PostMapping("api/v1.1/user")
+    public ResponseEntity<UserIdTokenResponseDTO> loginBySocial(@RequestBody LoginBySocialRequestDTO request) {
 
-        AccessAndRefreshToken accessAndRefreshToken = userService.createUserBySocial(request.getSocialId(), request.getAuthorizationServer(), request.getFirstName(), request.getLastName(), request.getBirth(), request.getEmail(), request.getGender(), request.getNickName());
+        String token = request.getSocialToken();
+        AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
-        return new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken());
+        AccessAndRefreshToken accessAndRefreshToken = userService.loginBySocial(token, authorizationServer);
+        
+        return ResponseEntity.status(411).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }
 
     @Operation(summary = "유저 토큰 재발급",
