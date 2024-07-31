@@ -4,19 +4,22 @@ import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
-import com.twentythree.peech.user.AuthorizationIdentifier;
-import com.twentythree.peech.user.AuthorizationServer;
-import com.twentythree.peech.user.UserGender;
-import com.twentythree.peech.user.UserRole;
+import com.twentythree.peech.user.client.KakaoLoginClient;
 import com.twentythree.peech.user.domain.*;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
+import com.twentythree.peech.user.dto.response.KakaoGetUserEmailResponseDTO;
+import com.twentythree.peech.user.dto.response.KakaoTokenDecodeResponseDTO;
+import com.twentythree.peech.user.entity.AuthorizationIdentifier;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
+import com.twentythree.peech.user.validator.UserValidator;
+import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,7 +32,11 @@ public class UserServiceImpl implements UserService {
     private final UserCreator userCreator;
     private final UserFetcher userFetcher;
     private final UserDeleter userDeleter;
+    private final KakaoLoginClient kakaoLoginClient;
+
+    private final UserValidator userValidator;
     private final JWTUtils jwtUtils;
+
 
     @Override
     @Transactional
@@ -52,25 +59,79 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public AccessAndRefreshToken createUserBySocial( String socialId, AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, String email, UserGender gender, String nickName) {
+    public AccessAndRefreshToken loginBySocial( String socialToken, AuthorizationServer authorizationServer) {
+
+        String socialId = "";
+        String userEmail = "";
+
+        String accessToken = "";
+        String refreshToken = "";
+
+        String bearerSocialToken  = "Bearer " + socialToken;
+
+        // Q: 도메인 규칙이라고 볼 수 없는 이런 코드는 위치를 어디로 해야하는가?
+        if (authorizationServer == AuthorizationServer.KAKAO) {
+            KakaoTokenDecodeResponseDTO kakaoTokenDecodeResponseDTO = kakaoLoginClient.decodeToken(bearerSocialToken);
+            socialId = kakaoTokenDecodeResponseDTO.getId().toString();
+
+            KakaoGetUserEmailResponseDTO response = kakaoLoginClient.getUserEmail(bearerSocialToken);
+            userEmail = response.getEmail();
+
+        } else if (authorizationServer == AuthorizationServer.APPLE) {
+            // TODO apple 로그인 구현시 여기서 토큰을 직접 decode
+        } else {
+            throw new IllegalArgumentException(String.format("잘못된 인증 서버입니다: %s", authorizationServer));
+        }
+        // Q
 
         AuthorizationIdentifier authorizationIdentifier = AuthorizationIdentifier.of(socialId, authorizationServer);
 
-        UserDomain userDomain = userCreator.createUser(authorizationIdentifier, firstName, lastName, birth, email, gender, nickName);
-        Long userId = userMapper.saveUserDomain(userDomain);
-        UserRole userRole = userDomain.getRole();
+        if (userValidator.notExistUser(authorizationIdentifier)) {
 
-        String accessToken = jwtUtils.createAccessToken(userId, userRole);
-        String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+            UserDomain userDomain = userCreator.createUserByEmail(authorizationIdentifier, userEmail, SignUpFinished.PENDING);
+            Long userId = userMapper.saveUserDomain(userDomain);
+            UserRole userRole = userDomain.getRole();
+
+            accessToken = jwtUtils.createAccessToken(userId, userRole);
+            refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+
+        } else if (userValidator.existUser(authorizationIdentifier)) {
+            UserEntity user = userRepository.findByAuthorizationIdentifier(authorizationIdentifier).orElseThrow(() -> new IllegalArgumentException("소셜 로그인이 잘 못되었습니다."));
+            Long userId = user.getId();
+            UserRole userRole = user.getRole();
+
+            accessToken = jwtUtils.createAccessToken(userId, userRole);
+            refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+        } else {
+            throw new RuntimeException("유저 생성에서 예상치 못한 문제가 생겼습니다.");
+        }
 
         return new AccessAndRefreshToken(accessToken, refreshToken);
     }
 
     @Override
+    @Transactional
     public UserDomain deleteUser(Long userId) {
         UserDomain userDomain = userFetcher.fetchUser(userId);
         LocalDate deleteAt = userDeleter.deleteUser(userDomain);
+        userMapper.saveUserDomain(userDomain);
         return userDomain;
+    }
+
+    @Override
+    @Transactional
+    public AccessAndRefreshToken completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender) {
+
+
+        UserDomain userDomain = userFetcher.fetchUser(userId);
+        UserDomain completedUserDomain = userCreator.completeUser(userDomain, userDomain.getAuthorizationIdentifier(), firstName, lastName, birth, gender, userDomain.getEmail(), nickName, userDomain.getRole(), userDomain.getUserStatus(), SignUpFinished.FINISHED, userDomain.getDeleteAt());
+        userId = userMapper.saveUserDomain(completedUserDomain);
+        UserRole userRole = userDomain.getRole();
+
+
+        String accessToken = jwtUtils.createAccessToken(userId, userRole);
+        String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+        return new AccessAndRefreshToken(accessToken, refreshToken);
     }
 
     @Override

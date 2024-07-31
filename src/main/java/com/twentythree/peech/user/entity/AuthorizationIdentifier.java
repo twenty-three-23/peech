@@ -1,5 +1,6 @@
-package com.twentythree.peech.user;
+package com.twentythree.peech.user.entity;
 
+import com.twentythree.peech.user.value.AuthorizationServer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

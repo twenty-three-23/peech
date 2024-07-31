@@ -1,14 +1,22 @@
 package com.twentythree.peech.user.controller;
 
-import com.twentythree.peech.user.domain.UserDomain;
 import com.twentythree.peech.user.domain.UserMapper;
+import com.twentythree.peech.user.value.AuthorizationServer;
+import com.twentythree.peech.user.domain.UserDomain;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
+import com.twentythree.peech.user.dto.request.CompleteProfileRequestDTO;
 import com.twentythree.peech.user.dto.request.CreateUserRequestDTO;
+import com.twentythree.peech.user.dto.request.LoginBySocialRequestDTO;
 import com.twentythree.peech.user.dto.response.UserDeleteResponseDTO;
 import com.twentythree.peech.user.dto.response.UserIdTokenResponseDTO;
 import com.twentythree.peech.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -27,15 +35,35 @@ public class UserController implements SwaggerUserController{
         return new UserIdTokenResponseDTO(token, token);
     }
 
-    @Operation(summary = "카카오톡으로 회원 가입",
-            description = "카카오 톡으로 회원 가입")
-    @PostMapping("api/v2/user")
-    public UserIdTokenResponseDTO createUserBySocial(@RequestBody CreateUserRequestDTO request) {
+    @Operation(summary = "소셜로 회원 가입",
+            description = "소셜 계정으로 회원 가입")
+    @PostMapping("api/v1.1/user")
+    public ResponseEntity<UserIdTokenResponseDTO> loginBySocial(@RequestBody LoginBySocialRequestDTO request) {
 
-        AccessAndRefreshToken accessAndRefreshToken = userService.createUserBySocial(request.getSocialId(), request.getAuthorizationServer(), request.getFirstName(), request.getLastName(), request.getBirth(), request.getEmail(), request.getGender(), request.getNickName());
+        String token = request.getSocialToken();
+        AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
-        return new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken());
+        AccessAndRefreshToken accessAndRefreshToken = userService.loginBySocial(token, authorizationServer);
+
+        return ResponseEntity.status(411).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }
+
+    @Operation(summary = "로그인에 필요한 추가 정보를 입력 받는다",
+            description = "gender는 꼭 입력 받지 않아도 된다.")
+    @PatchMapping("api/v1.1/user")
+    public ResponseEntity<UserIdTokenResponseDTO> completeProfile(@RequestBody CompleteProfileRequestDTO request) {
+        if (request.getFirstName() == null || request.getLastName() == null || request.getBirth() == null || request.getNickName() == null ) {
+            return ResponseEntity.badRequest().build();
+        }
+        //TODO 컨텍스트 홀더에서 유저 아이디 가져오기
+        Long userId = 0L;
+
+        AccessAndRefreshToken accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender());
+
+        return ResponseEntity.status(200).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
+    }
+
+
 
     @Operation(summary = "유저 토큰 재발급",
             description = "deviceId를 전송하면 이미 가입된 유저라면 유저 토큰 재발급")
@@ -47,12 +75,12 @@ public class UserController implements SwaggerUserController{
     }
 
     @Operation(summary = "유저 삭제")
-    @DeleteMapping("api/v2/user")
+    @DeleteMapping("api/v1.1/user")
     public UserDeleteResponseDTO deleteUser() {
         // TODO 유저 토큰에서 userId 가져오는 코드
         Long userId = 123L; // 임시 유저
+
         UserDomain userDomain = userService.deleteUser(userId);
-        userMapper.saveUserDomain(userDomain);
         return new UserDeleteResponseDTO(userDomain.getDeleteAt());
     }
 }
