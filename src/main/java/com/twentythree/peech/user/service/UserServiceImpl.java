@@ -67,12 +67,14 @@ public class UserServiceImpl implements UserService {
         String accessToken = "";
         String refreshToken = "";
 
+        String bearerSocialToken  = "Bearer " + socialToken;
+
         // Q: 도메인 규칙이라고 볼 수 없는 이런 코드는 위치를 어디로 해야하는가?
         if (authorizationServer == AuthorizationServer.KAKAO) {
-            KakaoTokenDecodeResponseDTO kakaoTokenDecodeResponseDTO = kakaoLoginClient.decodeToken(socialToken);
+            KakaoTokenDecodeResponseDTO kakaoTokenDecodeResponseDTO = kakaoLoginClient.decodeToken(bearerSocialToken);
             socialId = kakaoTokenDecodeResponseDTO.getId().toString();
 
-            KakaoGetUserEmailResponseDTO response = kakaoLoginClient.getUserEmail(socialToken);
+            KakaoGetUserEmailResponseDTO response = kakaoLoginClient.getUserEmail(bearerSocialToken);
             userEmail = response.getEmail();
 
         } else if (authorizationServer == AuthorizationServer.APPLE) {
