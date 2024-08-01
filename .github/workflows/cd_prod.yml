@@ -90,7 +90,7 @@ jobs:
       - name: Run deployment script
         run: |
           
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.PROD_EC2_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60  -o ServerAliveCountMax=2 ubuntu@${{ secrets.PROD_EC2_IP }} << 'EOF'
           echo "${{ secrets.DOCKERHUB_PASSWORD_PROD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME_PROD }} --password-stdin
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME_PROD }}/github-actions-demo
           sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
