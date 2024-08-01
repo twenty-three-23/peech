@@ -97,5 +97,6 @@ jobs:
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME_PROD }}/github-actions-demo
           sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
           sudo docker run --name github-actions-demo -v logs:/logs --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME_PROD }}/github-actions-demo
+          sudo chmode logs 777
           sudo docker system prune -f 
           EOF

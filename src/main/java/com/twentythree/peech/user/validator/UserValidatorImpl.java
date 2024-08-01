@@ -1,6 +1,5 @@
 package com.twentythree.peech.user.validator;
 
-import com.twentythree.peech.user.entity.AuthorizationIdentifier;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +25,9 @@ public class UserValidatorImpl implements UserValidator {
     }
 
     @Override
-    public boolean existUser(AuthorizationIdentifier authorizationIdentifier) {
+    public boolean existUserByEmail(String email) {
 
-        Optional<UserEntity> user = userRepository.findByAuthorizationIdentifier(authorizationIdentifier);
+        Optional<UserEntity> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
             return true;
@@ -38,8 +37,8 @@ public class UserValidatorImpl implements UserValidator {
     }
 
     @Override
-    public boolean notExistUser(AuthorizationIdentifier authorizationIdentifier) {
-        return !existUser(authorizationIdentifier);
+    public boolean notExistUserByEmail(String email) {
+        return !existUserByEmail(email);
     }
 
 }

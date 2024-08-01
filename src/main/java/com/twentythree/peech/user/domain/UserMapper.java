@@ -17,7 +17,7 @@ public class UserMapper {
 
     @Transactional
     public Long saveUserDomain(UserDomain userDomain) {
-        UserEntity userEntity = UserEntity.of(userDomain.getUserId(), null, userDomain.getAuthorizationIdentifier(), userDomain.getFirstName(), userDomain.getLastName(), userDomain.getBirth(), userDomain.getGender(), userDomain.getEmail(), userDomain.getNickName(), userDomain.getSignUpFinished());
+        UserEntity userEntity = UserEntity.of(userDomain.getUserId(), null, userDomain.getAuthorizationServer(), userDomain.getFirstName(), userDomain.getLastName(), userDomain.getBirth(), userDomain.getGender(), userDomain.getEmail(), userDomain.getNickName(), userDomain.getSignUpFinished());
 
         UsageTimeEntity usageTimeEntity = UsageTimeEntity.of(userDomain.getUsageTime(), userDomain.getRemainingTime(), userEntity);
 

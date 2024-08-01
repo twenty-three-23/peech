@@ -19,6 +19,6 @@ public class UserFetcher {
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘 못된 유저 정보입니다."));
         UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("잘 못된 유저 정보 입니다."));
 
-        return UserDomain.of(user.getId(), user.getAuthorizationIdentifier(), user.getFirstName(), user.getLastName(), user.getBirth(), user.getGender(), user.getEmail(), user.getNickName(), user.getRole(), user.getUserStatus(), usageTime.getUsageTimeId(), usageTime.getRemainingTime(), user.getDeleteAt(), user.getSignUpFinished());
+        return UserDomain.of(user.getId(), user.getAuthorizationServer(), user.getFirstName(), user.getLastName(), user.getBirth(), user.getGender(), user.getEmail(), user.getNickName(), user.getRole(), user.getUserStatus(), usageTime.getUsageTimeId(), usageTime.getRemainingTime(), user.getDeleteAt(), user.getSignUpFinished());
     }
 }
