@@ -1,14 +1,17 @@
 package com.twentythree.peech.user.service;
 
+import com.twentythree.peech.common.exception.Unauthorized;
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
+import com.twentythree.peech.user.client.AppleLoginClient;
 import com.twentythree.peech.user.client.KakaoLoginClient;
 import com.twentythree.peech.user.domain.*;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
+import com.twentythree.peech.user.dto.IdentityToken;
+import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
 import com.twentythree.peech.user.dto.response.KakaoGetUserEmailResponseDTO;
-import com.twentythree.peech.user.dto.response.KakaoTokenDecodeResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.validator.UserValidator;
@@ -31,7 +34,9 @@ public class UserServiceImpl implements UserService {
     private final UserCreator userCreator;
     private final UserFetcher userFetcher;
     private final UserDeleter userDeleter;
+
     private final KakaoLoginClient kakaoLoginClient;
+    private final AppleLoginClient appleLoginClient;
 
     private final UserValidator userValidator;
     private final JWTUtils jwtUtils;
@@ -60,23 +65,36 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public AccessAndRefreshToken loginBySocial( String socialToken, AuthorizationServer authorizationServer) {
 
-        String userEmail = "";
+        String userEmail = null;
 
-        String accessToken = "";
-        String refreshToken = "";
+        String accessToken = null;
+        String refreshToken = null;
 
         String bearerSocialToken  = "Bearer " + socialToken;
 
         // Q: 도메인 규칙이라고 볼 수 없는 이런 코드는 위치를 어디로 해야하는가?
         if (authorizationServer == AuthorizationServer.KAKAO) {
-            KakaoTokenDecodeResponseDTO kakaoTokenDecodeResponseDTO = kakaoLoginClient.decodeToken(bearerSocialToken);
+
+
             KakaoGetUserEmailResponseDTO response = kakaoLoginClient.getUserEmail(bearerSocialToken);
             userEmail = response.getEmail();
 
         } else if (authorizationServer == AuthorizationServer.APPLE) {
-            // TODO apple 로그인 구현시 여기서 토큰을 직접 decode
+
+            IdentityToken identityToken = jwtUtils.decodeIdentityToken(socialToken);
+            String alg = identityToken.getIdentityTokenHeader().getAlg();
+            String kid = identityToken.getIdentityTokenHeader().getKid();
+
+            ApplePublicKeyResponseDTO publicKeys = appleLoginClient.getPublicKeys();
+
+            if (identityToken.isVerify(publicKeys.getApplePublicKeys())) {
+                userEmail = identityToken.getIdentityTokenPayload().getEmail();
+            } else {
+                throw new Unauthorized("애플로그인에서 토큰이 유효하지 않습니다.");
+            }
+
         } else {
-            throw new IllegalArgumentException(String.format("잘못된 인증 서버입니다: %s", authorizationServer));
+            throw new Unauthorized(String.format("잘못된 인증 서버입니다: %s", authorizationServer));
         }
         // Q
 
@@ -90,7 +108,7 @@ public class UserServiceImpl implements UserService {
             refreshToken = jwtUtils.createRefreshToken(userId, userRole);
 
         } else if (userValidator.existUserByEmail(userEmail)) {
-            UserEntity user = userRepository.findByEmail(userEmail).orElseThrow(() -> new IllegalArgumentException("소셜 로그인이 잘 못되었습니다."));
+            UserEntity user = userRepository.findByEmail(userEmail).orElseThrow(() -> new IllegalArgumentException("서버에서 알 수 없는 오류가 발생했습니다."));
             Long userId = user.getId();
             UserRole userRole = user.getRole();
 
