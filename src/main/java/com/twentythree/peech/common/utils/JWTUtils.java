@@ -1,6 +1,10 @@
 package com.twentythree.peech.common.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twentythree.peech.common.JwtProperties;
+import com.twentythree.peech.user.dto.IdentityToken;
+import com.twentythree.peech.user.dto.IdentityTokenHeader;
+import com.twentythree.peech.user.dto.IdentityTokenPayload;
 import com.twentythree.peech.user.value.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -102,7 +106,7 @@ public class JWTUtils {
         return claimsJws;
     }
 
-    public Jws<Claims> parseAccessToken(String token, Long userId) {
+    public Jws<Claims> parseAccessToken(String token) {
         Jws<Claims> claimsJws = Jwts.parser()
                 .verifyWith(accessKey)
                 .build()
@@ -111,13 +115,37 @@ public class JWTUtils {
         return claimsJws;
     }
 
-    public Jws<Claims> parseRefreshToken(String token, Long userId) {
+    public Jws<Claims> parseRefreshToken(String token) {
         Jws<Claims> claimsJws = Jwts.parser()
                 .verifyWith(refreshKey)
                 .build()
                 .parseSignedClaims(token);
 
         return claimsJws;
+    }
+
+    public IdentityToken decodeIdentityToken(String token) {
+        try {
+
+            String[] splitToken = token.split("\\.");
+
+            String header = splitToken[0];
+            String payload = splitToken[1];
+
+            String tokenHeader = new String(Decoders.BASE64.decode(header));
+            String tokenPayload = new String(Decoders.BASE64.decode(payload));
+
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            IdentityTokenHeader identityTokenHeader = objectMapper.readValue(tokenHeader, IdentityTokenHeader.class);
+            IdentityTokenPayload identityTokenPayload = objectMapper.readValue(tokenPayload, IdentityTokenPayload.class);
+
+
+            return new IdentityToken(identityTokenHeader, identityTokenPayload);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("error", e);
+        }
     }
 
 }
