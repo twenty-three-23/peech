@@ -9,7 +9,6 @@ import com.twentythree.peech.user.domain.*;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.response.KakaoGetUserEmailResponseDTO;
 import com.twentythree.peech.user.dto.response.KakaoTokenDecodeResponseDTO;
-import com.twentythree.peech.user.entity.AuthorizationIdentifier;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.validator.UserValidator;
@@ -61,7 +60,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public AccessAndRefreshToken loginBySocial( String socialToken, AuthorizationServer authorizationServer) {
 
-        String socialId = "";
         String userEmail = "";
 
         String accessToken = "";
@@ -72,8 +70,6 @@ public class UserServiceImpl implements UserService {
         // Q: 도메인 규칙이라고 볼 수 없는 이런 코드는 위치를 어디로 해야하는가?
         if (authorizationServer == AuthorizationServer.KAKAO) {
             KakaoTokenDecodeResponseDTO kakaoTokenDecodeResponseDTO = kakaoLoginClient.decodeToken(bearerSocialToken);
-            socialId = kakaoTokenDecodeResponseDTO.getId().toString();
-
             KakaoGetUserEmailResponseDTO response = kakaoLoginClient.getUserEmail(bearerSocialToken);
             userEmail = response.getEmail();
 
@@ -84,19 +80,17 @@ public class UserServiceImpl implements UserService {
         }
         // Q
 
-        AuthorizationIdentifier authorizationIdentifier = AuthorizationIdentifier.of(socialId, authorizationServer);
+        if (userValidator.notExistUserByEmail(userEmail)) {
 
-        if (userValidator.notExistUser(authorizationIdentifier)) {
-
-            UserDomain userDomain = userCreator.createUserByEmail(authorizationIdentifier, userEmail, SignUpFinished.PENDING);
+            UserDomain userDomain = userCreator.createUserByEmail(authorizationServer, userEmail, SignUpFinished.PENDING);
             Long userId = userMapper.saveUserDomain(userDomain);
             UserRole userRole = userDomain.getRole();
 
             accessToken = jwtUtils.createAccessToken(userId, userRole);
             refreshToken = jwtUtils.createRefreshToken(userId, userRole);
 
-        } else if (userValidator.existUser(authorizationIdentifier)) {
-            UserEntity user = userRepository.findByAuthorizationIdentifier(authorizationIdentifier).orElseThrow(() -> new IllegalArgumentException("소셜 로그인이 잘 못되었습니다."));
+        } else if (userValidator.existUserByEmail(userEmail)) {
+            UserEntity user = userRepository.findByEmail(userEmail).orElseThrow(() -> new IllegalArgumentException("소셜 로그인이 잘 못되었습니다."));
             Long userId = user.getId();
             UserRole userRole = user.getRole();
 
@@ -124,7 +118,7 @@ public class UserServiceImpl implements UserService {
 
 
         UserDomain userDomain = userFetcher.fetchUser(userId);
-        UserDomain completedUserDomain = userCreator.completeUser(userDomain, userDomain.getAuthorizationIdentifier(), firstName, lastName, birth, gender, userDomain.getEmail(), nickName, userDomain.getRole(), userDomain.getUserStatus(), SignUpFinished.FINISHED, userDomain.getDeleteAt());
+        UserDomain completedUserDomain = userCreator.completeUser(userDomain, userDomain.getAuthorizationServer(), firstName, lastName, birth, gender, userDomain.getEmail(), nickName, userDomain.getRole(), userDomain.getUserStatus(), SignUpFinished.FINISHED, userDomain.getDeleteAt());
         userId = userMapper.saveUserDomain(completedUserDomain);
         UserRole userRole = userDomain.getRole();
 

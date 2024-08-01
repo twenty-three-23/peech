@@ -1,10 +1,6 @@
 package com.twentythree.peech.user.domain;
 
-import com.twentythree.peech.user.entity.AuthorizationIdentifier;
-import com.twentythree.peech.user.value.SignUpFinished;
-import com.twentythree.peech.user.value.UserGender;
-import com.twentythree.peech.user.value.UserRole;
-import com.twentythree.peech.user.value.UserStatus;
+import com.twentythree.peech.user.value.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +14,7 @@ import static com.twentythree.peech.usagetime.constant.UsageConstantValue.DEFAUL
 public class UserDomain {
 
     private Long userId;
-    private AuthorizationIdentifier authorizationIdentifier;
+    private AuthorizationServer authorizationServer;
     private String firstName;
     private String lastName;
     private LocalDate birth;
@@ -33,10 +29,10 @@ public class UserDomain {
     private Long remainingTime;
     private LocalDate deleteAt;
 
-    private UserDomain(AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName,
+    private UserDomain(AuthorizationServer authorizationServer, String firstName, String lastName,
                        LocalDate birth, UserGender gender, String email,
                        String nickName, UserRole role, Long usageTime, Long remainingTime) {
-        this.authorizationIdentifier = authorizationIdentifier;
+        this.authorizationServer = authorizationServer;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birth = birth;
@@ -48,8 +44,8 @@ public class UserDomain {
         this.remainingTime = remainingTime;
     }
 
-    private UserDomain( AuthorizationIdentifier authorizationIdentifier, String email, UserRole role, Long usageTime, Long remainingTime, SignUpFinished signUpFinished) {
-        this.authorizationIdentifier = authorizationIdentifier;
+    private UserDomain( AuthorizationServer authorizationServer , String email, UserRole role, Long usageTime, Long remainingTime, SignUpFinished signUpFinished) {
+        this.authorizationServer = authorizationServer;
         this.email = email;
         this.role = role;
         this.usageTime = usageTime;
@@ -57,16 +53,16 @@ public class UserDomain {
         this.signUpFinished = signUpFinished;
     }
 
-    public static UserDomain of(Long userId, AuthorizationIdentifier authorizationIdentifier, String firstName,
+    public static UserDomain of(Long userId, AuthorizationServer authorizationServer, String firstName,
                                 String lastName, LocalDate birth, UserGender gender,
                                 String email, String nickName, UserRole role, UserStatus userStatus, Long usageTime, Long remainingTime, LocalDate deleteAt, SignUpFinished signUpFinished ){
-        return new UserDomain(userId, authorizationIdentifier, firstName, lastName, birth, gender, email, nickName, role, signUpFinished, userStatus, usageTime, remainingTime, deleteAt);
+        return new UserDomain(userId, authorizationServer, firstName, lastName, birth, gender, email, nickName, role, signUpFinished, userStatus, usageTime, remainingTime, deleteAt);
     }
 
-    public static UserDomain ofCreateUser(AuthorizationIdentifier authorizationIdentifier, String firstName,
+    public static UserDomain ofCreateUser(AuthorizationServer authorizationServer, String firstName,
                                           String lastName, LocalDate birth, UserGender gender,
                                           String email, String nickName){
-        return new UserDomain(authorizationIdentifier, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, DEFAULT_USAGE_TIME, DEFAULT_USAGE_TIME);
+        return new UserDomain(authorizationServer, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, DEFAULT_USAGE_TIME, DEFAULT_USAGE_TIME);
     }
 
 
@@ -81,8 +77,8 @@ public class UserDomain {
 
     // Q 1. 이런 식으로 도메인에 수정 코드를 넣고 creator에서 함수를 생성해서 하는게 맞는가, 아니면 이 메소드를 바로 호출하는게 옮은가
     //  나의 생각으로는 바로 호출하는 게 맞다고 생각이 드는데.. 이유는 모르겠지만 느낌이 뺴야할 것 같은 느낌쓰
-    public void setUser(AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, UserRole role, UserStatus userStatus, SignUpFinished signUpFinished, LocalDate deleteAt) {
-        this.authorizationIdentifier = authorizationIdentifier;
+    public void setUser(AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, UserRole role, UserStatus userStatus, SignUpFinished signUpFinished, LocalDate deleteAt) {
+        this. authorizationServer = authorizationServer;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birth = birth;
@@ -95,7 +91,7 @@ public class UserDomain {
         this.deleteAt = deleteAt;
     }
 
-    public static UserDomain ofEmail(AuthorizationIdentifier authorizationIdentifier, String email, UserRole role, Long usageTime, Long remainingTime, SignUpFinished signUpFinished){
-        return new UserDomain(authorizationIdentifier, email, role, usageTime, remainingTime, signUpFinished);
+    public static UserDomain ofEmail(AuthorizationServer authorizationServer, String email, UserRole role, Long usageTime, Long remainingTime, SignUpFinished signUpFinished){
+        return new UserDomain(authorizationServer, email, role, usageTime, remainingTime, signUpFinished);
     }
 }
