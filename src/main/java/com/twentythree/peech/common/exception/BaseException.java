@@ -2,7 +2,6 @@ package com.twentythree.peech.common.exception;
 
 import com.twentythree.peech.common.dto.UserAlreadyExistErrorVO;
 import com.twentythree.peech.common.dto.ErrorDTO;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,13 @@ public class BaseException {
         log.error("이미 가입된 유저 에러 발생", e);
         UserAlreadyExistErrorVO alreadyExistErrorVO = new UserAlreadyExistErrorVO(e.getMessage());
         return new ResponseEntity<>(alreadyExistErrorVO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(Unauthorized.class)
+    public ResponseEntity<Unauthorized> unauthorizedExceptionHandler(Unauthorized e) {
+        log.error(e.getMessage(), e);
+        Unauthorized unauthorized = new Unauthorized(e.getMessage());
+        return new ResponseEntity<>(unauthorized, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
