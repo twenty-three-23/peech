@@ -11,6 +11,7 @@ import com.twentythree.peech.user.domain.*;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.IdentityToken;
 import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
+import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.dto.response.KakaoGetUserEmailResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
@@ -145,6 +146,21 @@ public class UserServiceImpl implements UserService {
         String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
         return new AccessAndRefreshToken(accessToken, refreshToken);
     }
+
+    @Override
+    public GetUserInformationResponseDTO getUserInformation() {
+
+        // TODO context holder에서 id 가져옴
+        Long userId = 1L;
+
+        UserDomain userDomain = userFetcher.fetchUser(userId);
+        String nickName = userDomain.getNickName();
+
+        GetUserInformationResponseDTO getUserInformationResponse = new GetUserInformationResponseDTO(nickName);
+
+        return getUserInformationResponse;
+    }
+
 
     @Override
     public String reIssuanceUserToken(String deviceId) {
