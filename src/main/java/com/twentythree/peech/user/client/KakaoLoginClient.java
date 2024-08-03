@@ -14,7 +14,7 @@ public interface KakaoLoginClient {
     @GetMapping("v1/user/access_token_info")
     KakaoTokenDecodeResponseDTO decodeToken(@RequestHeader("Authorization") String token);
 
-    @GetMapping("v2/user/me?properties_keys=[\"kakao_acount.email\"]")
-    @Headers("application/x-www-form-urlencoded;charset=utf-8")
+    @GetMapping("v2/user/me")
+    @Headers("Content-Type: application/x-www-form-urlencoded;charset=utf-8")
     KakaoGetUserEmailResponseDTO getUserEmail(@RequestHeader("Authorization") String token);
 }
