@@ -56,3 +56,10 @@ clova:
     key: ${CLOVASTUDIO_API_KEY}
     gw-key: ${CLOVASTUDIO_APIGW_API_KEY}
     url: ${CLOVASTUDIO_API_URL}
+
+sentry:
+  dsn: "${SENTRY_DSN}"
+  exception-resolver-order: -2147483647
+  max-request-body-size: always
+  send-default-pii: true
+  traces-sample-rate: 1.0

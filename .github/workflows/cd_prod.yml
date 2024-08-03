@@ -49,6 +49,7 @@ jobs:
           clova.divide-sentence-api.key: ${{ secrets.CLOVASTUDIO_API_KEY_PROD }}
           clova.divide-sentence-api.gw-key: ${{ secrets.CLOVASTUDIO_APIGW_API_KEY_PROD }}
           clova.divide-sentence-api.url: ${{ secrets.CLOVASTUDIO_API_URL_PROD }}
+          sentry.dsn: ${{ secrets.SENTRY_DSN_DEV }}
 
       # application.yml 파일 내용 확인
       - name: Display modified application.yml
@@ -93,6 +94,7 @@ jobs:
         run: |
           
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.PROD_EC2_IP }} << 'EOF'
+          export SENTRY_DSN="${{ secrets.SENTRY_DSN_DEV }}"
           echo "${{ secrets.DOCKERHUB_PASSWORD_PROD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME_PROD }} --password-stdin
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME_PROD }}/github-actions-demo
           sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
