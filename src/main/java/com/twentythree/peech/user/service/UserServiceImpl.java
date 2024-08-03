@@ -10,9 +10,9 @@ import com.twentythree.peech.user.client.KakaoLoginClient;
 import com.twentythree.peech.user.domain.*;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.IdentityToken;
+import com.twentythree.peech.user.dto.KakaoAccount;
 import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
-import com.twentythree.peech.user.dto.response.KakaoGetUserEmailResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.validator.UserValidator;
@@ -76,10 +76,13 @@ public class UserServiceImpl implements UserService {
         // Q: 도메인 규칙이라고 볼 수 없는 이런 코드는 위치를 어디로 해야하는가?
         if (authorizationServer == AuthorizationServer.KAKAO) {
 
+            KakaoAccount kakaoAccount = kakaoLoginClient.getUserEmail(bearerSocialToken).getKakaoAccount();
 
-            KakaoGetUserEmailResponseDTO response = kakaoLoginClient.getUserEmail(bearerSocialToken);
-            userEmail = response.getEmail();
-
+            if (userValidator.kakaoEmailValid(kakaoAccount)) {
+                userEmail = kakaoAccount.getEmail();
+            } else {
+                throw new Unauthorized("이메일이 검증되지 않았습니다.");
+            }
         } else if (authorizationServer == AuthorizationServer.APPLE) {
 
             IdentityToken identityToken = jwtUtils.decodeIdentityToken(socialToken);
