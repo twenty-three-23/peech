@@ -6,6 +6,7 @@ import com.twentythree.peech.security.handler.JWTAuthAccessDeniedHandler;
 import com.twentythree.peech.security.handler.JWTAuthEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,7 +41,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/api/v1.1/auth/reissue", "/api/v1.1/user").permitAll()
+                        authorize.requestMatchers("/api/v1.1/auth/reissue").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/v1.1/user").permitAll()
                                 .requestMatchers("/swagger-ui/").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
