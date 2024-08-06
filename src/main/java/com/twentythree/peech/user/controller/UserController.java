@@ -1,6 +1,8 @@
 package com.twentythree.peech.user.controller;
 
+import com.twentythree.peech.user.domain.UserFetcher;
 import com.twentythree.peech.user.domain.UserMapper;
+import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.value.AuthorizationServer;
 import com.twentythree.peech.user.domain.UserDomain;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
@@ -25,6 +27,7 @@ public class UserController implements SwaggerUserController{
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final UserFetcher userFetcher;
 
     @Operation(summary = "유저 가입",
             description = "deviceId를 RequestBody에 담아 요청하면 새로운 유저를 생성하고 생성된 UserId를 응답한다.")
@@ -63,7 +66,11 @@ public class UserController implements SwaggerUserController{
         return ResponseEntity.status(200).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }
 
-
+    @Operation(summary = "토큰으로 유저 정보 조회")
+    @GetMapping("api/v1.1/user")
+    public GetUserInformationResponseDTO getUserInformation() {
+        return userService.getUserInformation();
+    }
 
     @Operation(summary = "유저 토큰 재발급",
             description = "deviceId를 전송하면 이미 가입된 유저라면 유저 토큰 재발급")

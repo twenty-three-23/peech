@@ -1,6 +1,5 @@
 package com.twentythree.peech.user.repository;
 
-import com.twentythree.peech.user.entity.AuthorizationIdentifier;
 import com.twentythree.peech.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +11,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByNickName(String nickName);
 
-    @Query("select user from UserEntity user where user.authorizationIdentifier = :authorizationIdentifier")
-    Optional<UserEntity> findByAuthorizationIdentifier(AuthorizationIdentifier authorizationIdentifier);
+    @Query("select user from UserEntity user where user.email = :email")
+    Optional<UserEntity> findByEmail(String email);
+
+    @Query("select user.nickName from UserEntity user where user.id = :id")
+    Optional<String> findNickNameById(Long id);
 }

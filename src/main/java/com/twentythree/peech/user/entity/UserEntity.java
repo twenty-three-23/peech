@@ -24,8 +24,9 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Embedded
-    private AuthorizationIdentifier authorizationIdentifier;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "authorizationServer")
+    private AuthorizationServer authorizationServer;
 
     @Column(name = "device_id", unique=true)
     private String deviceId;
@@ -43,7 +44,7 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "gender")
     private UserGender gender;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "nick_name")
@@ -74,8 +75,8 @@ public class UserEntity extends BaseTimeEntity {
     }
 
 
-    public static UserEntity of(Long id, String deviceId, AuthorizationIdentifier authorizationIdentifier, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, SignUpFinished signUpFinished) {
-        return new UserEntity(id, authorizationIdentifier, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, UserStatus.ACTIVE, signUpFinished, null );
+    public static UserEntity of(Long id, String deviceId, AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, SignUpFinished signUpFinished) {
+        return new UserEntity(id, authorizationServer, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, UserStatus.ACTIVE, signUpFinished, null );
     }
 
     @Override

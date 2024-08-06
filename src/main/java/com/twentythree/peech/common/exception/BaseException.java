@@ -21,6 +21,13 @@ public class BaseException {
         return new ResponseEntity<>(alreadyExistErrorVO, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(Unauthorized.class)
+    public ResponseEntity<Unauthorized> unauthorizedExceptionHandler(Unauthorized e) {
+        log.error(e.getMessage(), e);
+        Unauthorized unauthorized = new Unauthorized(e.getMessage());
+        return new ResponseEntity<>(unauthorized, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> baseExceptionHandler(Exception e) {
         log.error("에러 발생", e);

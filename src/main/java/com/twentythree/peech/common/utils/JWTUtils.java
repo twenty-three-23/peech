@@ -1,8 +1,12 @@
 package com.twentythree.peech.common.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twentythree.peech.common.JwtProperties;
 import com.twentythree.peech.common.exception.AccessTokenExpiredException;
 import com.twentythree.peech.common.exception.RefreshTokenExpiredException;
+import com.twentythree.peech.user.dto.IdentityToken;
+import com.twentythree.peech.user.dto.IdentityTokenHeader;
+import com.twentythree.peech.user.dto.IdentityTokenPayload;
 import com.twentythree.peech.user.value.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -161,5 +165,29 @@ public class JWTUtils {
             log.info("JWT Token is empty", e);
         }
         return null;
+    }
+  
+    public IdentityToken decodeIdentityToken(String token) {
+        try {
+
+            String[] splitToken = token.split("\\.");
+
+            String header = splitToken[0];
+            String payload = splitToken[1];
+
+            String tokenHeader = new String(Decoders.BASE64.decode(header));
+            String tokenPayload = new String(Decoders.BASE64.decode(payload));
+
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            IdentityTokenHeader identityTokenHeader = objectMapper.readValue(tokenHeader, IdentityTokenHeader.class);
+            IdentityTokenPayload identityTokenPayload = objectMapper.readValue(tokenPayload, IdentityTokenPayload.class);
+
+
+            return new IdentityToken(identityTokenHeader, identityTokenPayload);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("error", e);
+        }
     }
 }

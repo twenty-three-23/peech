@@ -1,9 +1,10 @@
 package com.twentythree.peech.user.validator;
 
-import com.twentythree.peech.user.entity.AuthorizationIdentifier;
+import com.twentythree.peech.user.dto.KakaoAccount;
 
 public interface UserValidator {
     boolean NickNameIsNotDuplicated(String nickName);
-    boolean existUser(AuthorizationIdentifier authorizationIdentifier);
-    boolean notExistUser(AuthorizationIdentifier authorizationIdentifier);
+    boolean existUserByEmail(String email);
+    boolean notExistUserByEmail(String email);
+    boolean kakaoEmailValid(KakaoAccount kakaoAccount);
 }
