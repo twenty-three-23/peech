@@ -16,4 +16,5 @@ public interface UserService {
     UserDomain deleteUser(Long userId);
     AccessAndRefreshToken loginBySocial(String socialToken, AuthorizationServer authorizationServer);
     AccessAndRefreshToken completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender);
+    void existUserById(Long userId);
 }

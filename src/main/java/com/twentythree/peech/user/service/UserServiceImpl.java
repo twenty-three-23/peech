@@ -135,6 +135,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void existUserById(Long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+    }
+
+    @Override
     public String reIssuanceUserToken(String deviceId) {
         if (!validateDeviceId(deviceId)) {
             UserEntity user = userRepository.findByDeviceId(deviceId);
