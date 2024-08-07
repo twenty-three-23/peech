@@ -15,6 +15,8 @@ import com.twentythree.peech.user.dto.response.UserIdTokenResponseDTO;
 import com.twentythree.peech.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +33,7 @@ public class UserController implements SwaggerUserController{
     private final UserService userService;
     private final UserMapper userMapper;
     private final UserFetcher userFetcher;
+    private final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Operation(summary = "유저 가입",
             description = "deviceId를 RequestBody에 담아 요청하면 새로운 유저를 생성하고 생성된 UserId를 응답한다.")
@@ -65,6 +68,7 @@ public class UserController implements SwaggerUserController{
         JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
 
         Long userId = jwtAuthentication.getUserId();
+        log.info("userId : {}", userId);
 
         AccessAndRefreshToken accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender());
 
