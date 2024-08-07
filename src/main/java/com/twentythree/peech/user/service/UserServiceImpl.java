@@ -151,6 +151,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void existUserById(Long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+    }
+
     public GetUserInformationResponseDTO getUserInformation() {
 
         // TODO context holder에서 id 가져옴
@@ -163,7 +167,6 @@ public class UserServiceImpl implements UserService {
 
         return getUserInformationResponse;
     }
-
 
     @Override
     public String reIssuanceUserToken(String deviceId) {

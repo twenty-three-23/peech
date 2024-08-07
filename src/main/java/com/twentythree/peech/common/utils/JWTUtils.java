@@ -2,17 +2,21 @@ package com.twentythree.peech.common.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twentythree.peech.common.JwtProperties;
+import com.twentythree.peech.common.exception.AccessTokenExpiredException;
+import com.twentythree.peech.common.exception.RefreshTokenExpiredException;
 import com.twentythree.peech.user.dto.IdentityToken;
 import com.twentythree.peech.user.dto.IdentityTokenHeader;
 import com.twentythree.peech.user.dto.IdentityTokenPayload;
 import com.twentythree.peech.user.value.UserRole;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -23,6 +27,7 @@ import java.util.Date;
 @Component
 public class JWTUtils {
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JwtProperties jwtProperties;
 
     private String secretString;
@@ -124,6 +129,44 @@ public class JWTUtils {
         return claimsJws;
     }
 
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
+
+    public Claims validateAccessToken(String token) {
+        try {
+            Jws<Claims> claimsJws = parseAccessToken(token);
+            return claimsJws.getPayload();
+        } catch (SecurityException | MalformedJwtException e) {
+            log.info("Invalid JWT Token", e);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT Token", e);
+            throw new AccessTokenExpiredException("AccessToken이 만료되었습니다. refreshToken으로 재요청해주세요.");
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT Token", e);
+        } catch (IllegalArgumentException e) {
+            log.info("JWT Token is empty", e);
+        }
+        return null;
+    }
+
+    public Claims validateRefreshToken(String token) {
+        try {
+            Jws<Claims> claimsJws = parseRefreshToken(token);
+            return claimsJws.getPayload();
+        } catch (SecurityException | MalformedJwtException e) {
+            log.info("Invalid JWT Token", e);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT Token", e);
+            throw new RefreshTokenExpiredException("RefreshToken이 만료되었습니다. 다시 로그인해 주세요.");
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT Token", e);
+        } catch (IllegalArgumentException e) {
+            log.info("JWT Token is empty", e);
+        }
+        return null;
+    }
+  
     public IdentityToken decodeIdentityToken(String token) {
         try {
 
@@ -147,5 +190,4 @@ public class JWTUtils {
             throw new IllegalArgumentException("error", e);
         }
     }
-
 }

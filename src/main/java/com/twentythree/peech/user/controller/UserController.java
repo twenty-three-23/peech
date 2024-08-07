@@ -1,5 +1,6 @@
 package com.twentythree.peech.user.controller;
 
+import com.twentythree.peech.security.jwt.JWTAuthentication;
 import com.twentythree.peech.user.domain.UserFetcher;
 import com.twentythree.peech.user.domain.UserMapper;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
@@ -15,6 +16,8 @@ import com.twentythree.peech.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,8 +61,10 @@ public class UserController implements SwaggerUserController{
         if (request.getFirstName() == null || request.getLastName() == null || request.getBirth() == null || request.getNickName() == null ) {
             return ResponseEntity.badRequest().build();
         }
-        //TODO 컨텍스트 홀더에서 유저 아이디 가져오기
-        Long userId = 0L;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
+
+        Long userId = jwtAuthentication.getUserId();
 
         AccessAndRefreshToken accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender());
 
