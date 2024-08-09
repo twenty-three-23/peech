@@ -40,9 +40,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/api/v1.1/auth/reissue").permitAll()
+                        authorize.requestMatchers("/api/v1.1/auth/reissue","/actuator").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/v1.1/user").permitAll()
-                                .requestMatchers("/swagger-ui/").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
