@@ -1,5 +1,6 @@
 package com.twentythree.peech.user.controller;
 
+import com.twentythree.peech.common.dto.response.WrappedResponseBody;
 import com.twentythree.peech.security.jwt.JWTAuthentication;
 import com.twentythree.peech.user.domain.UserFetcher;
 import com.twentythree.peech.user.domain.UserMapper;
@@ -47,14 +48,14 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "소셜로 회원 가입",
             description = "소셜 계정으로 회원 가입")
     @PostMapping("api/v1.1/user")
-    public ResponseEntity<UserIdTokenResponseDTO> loginBySocial(@RequestBody LoginBySocialRequestDTO request) {
+    public ResponseEntity<WrappedResponseBody<UserIdTokenResponseDTO>> loginBySocial(@RequestBody LoginBySocialRequestDTO request) {
 
         String token = request.getSocialToken();
         AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
         AccessAndRefreshToken accessAndRefreshToken = userService.loginBySocial(token, authorizationServer);
-
-        return ResponseEntity.status(411).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
+        UserIdTokenResponseDTO userIdTokenResponseDTO = new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken());
+        return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(411, userIdTokenResponseDTO));
     }
 
     @Operation(summary = "로그인에 필요한 추가 정보를 입력 받는다",
