@@ -29,28 +29,28 @@ public class ParagraphFetcherImpl implements ParagraphFetcher {
 
         List<Paragraph> paragraphs = new ArrayList<>();
         Long latestParagraphOrder = null;
-        String paragraphContnet = "";
+        String paragraphContent = "";
 
         for (SentenceEntity sentence : sentences) {
             Long paragraphOrder = sentence.getParagraphId();
 
             if (latestParagraphOrder == null) {
                 latestParagraphOrder = paragraphOrder;
-                paragraphContnet = sentence.getSentenceContent();
+                paragraphContent = sentence.getSentenceContent();
             }
             else if (paragraphOrder > latestParagraphOrder) {
 
-                paragraphs.add(new Paragraph(latestParagraphOrder, paragraphContnet));
+                paragraphs.add(new Paragraph(latestParagraphOrder, paragraphContent));
 
                 latestParagraphOrder = paragraphOrder;
-                paragraphContnet = sentence.getSentenceContent();
+                paragraphContent = sentence.getSentenceContent();
             } else if (paragraphOrder.equals(latestParagraphOrder)) {
-                paragraphContnet += sentence.getSentenceContent();
+                paragraphContent += sentence.getSentenceContent();
             } else {
                 throw new RuntimeException("문단 도메인 생성중 알 수 없는 오류 발생");
             }
         }
-        paragraphs.add(new Paragraph(latestParagraphOrder, paragraphContnet));
+        paragraphs.add(new Paragraph(latestParagraphOrder, paragraphContent));
 
         return ParagraphsDomain.of(scriptId, paragraphs);
     }

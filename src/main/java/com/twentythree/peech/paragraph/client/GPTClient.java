@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
         url = "https://api.openai.com/")
 public interface GPTClient {
 
-    @PostMapping("v1/chat/completions")
+    @PostMapping("v1.1/chat/completions")
     GPTResponse extractKeyWords(GPTRequest gptRequest);
 }
