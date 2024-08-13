@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+@Deprecated
 @RequiredArgsConstructor
 @Configuration
 public class ArgumentResolverConfig implements WebMvcConfigurer {
