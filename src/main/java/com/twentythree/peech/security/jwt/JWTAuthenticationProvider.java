@@ -1,7 +1,10 @@
 package com.twentythree.peech.security.jwt;
 
+import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.service.UserService;
+import com.twentythree.peech.user.value.SignUpFinished;
 import org.apache.commons.lang3.ClassUtils;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -22,10 +25,14 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
     private Authentication processOAuthAuthentication(Long userId) {
 
-        userService.existUserById(userId);
+        UserEntity userEntity = userService.existUserById(userId);
 
-        return new JWTAuthenticationToken(new JWTAuthentication(userId),
-                AuthorityUtils.createAuthorityList("ROLE_USER"));
+        if(userEntity.getSignUpFinished() == SignUpFinished.FINISHED) {
+            return new JWTAuthenticationToken(new JWTAuthentication(userId),
+                    AuthorityUtils.createAuthorityList("ROLE_COMMON"));
+        } else {
+            throw new AccessDeniedException("회원가입이 완료되지않은 사용자입니다.");
+        }
     }
 
     @Override
