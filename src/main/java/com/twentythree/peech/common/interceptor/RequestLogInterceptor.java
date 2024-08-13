@@ -15,8 +15,12 @@ public class RequestLogInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId;
+        try {
+            userId = SecurityContextHolder.getUserId();
+        } catch (NullPointerException e) {
+            userId = null;
+        }
         String requestURI = request.getRequestURI();
         String uuid = UUID.randomUUID().toString();
 
