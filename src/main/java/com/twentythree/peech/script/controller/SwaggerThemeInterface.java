@@ -1,7 +1,5 @@
 package com.twentythree.peech.script.controller;
 
-import com.twentythree.peech.auth.dto.LoginUserId;
-import com.twentythree.peech.auth.dto.UserIdDTO;
 import com.twentythree.peech.script.dto.request.ThemeTitleRequestDTO;
 import com.twentythree.peech.script.dto.response.ThemeIdResponseDTO;
 import com.twentythree.peech.script.dto.response.ThemesResponseDTO;
@@ -13,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface SwaggerThemeInterface {
 
     @ApiResponse(responseCode = "201", description = "성공", content = {@Content(schema = @Schema(implementation = ThemeIdResponseDTO.class), mediaType = "application/json")})
-    ThemeIdResponseDTO saveTheme(@RequestBody ThemeTitleRequestDTO request, @LoginUserId UserIdDTO userIdDTO);
+    ThemeIdResponseDTO saveTheme(@RequestBody ThemeTitleRequestDTO request);
 
     @ApiResponse(responseCode = "200", description = "success")
-    ThemesResponseDTO getThemes(@LoginUserId UserIdDTO userIdDTO);
+    ThemesResponseDTO getThemes();
 }
