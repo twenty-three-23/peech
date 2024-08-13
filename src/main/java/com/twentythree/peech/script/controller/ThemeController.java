@@ -1,7 +1,6 @@
 package com.twentythree.peech.script.controller;
 
-import com.twentythree.peech.auth.dto.LoginUserId;
-import com.twentythree.peech.auth.dto.UserIdDTO;
+import com.twentythree.peech.auth.service.SecurityContextHolder;
 import com.twentythree.peech.script.dto.request.ThemeTitleRequestDTO;
 import com.twentythree.peech.script.dto.response.ThemeIdResponseDTO;
 import com.twentythree.peech.script.dto.response.ThemesResponseDTO;
@@ -23,8 +22,8 @@ public class ThemeController implements SwaggerThemeInterface {
     @Operation(summary = "주제 저장", description = "사용자가 주제를 생성할 때 호출")
     @Override
     @PostMapping("/api/v1/theme")
-    public ThemeIdResponseDTO saveTheme(@RequestBody ThemeTitleRequestDTO request, @LoginUserId UserIdDTO userIdDTO) {
-        Long userId = userIdDTO.userId();
+    public ThemeIdResponseDTO saveTheme(@RequestBody ThemeTitleRequestDTO request) {
+        Long userId = SecurityContextHolder.getUserId();
 
         Long themeId = themeService.saveTheme(userId, request.themeTitle());
 
@@ -33,8 +32,8 @@ public class ThemeController implements SwaggerThemeInterface {
 
     @Override
     @GetMapping("/api/v1/themes")
-    public ThemesResponseDTO getThemes(@LoginUserId UserIdDTO userIdDTO) {
-        Long userId = userIdDTO.userId();
+    public ThemesResponseDTO getThemes() {
+        Long userId = SecurityContextHolder.getUserId();
 
         return themeService.getThemesByUserId(userId);
     }
