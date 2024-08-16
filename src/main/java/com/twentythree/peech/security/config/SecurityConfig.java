@@ -48,7 +48,7 @@ public class SecurityConfig {
                         authorize.requestMatchers(swagger).permitAll()
                                 .requestMatchers(defaultPermitAll).permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/v1.1/user").permitAll()
-                                .requestMatchers(HttpMethod.PUT,"/api/v1.1/user").permitAll()
+                                .requestMatchers(HttpMethod.PATCH,"/api/v1.1/user").permitAll()
                                 .anyRequest().authenticated())
                 .exceptionHandling(e -> e.
                         authenticationEntryPoint(jwtAuthEntryPoint)
