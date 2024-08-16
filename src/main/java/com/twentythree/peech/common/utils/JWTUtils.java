@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
@@ -52,11 +51,11 @@ public class JWTUtils {
         accessString = jwtProperties.getAccessString();
         refreshString = jwtProperties.getRefreshString();
 
-        this.secretKey = Keys.hmacShaKeyFor(secretString.getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
 
-        this.accessKey = Keys.hmacShaKeyFor(accessString.getBytes());
+        this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessString));
 
-        this.refreshKey = Keys.hmacShaKeyFor(refreshString.getBytes());
+        this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshString));
 
         Date today = new Date();
         this.accessExpirationDate = new Date(today.getTime() + (1000 * 60 * 60 * 24 * accessExpiration));
