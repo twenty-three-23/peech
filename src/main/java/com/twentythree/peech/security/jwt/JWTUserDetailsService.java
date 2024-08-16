@@ -7,7 +7,6 @@ import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.value.SignUpFinished;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class JWTUserDetailsService implements UserDetailsService {
 
-    @Autowired
     private final UserRepository userRepository;
 
     @Override
@@ -26,7 +24,7 @@ public class JWTUserDetailsService implements UserDetailsService {
     public JWTUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         long userId = Long.parseLong(username);
 
-        UserEntity userEntity = userRepository.findById(Long.parseLong(username))
+        UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. userId: " + userId));
         // User가 Pending이면 에러 발생
         if (userEntity.getSignUpFinished() == SignUpFinished.PENDING) {
