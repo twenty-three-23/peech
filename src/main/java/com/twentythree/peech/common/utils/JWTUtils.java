@@ -2,8 +2,8 @@ package com.twentythree.peech.common.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twentythree.peech.common.JwtProperties;
-import com.twentythree.peech.common.exception.AccessTokenExpiredException;
-import com.twentythree.peech.common.exception.RefreshTokenExpiredException;
+import com.twentythree.peech.security.exception.JWTAuthenticationException;
+import com.twentythree.peech.security.exception.LoginExceptionCode;
 import com.twentythree.peech.user.dto.IdentityToken;
 import com.twentythree.peech.user.dto.IdentityTokenHeader;
 import com.twentythree.peech.user.dto.IdentityTokenPayload;
@@ -12,22 +12,22 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JWTUtils {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JwtProperties jwtProperties;
 
     private String secretString;
@@ -52,14 +52,11 @@ public class JWTUtils {
         accessString = jwtProperties.getAccessString();
         refreshString = jwtProperties.getRefreshString();
 
-        secretString = Base64.getEncoder().encodeToString(secretString.getBytes());
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
+        this.secretKey = Keys.hmacShaKeyFor(secretString.getBytes());
 
-        accessString = Base64.getEncoder().encodeToString(secretString.getBytes());
-        this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessString));
+        this.accessKey = Keys.hmacShaKeyFor(accessString.getBytes());
 
-        refreshString = Base64.getEncoder().encodeToString(secretString.getBytes());
-        this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshString));
+        this.refreshKey = Keys.hmacShaKeyFor(refreshString.getBytes());
 
         Date today = new Date();
         this.accessExpirationDate = new Date(today.getTime() + (1000 * 60 * 60 * 24 * accessExpiration));
@@ -79,7 +76,7 @@ public class JWTUtils {
 
     public String createAccessToken(Long userId, UserRole userRole) {
         return Jwts.builder().
-                header().
+                header().type("JWT").
                 and().
                 subject("AccessToken").
                 claim("userId", userId).
@@ -91,7 +88,7 @@ public class JWTUtils {
 
     public String createRefreshToken(Long userId, UserRole userRole) {
         return Jwts.builder().
-                header().
+                header().type("JWT").
                 and().
                 subject("RefreshToken").
                 claim("userId", userId).
@@ -133,40 +130,43 @@ public class JWTUtils {
         return request.getHeader("Authorization");
     }
 
-    public Claims validateAccessToken(String token) {
+    public Claims validateAccessToken(String token) throws JWTAuthenticationException {
         try {
             Jws<Claims> claimsJws = parseAccessToken(token);
+            System.out.println(claimsJws);
             return claimsJws.getPayload();
+        } catch (SignatureException e) {
+            log.error("JWT Token Signature is invalid", e);
         } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+            log.error("Invalid JWT Token", e);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-            throw new AccessTokenExpiredException("AccessToken이 만료되었습니다. refreshToken으로 재요청해주세요.");
+            log.error("Expired JWT Token", e);
+            throw new JWTAuthenticationException(LoginExceptionCode.ACCESS_TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            log.error("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
-            log.info("JWT Token is empty", e);
+            log.error("JWT Token is empty", e);
         }
-        return null;
+        throw new JWTAuthenticationException(LoginExceptionCode.LOGIN_EXCEPTION_CODE);
     }
 
-    public Claims validateRefreshToken(String token) {
+    public Claims validateRefreshToken(String token) throws JWTAuthenticationException {
         try {
             Jws<Claims> claimsJws = parseRefreshToken(token);
             return claimsJws.getPayload();
         } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+            log.warn("Invalid JWT Token", e);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-            throw new RefreshTokenExpiredException("RefreshToken이 만료되었습니다. 다시 로그인해 주세요.");
+            log.warn("Expired JWT Token", e);
+            throw new JWTAuthenticationException(LoginExceptionCode.REFRESH_TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            log.warn("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
-            log.info("JWT Token is empty", e);
+            log.warn("JWT Token is empty", e);
         }
-        return null;
+        throw new JWTAuthenticationException(LoginExceptionCode.LOGIN_EXCEPTION_CODE);
     }
-  
+
     public IdentityToken decodeIdentityToken(String token) {
         try {
 
