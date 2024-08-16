@@ -3,6 +3,7 @@ package com.twentythree.peech.security.config;
 import com.twentythree.peech.security.filter.JWTAuthenticationFilter;
 import com.twentythree.peech.security.handler.JWTAuthAccessDeniedHandler;
 import com.twentythree.peech.security.handler.JWTAuthEntryPoint;
+import com.twentythree.peech.security.jwt.JWTAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,33 +22,38 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
-    private final JWTAuthEntryPoint JWTAuthEntryPoint;
-    private final JWTAuthAccessDeniedHandler JWTAuthAccessDeniedHandler;
+    private final JWTAuthEntryPoint jwtAuthEntryPoint;
+    private final JWTAuthAccessDeniedHandler jwtAuthAccessDeniedHandler;
 
     public SecurityConfig(JWTAuthenticationFilter jwtAuthenticationFilter,
-                          JWTAuthEntryPoint JWTAuthEntryPoint,
-                          JWTAuthAccessDeniedHandler JWTAuthAccessDeniedHandler
+                          JWTAuthEntryPoint jwtAuthEntryPoint,
+                          JWTAuthAccessDeniedHandler jwtAuthAccessDeniedHandler
                           ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.JWTAuthEntryPoint = JWTAuthEntryPoint;
-        this.JWTAuthAccessDeniedHandler = JWTAuthAccessDeniedHandler;
+        this.jwtAuthEntryPoint = jwtAuthEntryPoint;
+        this.jwtAuthAccessDeniedHandler = jwtAuthAccessDeniedHandler;
     }
 
     // 필터체인 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        String[] swagger = { "/swagger-ui/**", "/v3/api-docs/**"};
+        String[] defaultPermitAll = {"/api/v1.1/auth/reissue","/actuator","/error"};
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/api/v1.1/auth/reissue","/actuator","/swagger-ui/**","/v3/api-docs/**").permitAll()
+                        authorize.requestMatchers(swagger).permitAll()
+                                .requestMatchers(defaultPermitAll).permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/v1.1/user").permitAll()
                                 .anyRequest().authenticated())
+                .exceptionHandling(e -> e.
+                        authenticationEntryPoint(jwtAuthEntryPoint)
+                .accessDeniedHandler(jwtAuthAccessDeniedHandler))
                 .addFilterBefore(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(e -> e.authenticationEntryPoint(JWTAuthEntryPoint)
-                        .accessDeniedHandler(JWTAuthAccessDeniedHandler))
-
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .anonymous(AbstractHttpConfigurer::disable);
 

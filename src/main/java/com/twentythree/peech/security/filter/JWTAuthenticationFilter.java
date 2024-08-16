@@ -1,7 +1,10 @@
 package com.twentythree.peech.security.filter;
 
+import com.twentythree.peech.security.exception.JWTAuthenticationException;
 import com.twentythree.peech.security.jwt.JWTAuthentication;
 import com.twentythree.peech.security.jwt.JWTAuthenticationToken;
+import com.twentythree.peech.security.jwt.JWTUserDetails;
+import com.twentythree.peech.security.jwt.JWTUserDetailsService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,12 +29,14 @@ import java.util.stream.Collectors;
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtils jwtUtils;
-    // 정규 표현식 -> 토큰 복호화시 Bearer 글자 제거
+    private final JWTUserDetailsService jwtUserDetailsService;
+// 정규 표현식 -> 토큰 복호화시 Bearer 글자 제거
     private final Pattern bearerRegex = Pattern.compile("^Bearer$", Pattern.CASE_INSENSITIVE);
     private final String header = "Authorization";
 
-    public JWTAuthenticationFilter(JWTUtils jwtUtils) {
+    public JWTAuthenticationFilter(JWTUtils jwtUtils, JWTUserDetailsService jwtUserDetailsService) {
         this.jwtUtils = jwtUtils;
+        this.jwtUserDetailsService = jwtUserDetailsService;
     }
 
     @Override
@@ -57,13 +62,22 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
                     if (userId != null && !authorities.isEmpty()) {
 
-                        JWTAuthenticationToken jwtAuthenticationToken = new JWTAuthenticationToken(new JWTAuthentication(userId), authorities);
+                        JWTUserDetails userDetails = jwtUserDetailsService.loadUserByUsername(String.valueOf(userId));
 
-                        jwtAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationToken);
+                        Long userDetailsId = userDetails.getUserEntity().getId();
+
+                        JWTAuthentication jwtAuthentication = new JWTAuthentication(userDetailsId);
+
+                        JWTAuthenticationToken authenticationToken = new JWTAuthenticationToken(jwtAuthentication, userDetails.getAuthorities());
+                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }
+                } catch (JWTAuthenticationException e) {
+                    // 로그 기록
+                    log.error("JWTAuthenticationFilter: JWT token validation failed", e);
+                    // 예외를 다시 던져서 EntryPoint에서 처리하게 함
+                    request.setAttribute("JWTAuthenticationException", e);
                 } catch (Exception e) {
-                    log.error("JWTAuthenticationFilter", e);
                     SecurityContextHolder.clearContext();
                 }
             }
