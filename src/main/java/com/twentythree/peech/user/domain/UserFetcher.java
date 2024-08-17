@@ -8,6 +8,8 @@ import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class UserFetcher {
@@ -19,6 +21,13 @@ public class UserFetcher {
 
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new Unauthorized("잘 못된 유저 정보입니다."));
         UsageTimeEntity usageTime = usageTimeRepository.findByUserId(userId).orElseThrow(() -> new Unauthorized("잘 못된 유저 정보 입니다."));
+
+        return UserDomain.of(user.getId(), user.getAuthorizationServer(), user.getFirstName(), user.getLastName(), user.getBirth(), user.getGender(), user.getEmail(), user.getNickName(), user.getRole(), user.getUserStatus(), usageTime.getUsageTimeId(), usageTime.getRemainingTime(), user.getDeleteAt(), user.getSignUpFinished());
+    }
+
+    public UserDomain fetchUserByEmail(String email){
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new Unauthorized("잘못된 유저 정보입니다."));
+        UsageTimeEntity usageTime= usageTimeRepository.findByUserId(user.getId()).orElseThrow(() -> new Unauthorized("잘못된 유저 정보입니다."));
 
         return UserDomain.of(user.getId(), user.getAuthorizationServer(), user.getFirstName(), user.getLastName(), user.getBirth(), user.getGender(), user.getEmail(), user.getNickName(), user.getRole(), user.getUserStatus(), usageTime.getUsageTimeId(), usageTime.getRemainingTime(), user.getDeleteAt(), user.getSignUpFinished());
     }
