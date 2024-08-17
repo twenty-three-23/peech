@@ -21,15 +21,9 @@ public class STTController implements SwaggerSTTController{
     @PostMapping(value ="/api/v1/themes/{themeId}/scripts/speech/script", consumes = "multipart/form-data")
     @Override
     public STTScriptResponseDTO responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId){
+        Long userId = SecurityContextHolder.getUserId();
 
-        // Mono를 block()을 사용해 동기적으로 처리하고 결과를 반환
-        STTScriptResponseDTO sttResult = processSTTService.createSTTResult(request, themeId).block();
-
-        // 추가 작업 수행
-        System.out.println(SecurityContextHolder.getUserId());
-
-        // STTScriptResponseDTO 객체를 반환
-        return sttResult;
+        return processSTTService.createSTTResult(request, themeId, userId).block();
     }
 
 
