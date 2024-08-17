@@ -1,11 +1,10 @@
 package com.twentythree.peech.common.app;
 
-import io.sentry.protocol.App;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class AppInfoController {
 
     @GetMapping("api/v1.1/app")
