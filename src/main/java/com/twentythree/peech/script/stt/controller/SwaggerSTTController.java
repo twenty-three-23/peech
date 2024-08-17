@@ -12,9 +12,10 @@ import reactor.core.publisher.Mono;
 public interface SwaggerSTTController {
     @ApiResponse(responseCode = "201" , description = "성공", content = {@Content(schema = @Schema(implementation = STTScriptResponseDTO.class), mediaType = "application/json")})
     @ApiResponse(responseCode = "400" , description = "실패", content = {@Content(schema = @Schema(implementation = Error.class), mediaType = "application/json")})
-    Mono<STTScriptResponseDTO>  responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId);
+    STTScriptResponseDTO  responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId);
 
     @ApiResponse(responseCode = "201" , description = "성공", content = {@Content(schema = @Schema(implementation = STTScriptResponseDTO.class), mediaType = "application/json")})
     @ApiResponse(responseCode = "400" , description = "실패", content = {@Content(schema = @Schema(implementation = Error.class), mediaType = "application/json")})
-    Mono<STTScriptResponseDTO>  responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId);
+    STTScriptResponseDTO  responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId);
 }
+
