@@ -20,10 +20,10 @@ public class STTController implements SwaggerSTTController{
         description = "대본 입력없이 바로 음성녹음을 STTRequestDTO에 담아 요청하면 Processing과정을 거쳐 STTResultResponseDTO에 담아 응답한다.")
     @PostMapping(value ="/api/v1/themes/{themeId}/scripts/speech/script", consumes = "multipart/form-data")
     @Override
-    public Mono<STTScriptResponseDTO> responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId){
+    public STTScriptResponseDTO responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId){
         Long userId = SecurityContextHolder.getUserId();
 
-        return processSTTService.createSTTResult(request, themeId, userId);
+        return processSTTService.createSTTResult(request, themeId, userId).block();
     }
 
 
@@ -31,9 +31,9 @@ public class STTController implements SwaggerSTTController{
             description = "대본이 입력된 상태에서 음성녹음을 STTRequestDTO에 담아 요청하면 Processing과정을 거쳐 STTResultResponseDTO에 담아 응답한다.")
     @PostMapping(value ="/api/v1/themes/{themeId}/scripts/{scriptId}/speech/script", consumes = "multipart/form-data")
     @Override
-    public Mono<STTScriptResponseDTO> responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId){
+    public STTScriptResponseDTO responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId){
         Long userId = SecurityContextHolder.getUserId();
 
-        return processSTTService.createSTTResult(request, themeId, scriptId, userId);
+        return processSTTService.createSTTResult(request, themeId, scriptId, userId).block();
     }
 }
