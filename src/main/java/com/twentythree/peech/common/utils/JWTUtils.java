@@ -132,7 +132,6 @@ public class JWTUtils {
     public Claims validateAccessToken(String token) throws JWTAuthenticationException {
         try {
             Jws<Claims> claimsJws = parseAccessToken(token);
-            System.out.println(claimsJws);
             return claimsJws.getPayload();
         } catch (SignatureException e) {
             log.error("JWT Token Signature is invalid", e);
