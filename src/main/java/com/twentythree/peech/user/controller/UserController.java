@@ -7,7 +7,7 @@ import com.twentythree.peech.user.domain.UserMapper;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.value.AuthorizationServer;
 import com.twentythree.peech.user.domain.UserDomain;
-import com.twentythree.peech.user.dto.AccessAndRefreshToken;
+import com.twentythree.peech.user.dto.LoginBySocial;
 import com.twentythree.peech.user.dto.request.CompleteProfileRequestDTO;
 import com.twentythree.peech.user.dto.request.CreateUserRequestDTO;
 import com.twentythree.peech.user.dto.request.LoginBySocialRequestDTO;
@@ -53,9 +53,9 @@ public class UserController implements SwaggerUserController{
         String token = request.getSocialToken();
         AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
-        AccessAndRefreshToken accessAndRefreshToken = userService.loginBySocial(token, authorizationServer);
-        UserIdTokenResponseDTO userIdTokenResponseDTO = new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken());
-        return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(411, userIdTokenResponseDTO));
+        LoginBySocial loginBySocial = userService.loginBySocial(token, authorizationServer);
+        UserIdTokenResponseDTO userIdTokenResponseDTO = new UserIdTokenResponseDTO(loginBySocial.getAccessToken(), loginBySocial.getRefreshToken());
+        return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(loginBySocial.getResponseCode(), userIdTokenResponseDTO));
     }
 
     @Operation(summary = "로그인에 필요한 추가 정보를 입력 받는다",
@@ -71,7 +71,7 @@ public class UserController implements SwaggerUserController{
         Long userId = jwtAuthentication.getUserId();
         log.info("userId : {}", userId);
 
-        AccessAndRefreshToken accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender());
+        LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender());
 
         return ResponseEntity.status(200).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }
