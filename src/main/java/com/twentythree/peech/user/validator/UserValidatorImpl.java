@@ -3,6 +3,7 @@ package com.twentythree.peech.user.validator;
 import com.twentythree.peech.user.dto.KakaoAccount;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
+import com.twentythree.peech.user.value.SignUpFinished;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,18 @@ public class UserValidatorImpl implements UserValidator {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean singedUpFinishedUser(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("알 수 없는 에러가 발생했습니다."));
+
+        if (userEntity.getSignUpFinished() == SignUpFinished.FINISHED) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 }

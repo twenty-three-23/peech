@@ -7,4 +7,5 @@ public interface UserValidator {
     boolean existUserByEmail(String email);
     boolean notExistUserByEmail(String email);
     boolean kakaoEmailValid(KakaoAccount kakaoAccount);
+    boolean singedUpFinishedUser(Long userId);
 }
