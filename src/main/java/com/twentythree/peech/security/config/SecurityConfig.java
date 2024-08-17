@@ -39,7 +39,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         String[] swagger = { "/swagger-ui/**", "/v3/api-docs/**"};
-        String[] defaultPermitAll = {"/api/v1.1/auth/reissue","/actuator","/error"};
+        String[] defaultPermitAll = {"/api/v1.1/auth/reissue","/actuator","/error", "/api/v1.1/app"};
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
