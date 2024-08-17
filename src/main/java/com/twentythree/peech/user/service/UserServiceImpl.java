@@ -8,7 +8,7 @@ import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
 import com.twentythree.peech.user.client.AppleLoginClient;
 import com.twentythree.peech.user.client.KakaoLoginClient;
 import com.twentythree.peech.user.domain.*;
-import com.twentythree.peech.user.dto.AccessAndRefreshToken;
+import com.twentythree.peech.user.dto.LoginBySocial;
 import com.twentythree.peech.user.dto.IdentityToken;
 import com.twentythree.peech.user.dto.KakaoAccount;
 import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public AccessAndRefreshToken loginBySocial( String socialToken, AuthorizationServer authorizationServer) {
+    public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer) {
 
         String userEmail = null;
 
@@ -100,7 +100,8 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new Unauthorized(String.format("잘못된 인증 서버입니다: %s", authorizationServer));
         }
-        // Q
+
+        Integer responseCode = 411;
 
         if (userValidator.notExistUserByEmail(userEmail)) {
 
@@ -112,9 +113,14 @@ public class UserServiceImpl implements UserService {
             refreshToken = jwtUtils.createRefreshToken(userId, userRole);
 
         } else if (userValidator.existUserByEmail(userEmail)) {
-            UserEntity user = userRepository.findByEmail(userEmail).orElseThrow(() -> new IllegalArgumentException("서버에서 알 수 없는 오류가 발생했습니다."));
-            Long userId = user.getId();
-            UserRole userRole = user.getRole();
+            UserDomain userDomain = userFetcher.fetchUserByEmail(userEmail);
+
+            Long userId = userDomain.getUserId();
+            UserRole userRole = userDomain.getRole();
+
+            if (userValidator.singedUpFinishedUser(userId)) {
+                responseCode = 200;
+            }
 
             accessToken = jwtUtils.createAccessToken(userId, userRole);
             refreshToken = jwtUtils.createRefreshToken(userId, userRole);
@@ -122,7 +128,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("유저 생성에서 예상치 못한 문제가 생겼습니다.");
         }
 
-        return new AccessAndRefreshToken(accessToken, refreshToken);
+        return new LoginBySocial(accessToken, refreshToken, responseCode);
     }
 
     @Override
@@ -136,8 +142,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public AccessAndRefreshToken completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender) {
+    public LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender) {
 
+        Integer responseCode = 200;
 
         UserDomain userDomain = userFetcher.fetchUser(userId);
         UserDomain completedUserDomain = userCreator.completeUser(userDomain, userDomain.getAuthorizationServer(), firstName, lastName, birth, gender, userDomain.getEmail(), nickName, userDomain.getRole(), userDomain.getUserStatus(), SignUpFinished.FINISHED, userDomain.getDeleteAt());
@@ -147,7 +154,7 @@ public class UserServiceImpl implements UserService {
 
         String accessToken = jwtUtils.createAccessToken(userId, userRole);
         String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
-        return new AccessAndRefreshToken(accessToken, refreshToken);
+        return new LoginBySocial(accessToken, refreshToken, responseCode);
     }
 
     @Override
