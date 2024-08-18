@@ -1,6 +1,5 @@
 package com.twentythree.peech.security.filter;
 
-import com.twentythree.peech.security.dto.RequestInformationDTO;
 import com.twentythree.peech.security.exception.JWTAuthenticationException;
 import com.twentythree.peech.security.jwt.JWTAuthentication;
 import com.twentythree.peech.security.jwt.JWTAuthenticationToken;
@@ -44,23 +43,20 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 토큰이 유효한지 확인
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            RequestInformationDTO requestInformation = getValidateInformation(request);
 
-            String jwtToken = requestInformation.getJwtToken();
+             String jwtToken = getValidateInformation(request);
 
-            if (jwtToken != null) {
+            if(jwtToken != null) {
                 try {
                     Claims claims;
 
                     // 검증할 토큰
-                    if ("/api/v1.1/auth/reissue".equals(requestInformation.getRequestURI())) {
+                    if ("/api/v1.1/auth/reissue".equals(request.getRequestURI())) {
                         claims = jwtUtils.validateRefreshToken(jwtToken);
                     } else {
                         claims = jwtUtils.validateAccessToken(jwtToken);
                     }
-
                     Long userId = claims.get("userId", Long.class);
-
                     List<GrantedAuthority> authorities = createAuthorities(claims);
 
                     if (userId != null && !authorities.isEmpty()) {
@@ -83,25 +79,22 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 } catch (Exception e) {
                     SecurityContextHolder.clearContext();
                 }
+
             }
         }
         filterChain.doFilter(request, response);
 
     }
 
-    private RequestInformationDTO getValidateInformation(HttpServletRequest request) {
-        log.info("JWTAuthenticationFilter: getJWTToken");
-        String requestURI = request.getRequestURI();
-        System.out.println("requestURI = " + requestURI);
+    private String getValidateInformation(HttpServletRequest request) {
         String token = request.getHeader(header);
-        System.out.println("token = " + token);
         if (token != null) {
             String[] parts = token.split(" ");
             if (parts.length == 2) {
                 String scheme = parts[0];   // Bearer
                 String credentials = parts[1];
                 if (bearerRegex.matcher(scheme).matches()) {
-                    return new RequestInformationDTO(credentials, requestURI);
+                    return credentials;
                 }
             }
         }
