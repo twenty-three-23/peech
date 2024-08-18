@@ -40,8 +40,8 @@ public class JWTUtils {
     private Date accessExpirationDate;
     private Date refreshExpirationDate;
 
-    private final Long accessExpiration = 30L;
-    private final Long refreshExpiration = 60L;
+    private final Long accessExpiration = 10L;
+    private final Long refreshExpiration = 30L;
 
 
     @PostConstruct
@@ -58,8 +58,8 @@ public class JWTUtils {
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshString));
 
         Date today = new Date();
-        this.accessExpirationDate = new Date(today.getTime() + (1000 * 60 * 60 * 24 * accessExpiration));
-        this.refreshExpirationDate = new Date(today.getTime() + (1000 * 60 * 60 * 24 * refreshExpiration));
+        this.accessExpirationDate = new Date(today.getTime() + (1000 * accessExpiration));
+        this.refreshExpirationDate = new Date(today.getTime() + (1000 * refreshExpiration));
     }
 
 
