@@ -40,8 +40,8 @@ public class JWTUtils {
     private Date accessExpirationDate;
     private Date refreshExpirationDate;
 
-    private final Long accessExpiration = 60L;
-    private final Long refreshExpiration = 120L;
+    private final Long accessExpiration = 30L;
+    private final Long refreshExpiration = 60L;
 
 
     @PostConstruct
@@ -61,8 +61,8 @@ public class JWTUtils {
 
     private void setExpirationDate() {
         Date today = new Date();
-        this.accessExpirationDate = new Date(today.getTime() + (1000 * accessExpiration));
-        this.refreshExpirationDate = new Date(today.getTime() + (1000 * refreshExpiration));
+        this.accessExpirationDate = new Date(today.getTime() + (1000 * 60 * 60 * 24 * accessExpiration));
+        this.refreshExpirationDate = new Date(today.getTime() + (1000 * 60 * 60 * 24 * refreshExpiration));
     }
 
 
