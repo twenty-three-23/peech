@@ -40,8 +40,8 @@ public class JWTUtils {
     private Date accessExpirationDate;
     private Date refreshExpirationDate;
 
-    private final Long accessExpiration = 10L;
-    private final Long refreshExpiration = 30L;
+    private final Long accessExpiration = 60L;
+    private final Long refreshExpiration = 120L;
 
 
     @PostConstruct
