@@ -1,6 +1,6 @@
 app:
   version: ${APP_VERSION}
-  appAvailable: ${APP_AVAILABLE}
+  available: ${APP_AVAILABLE}
 
 jwt:
   secret:
