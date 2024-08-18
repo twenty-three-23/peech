@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1.1/auth")
 public class AuthController {
 
     private final ReissueAccessAndRefreshTokenService reissueAccessAndRefreshTokenService;
 
-    @PatchMapping("/reissue")
+    @PostMapping("api/v1.1/auth/reissue")
     public AccessAndRefreshToken reissueAccessToken(String refreshToken) {
         return reissueAccessAndRefreshTokenService.createNewToken(refreshToken);
     }
