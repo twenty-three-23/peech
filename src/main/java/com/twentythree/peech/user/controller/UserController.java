@@ -55,6 +55,7 @@ public class UserController implements SwaggerUserController{
 
         LoginBySocial loginBySocial = userService.loginBySocial(token, authorizationServer);
         UserIdTokenResponseDTO userIdTokenResponseDTO = new UserIdTokenResponseDTO(loginBySocial.getAccessToken(), loginBySocial.getRefreshToken());
+        log.info("{}", userIdTokenResponseDTO.getAccessToken());
         return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(loginBySocial.getResponseCode(), userIdTokenResponseDTO));
     }
 
