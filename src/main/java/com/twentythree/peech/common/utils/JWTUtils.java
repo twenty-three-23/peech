@@ -57,10 +57,14 @@ public class JWTUtils {
 
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshString));
 
+    }
+
+    private void setExpirationDate() {
         Date today = new Date();
         this.accessExpirationDate = new Date(today.getTime() + (1000 * accessExpiration));
         this.refreshExpirationDate = new Date(today.getTime() + (1000 * refreshExpiration));
     }
+
 
 
     public String createJWT(Long userId) {
@@ -74,6 +78,8 @@ public class JWTUtils {
     }
 
     public String createAccessToken(Long userId, UserRole userRole) {
+        setExpirationDate();
+
         return Jwts.builder().
                 header().type("JWT").
                 and().
@@ -86,6 +92,8 @@ public class JWTUtils {
     }
 
     public String createRefreshToken(Long userId, UserRole userRole) {
+        setExpirationDate();
+
         return Jwts.builder().
                 header().type("JWT").
                 and().
