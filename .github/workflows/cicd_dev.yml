@@ -51,6 +51,9 @@ jobs:
         clova.divide-sentence-api.gw-key: ${{ secrets.CLOVASTUDIO_APIGW_API_KEY }}
         clova.divide-sentence-api.url: ${{ secrets.CLOVASTUDIO_API_URL }}
         sentry.dsn: ${{ secrets.SENTRY_DSN_DEV }}
+        app.version: ${{ secrets.APP_VERSION_DEV}}
+        app.available: ${{ secrets.APP_AVAILABLE_DEV}}
+
         
     # application.yml 파일 내용 확인
     - name: Display modified application.yml
