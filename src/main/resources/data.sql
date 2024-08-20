@@ -1,5 +1,5 @@
-INSERT INTO user (user_id, device_id, created_at, updated_at) VALUES
-    (1, 'device_1', '2018-02-01', '2018-12-18');
+INSERT INTO user (birth, created_at, updated_at, user_id, device_id, email, first_name, last_name, nick_name, authorization_server, gender, role, user_status, sign_up_finished) VALUES
+    ('2018-02-01', '2018-02-01', '2018-12-18', '1', 'device_1', 'asdf@naver.com', 'ex', 'ample', 'nick', 'KAKAO', 'MALE', 'ROLE_COMMON', 'ACTIVE', 'PENDING');
 
 INSERT INTO usage_time(usage_time_id, user_id, created_at, updated_at, remaining_time) VALUES
     (1, 1, '2018-02-01', '2018-12-18', '9000');
@@ -45,9 +45,9 @@ INSERT INTO script (script_id, script_content, theme_id, created_at, d_type, maj
 
 
 INSERT INTO sentence (sentence_id, sentence_content, sentence_order, paragraph_id, script_id, created_at, sentence_expect_time) VALUES
-    ("1", 'Hello.', 1, 1, 1, '2018-02-01', '00:01:30'),
-    ("3", 'my 1.', 2, 1, 1, '2018-02-01', '00:01:30'),
-    ("2", 'name is 1', 3, 2, 1, '2018-02-01', '00:01:30'),
+    ("1", '사업가 김씨가 신한은행 자산 관리 센터에서 50억짜리 해외 부동산 펀드에 가입한 건 지난 2017년입니다.', 1, 1, 1, '2018-02-01', '00:01:30'),
+    ("3", '해외 국가 기간이 세들어 있어 무조건 안전하다는 은행 직원 설득이 결정적이었다고 합니다.', 2, 1, 1, '2018-02-01', '00:01:30'),
+    ("2", '이렇게 때마다 금리를 웃도는 배당을 주고, 5년 후 건물의 증권을 팔아 투자자에게 나눠주는 상품, 인데 당시엔 없어서 못팔 정도였습니다.', 3, 2, 1, '2018-02-01', '00:01:30'),
 
     ("4", 'Hello.', 1, 1, 2, '2018-02-01', '00:01:30'),
     ("5", 'my 2.', 2, 1, 2, '2018-02-01', '00:01:30'),

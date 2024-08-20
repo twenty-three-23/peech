@@ -1,6 +1,6 @@
 package com.twentythree.peech.usagetime.controller;
 
-import com.twentythree.peech.auth.dto.UserIdDTO;
+import com.twentythree.peech.auth.service.SecurityContextHolder;
 import com.twentythree.peech.usagetime.dto.response.CheckRemainingTimeResponseDTO;
 import com.twentythree.peech.usagetime.dto.response.TextAndSecondResponseDTO;
 import com.twentythree.peech.usagetime.service.UsageTimeService;
@@ -17,14 +17,18 @@ public class UsageTimeController implements SwaggerUsageTimeController{
 
     @Override
     @GetMapping("api/v1/usage-time")
-    public CheckRemainingTimeResponseDTO checkRemainingTime(UserIdDTO userId, Long audioTime) {
-        return usageTimeService.checkRemainingTime(userId.userId(), audioTime);
+    public CheckRemainingTimeResponseDTO checkRemainingTime(Long audioTime) {
+        Long userId = SecurityContextHolder.getUserId();
+
+        return usageTimeService.checkRemainingTime(userId, audioTime);
     }
 
     @Override
     @GetMapping("api/v1/remaining-time")
-    public TextAndSecondResponseDTO getUsageTime(UserIdDTO userId) {
-        return usageTimeService.getUsageTime(userId.userId());
+    public TextAndSecondResponseDTO getUsageTime() {
+        Long userId = SecurityContextHolder.getUserId();
+
+        return usageTimeService.getUsageTime(userId);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.twentythree.peech.usagetime.service;
 
 import com.twentythree.peech.common.utils.ScriptUtils;
-import com.twentythree.peech.usagetime.constant.ConstantValue;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
 import com.twentythree.peech.usagetime.dto.response.TextAndSecondResponseDTO;
 import com.twentythree.peech.usagetime.dto.response.CheckRemainingTimeResponseDTO;
@@ -22,10 +21,9 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.channels.IllegalChannelGroupException;
 import java.time.LocalTime;
 
-import static com.twentythree.peech.usagetime.constant.ConstantValue.*;
+import static com.twentythree.peech.usagetime.constant.UsageConstantValue.*;
 
 @Slf4j
 @RequiredArgsConstructor

@@ -2,7 +2,6 @@ package com.twentythree.peech.common.exception;
 
 import com.twentythree.peech.common.dto.UserAlreadyExistErrorVO;
 import com.twentythree.peech.common.dto.ErrorDTO;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,10 +21,30 @@ public class BaseException {
         return new ResponseEntity<>(alreadyExistErrorVO, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(Unauthorized.class)
+    public ResponseEntity<Unauthorized> unauthorizedExceptionHandler(Unauthorized e) {
+        log.error(e.getMessage(), e);
+        Unauthorized unauthorized = new Unauthorized(e.getMessage());
+        return new ResponseEntity<>(unauthorized, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> baseExceptionHandler(Exception e) {
         log.error("에러 발생", e);
         ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
         return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(AccessTokenExpiredException.class)
+    public ResponseEntity<String> handleExpiredJWTTokenException(AccessTokenExpiredException e) {
+        log.error("access 토큰 만료 에러 발생", e);
+        // 410번 에러 코드로 응답
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.GONE);
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<String> handleExpiredJWTTokenException(RefreshTokenExpiredException e) {
+        log.error("refresh 토큰 만료 에러 발생", e);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }

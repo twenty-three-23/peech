@@ -41,6 +41,8 @@ jobs:
         logging.config: classpath:spring-logback.xml
         gpt.api.key: ${{secrets.GPT_API_KEY}}
         jwt.secret.key: ${{secrets.JWT_SECRET_KEY}}
+        jwt.access.key: ${{secrets.JWT_ACCESS_KEY}}
+        jwt.refresh.key: ${{secrets.JWT_REFRESH_KEY}}
         spring.sql.init.mode: ${{ secrets.DATA_SQL_OPTION }}
         spring.jpa.defer-datasource-initialization: ${{ secrets.DATA_INITALIZATION_OPTION }}
         clova.speech-api.secret: ${{ secrets.CLOVA_SPEECH_SECRET_KEY }}
@@ -48,7 +50,11 @@ jobs:
         clova.divide-sentence-api.key: ${{ secrets.CLOVASTUDIO_API_KEY }}
         clova.divide-sentence-api.gw-key: ${{ secrets.CLOVASTUDIO_APIGW_API_KEY }}
         clova.divide-sentence-api.url: ${{ secrets.CLOVASTUDIO_API_URL }}
-        
+        sentry.dsn: ${{ secrets.SENTRY_DSN_DEV }}
+        app.version: ${{ secrets.APP_VERSION_DEV}}
+        app.available: ${{ secrets.APP_AVAILABLE_DEV}}
+
+
     # application.yml 파일 내용 확인
     - name: Display modified application.yml
       run: cat ${{ env.RESOURCE_PATH }}
@@ -92,6 +98,7 @@ jobs:
       run: |
         
         ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 ubuntu@${{ secrets.DEV_EC2_IP }} << 'EOF'
+        export SENTRY_DSN="${{ secrets.SENTRY_DSN_DEV }}"
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
         sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
         sudo docker stop $(sudo docker ps -q) 2>/dev/null || true

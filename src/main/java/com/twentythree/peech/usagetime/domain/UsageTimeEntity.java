@@ -1,7 +1,7 @@
 package com.twentythree.peech.usagetime.domain;
 
 import com.twentythree.peech.common.domain.BaseTimeEntity;
-import com.twentythree.peech.user.domain.UserEntity;
+import com.twentythree.peech.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -36,6 +36,10 @@ public class UsageTimeEntity extends BaseTimeEntity {
 
     public static UsageTimeEntity of(UserEntity userEntity) {
         return new UsageTimeEntity(userEntity);
+    }
+
+    public static UsageTimeEntity of(Long usageTimeId, Long remainingTime, UserEntity userEntity) {
+        return new UsageTimeEntity(usageTimeId, remainingTime, userEntity);
     }
 
 

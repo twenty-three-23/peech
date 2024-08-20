@@ -1,5 +1,6 @@
 package com.twentythree.peech.common.interceptor;
 
+import com.twentythree.peech.auth.service.SecurityContextHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -14,8 +15,12 @@ public class RequestLogInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-
-        Long userId = (Long) request.getAttribute("userId");
+        Long userId;
+        try {
+            userId = SecurityContextHolder.getUserId();
+        } catch (NullPointerException e) {
+            userId = null;
+        }
         String requestURI = request.getRequestURI();
         String uuid = UUID.randomUUID().toString();
 

@@ -1,14 +1,13 @@
 package com.twentythree.peech.auth.interceptor;
 
-import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+@Deprecated
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
