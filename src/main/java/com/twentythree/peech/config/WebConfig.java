@@ -8,8 +8,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("https://twenty-three-4d6f6.web.app/#/home")
-                .allowedOriginPatterns("*") // “*“같은 와일드카드를 사용
+        registry.addMapping("*")
+                .allowedOriginPatterns("https://twenty-three-4d6f6.web.app") // “*“같은 와일드카드를 사용
                 .allowedMethods("GET", "POST", "PATCH", "PUT") // 허용할 HTTP method
                 .allowCredentials(true); // 쿠키 인증 요청 허용
     }
