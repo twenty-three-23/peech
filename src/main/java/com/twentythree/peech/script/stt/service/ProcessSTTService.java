@@ -42,6 +42,8 @@ public class ProcessSTTService {
     
     private final UsageTimeService usageTimeService;
 
+    private final AudioChecker audioChecker;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     // 대본 입력 없이 STT 결과 생성
@@ -51,49 +53,53 @@ public class ProcessSTTService {
 
         File tempFile = saveTempFile(request);
 
-        Long remainingTime = usageTimeService.getRemainingTime(userId);
+        double time = audioChecker.checkMaxAudioDuration(tempFile.getPath());
+        if(time != -1) {
 
-        if (remainingTime - request.time() < 0) {
-            throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
-        }
+            Long remainingTime = usageTimeService.getRemainingTime(userId);
 
-        Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
+            if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+            }
 
-        return clovaResponseDtoMono
-                .flatMap(clovaResponseDto -> {
-                    String totalText = clovaResponseDto.getFullText();
-                    // stt 길이에서 사용시간 차감
-                    long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
-                    log.info("STT 요청 시간: {}초", totalRealSeconds);
+            Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
 
-                    usageTimeService.subUsageTimeByTimePerSecond(userId, totalRealSeconds);
+            return clovaResponseDtoMono
+                    .flatMap(clovaResponseDto -> {
+                        String totalText = clovaResponseDto.getFullText();
+                        // stt 길이에서 사용시간 차감
+                        long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
+                        log.info("STT 요청 시간: {}초", totalRealSeconds);
 
-                    Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
-                    return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
+                        usageTimeService.subUsageTimeByTimePerSecond(userId, totalRealSeconds);
 
-                        List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
-                        // Script Entity 저장
-                        LocalTime totalExpectedTime = sentenceService.getTotalExpectedTime(sentenceAndRealTimeList);
-                        Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, clovaResponseDto, totalExpectedTime);
-                        // Sentence Entity 저장
-                        return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
+                        Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
+                        return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
 
-                            // 생성된 scriptId 가져오기
-                            long scriptId = saveSTTScriptVO.scriptEntity().getScriptId();
-                            List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                            STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, scriptId);
-                            // Redis 저장 로직
-                            saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+                            List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
+                            // Script Entity 저장
+                            LocalTime totalExpectedTime = sentenceService.getTotalExpectedTime(sentenceAndRealTimeList);
+                            Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, clovaResponseDto, totalExpectedTime);
+                            // Sentence Entity 저장
+                            return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
 
-                            // 최종 클라이언트 반환 DTO
-                            return Mono.just(sttScriptResponseDTO);
+                                // 생성된 scriptId 가져오기
+                                long scriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, scriptId);
+                                // Redis 저장 로직
+                                saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+
+                                // 최종 클라이언트 반환 DTO
+                                return Mono.just(sttScriptResponseDTO);
+                            });
                         });
+                    })
+                    .onErrorResume(e -> {
+                        // 적절한 오류 메시지 반환
+                        return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
                     });
-                })
-                .onErrorResume(e -> {
-                    // 적절한 오류 메시지 반환
-                    return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
-                });
+        }
     }
 
     // 대본 입력 후 STT 결과 생성
@@ -101,54 +107,176 @@ public class ProcessSTTService {
 
         File tempFile = saveTempFile(request);
 
-        Long remainingTime = usageTimeService.getRemainingTime(userId);
+        double time = audioChecker.checkMaxAudioDuration(tempFile.getPath());
 
-        if (remainingTime - request.time() < 0) {
-            throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
-        }
-
-        Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
-
-        return clovaResponseDtoMono
-                .flatMap(clovaResponseDto -> {
-                    String totalText = clovaResponseDto.getFullText();
-                    // stt 길이에서 사용시간 차감
-                    long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
-                    log.info("STT 요청 시간: {}초", totalRealSeconds);
-                    usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
+        if (time != -1) {
 
 
-                    Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
-                    return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
+            Long remainingTime = usageTimeService.getRemainingTime(userId);
 
-                        List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
-                        // Script Entity 저장
-                        LocalTime totalExpectedTime = sentenceService.getTotalExpectedTime(sentenceAndRealTimeList);
-                        Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, scriptId, clovaResponseDto, totalExpectedTime);
+            if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+            }
 
-                        // Sentence Entity 저장
-                        return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
+            Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
 
-                            // scriptId 저장
-                            long newScriptId = saveSTTScriptVO.scriptEntity().getScriptId();
-                            List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
-                            STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, newScriptId);
+            return clovaResponseDtoMono
+                    .flatMap(clovaResponseDto -> {
+                        String totalText = clovaResponseDto.getFullText();
+                        // stt 길이에서 사용시간 차감
+                        long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
+                        log.info("STT 요청 시간: {}초", totalRealSeconds);
+                        usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
 
-                            // Redis 저장 로직
-                            saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+
+                        Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
+                        return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
+
+                            List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
+                            // Script Entity 저장
+                            LocalTime totalExpectedTime = sentenceService.getTotalExpectedTime(sentenceAndRealTimeList);
+                            Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, scriptId, clovaResponseDto, totalExpectedTime);
+
+                            // Sentence Entity 저장
+                            return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
+
+                                // scriptId 저장
+                                long newScriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, newScriptId);
+
+                                // Redis 저장 로직
+                                saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
 
                                 // 최종 클라이언트 반환 DTO
-                            return Mono.just(sttScriptResponseDTO);
+                                return Mono.just(sttScriptResponseDTO);
+                            });
                         });
+                    })
+                    .onErrorResume(e -> {
+                        // 예외 처리 로직 추가
+                        e.printStackTrace(); // 예외 로그 출력
+                        // 적절한 오류 메시지 반환
+                        return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
                     });
-                })
-                .onErrorResume(e -> {
-                    // 예외 처리 로직 추가
-                    e.printStackTrace(); // 예외 로그 출력
-                    // 적절한 오류 메시지 반환
-                    return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
-                });
+        }
     }
+
+    public Mono<STTScriptResponseDTO> createSTTResult(File file, Long themeId, Long scriptId, Long userId)  {
+
+        double time = audioChecker.checkMaxAudioDuration(file.getPath());
+        Long longTime = (long) time;
+
+        if (time != -1) {
+
+            Long remainingTime = usageTimeService.getRemainingTime(userId);
+
+            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+            }
+
+            Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(file);
+
+            return clovaResponseDtoMono
+                    .flatMap(clovaResponseDto -> {
+                        String totalText = clovaResponseDto.getFullText();
+                        // stt 길이에서 사용시간 차감
+                        long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
+                        log.info("STT 요청 시간: {}초", totalRealSeconds);
+                        usageTimeService.subUsageTimeByTimePerSecond(userId, longTime);
+
+
+                        Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
+                        return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
+
+                            List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
+                            // Script Entity 저장
+                            LocalTime totalExpectedTime = sentenceService.getTotalExpectedTime(sentenceAndRealTimeList);
+                            Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, scriptId, clovaResponseDto, totalExpectedTime);
+
+                            // Sentence Entity 저장
+                            return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
+
+                                // scriptId 저장
+                                long newScriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, newScriptId);
+
+                                // Redis 저장 로직
+                                saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+
+                                // 최종 클라이언트 반환 DTO
+                                return Mono.just(sttScriptResponseDTO);
+                            });
+                        });
+                    })
+                    .onErrorResume(e -> {
+                        // 예외 처리 로직 추가
+                        e.printStackTrace(); // 예외 로그 출력
+                        // 적절한 오류 메시지 반환
+                        return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                    });
+        } else {
+            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+        }
+    }
+
+    public Mono<STTScriptResponseDTO> createSTTResult(File file, Long themeId, Long userId) {
+
+        // 음성파일 길이 로그 출력
+
+        double time = audioChecker.checkMaxAudioDuration(file.getPath());
+
+        if (time != -1) {
+
+            Long remainingTime = usageTimeService.getRemainingTime(userId);
+
+            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+            }
+
+            Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(file);
+
+            return clovaResponseDtoMono
+                    .flatMap(clovaResponseDto -> {
+                        String totalText = clovaResponseDto.getFullText();
+                        // stt 길이에서 사용시간 차감
+                        long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
+                        log.info("STT 요청 시간: {}초", totalRealSeconds);
+
+                        usageTimeService.subUsageTimeByTimePerSecond(userId, totalRealSeconds);
+
+                        Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
+                        return paragraphDivideResponseDtoMono.flatMap(paragraphDivideResponseDto -> {
+
+                            List<AddSentenceInformationVO> sentenceAndRealTimeList = addRealTimeToSentenceService.addRealTimeToSentence(clovaResponseDto, paragraphDivideResponseDto);
+                            // Script Entity 저장
+                            LocalTime totalExpectedTime = sentenceService.getTotalExpectedTime(sentenceAndRealTimeList);
+                            Mono<SaveSTTScriptVO> saveSTTScriptVOMono = scriptService.saveSTTScriptVO(themeId, clovaResponseDto, totalExpectedTime);
+                            // Sentence Entity 저장
+                            return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
+
+                                // 생성된 scriptId 가져오기
+                                long scriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
+                                STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, scriptId);
+                                // Redis 저장 로직
+                                saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+
+                                // 최종 클라이언트 반환 DTO
+                                return Mono.just(sttScriptResponseDTO);
+                            });
+                        });
+                    })
+                    .onErrorResume(e -> {
+                        // 적절한 오류 메시지 반환
+                        return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                    });
+        } else {
+            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+        }
+    }
+
 
     // request 파일을 임시 저장하는 로직
     private File saveTempFile(STTRequestDto request) {
