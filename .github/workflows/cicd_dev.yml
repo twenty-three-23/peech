@@ -53,6 +53,8 @@ jobs:
         sentry.dsn: ${{ secrets.SENTRY_DSN_DEV }}
         app.version: ${{ secrets.APP_VERSION_DEV}}
         app.available: ${{ secrets.APP_AVAILABLE_DEV}}
+        ffmpeg.path: ${{ secrets.FFMPEG_PATH_DEV }}
+        ffprobe.path: ${{ secrets.FFPROBE_PATH_DEV }}
 
 
     # application.yml 파일 내용 확인
