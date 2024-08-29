@@ -2,6 +2,11 @@ app:
   version: ${APP_VERSION}
   available: ${APP_AVAILABLE}
 
+ffmpeg:
+  path: ${FFMPEG_PATH}
+ffprobe:
+  path: ${FFPROBE_PATH}
+
 jwt:
   secret:
     key: ${SECRET_KEY}
