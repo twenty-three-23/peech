@@ -99,6 +99,8 @@ public class ProcessSTTService {
                         // 적절한 오류 메시지 반환
                         return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
                     });
+        }else {
+            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
         }
     }
 
@@ -159,6 +161,8 @@ public class ProcessSTTService {
                         // 적절한 오류 메시지 반환
                         return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
                     });
+        }else {
+            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
         }
     }
 
