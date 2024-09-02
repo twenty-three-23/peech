@@ -168,26 +168,26 @@ public class ProcessSTTService {
 
     public Mono<STTScriptResponseDTO> createSTTResult(File file, Long themeId, Long scriptId, Long userId)  {
 
-        double time = audioChecker.checkMaxAudioDuration(file.getPath());
-        Long longTime = (long) time;
+//        double time = audioChecker.checkMaxAudioDuration(file.getPath());
+//        Long longTime = (long) time;
+//
+//        if (time != -1) {
+//
+//            Long remainingTime = usageTimeService.getRemainingTime(userId);
+//
+//            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+//                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+//            }
 
-        if (time != -1) {
+        Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(file);
 
-            Long remainingTime = usageTimeService.getRemainingTime(userId);
-
-            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
-            }
-
-            Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(file);
-
-            return clovaResponseDtoMono
-                    .flatMap(clovaResponseDto -> {
-                        String totalText = clovaResponseDto.getFullText();
-                        // stt 길이에서 사용시간 차감
-                        long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
-                        log.info("STT 요청 시간: {}초", totalRealSeconds);
-                        usageTimeService.subUsageTimeByTimePerSecond(userId, longTime);
+        return clovaResponseDtoMono
+                .flatMap(clovaResponseDto -> {
+                    String totalText = clovaResponseDto.getFullText();
+                    // stt 길이에서 사용시간 차감
+                    long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
+                    log.info("STT 요청 시간: {}초", totalRealSeconds);
+                    usageTimeService.subUsageTimeByTimePerSecond(userId, totalRealSeconds);
 
 
                         Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
@@ -220,24 +220,24 @@ public class ProcessSTTService {
                         // 적절한 오류 메시지 반환
                         return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
                     });
-        } else {
-            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
-        }
+//        } else {
+//            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+//        }
     }
 
     public Mono<STTScriptResponseDTO> createSTTResult(File file, Long themeId, Long userId) {
 
         // 음성파일 길이 로그 출력
 
-        double time = audioChecker.checkMaxAudioDuration(file.getPath());
-
-        if (time != -1) {
-
-            Long remainingTime = usageTimeService.getRemainingTime(userId);
-
-            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
-            }
+//        double time = audioChecker.checkMaxAudioDuration(file.getPath());
+//
+//        if (time != -1) {
+//
+//            Long remainingTime = usageTimeService.getRemainingTime(userId);
+//
+//            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+//                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+//            }
 
             Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(file);
 
@@ -276,9 +276,9 @@ public class ProcessSTTService {
                         // 적절한 오류 메시지 반환
                         return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
                     });
-        } else {
-            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
-        }
+//        } else {
+//            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+//        }
     }
 
 
