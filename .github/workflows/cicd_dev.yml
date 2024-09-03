@@ -3,7 +3,7 @@ name: Spring CI/CD with Gradle and Docker
 # 동작 조건 설정 : main 브랜치에 push 혹은 pull request가 발생할 경우 동작한다.
 on:
   push:
-    branches: [ "dev", "feature/TT-402" ]
+    branches: [ "dev"]
 
 permissions:
   contents: read
