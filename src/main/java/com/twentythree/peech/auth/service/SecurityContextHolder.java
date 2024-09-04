@@ -14,4 +14,12 @@ public class SecurityContextHolder {
 
         return new SecurityContextHolderDTO(userId, funnel);
     }
+
+    public static Long getUserId() {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
+        Long userId = jwtAuthentication.getUserId();
+
+        return userId;
+    }
 }
