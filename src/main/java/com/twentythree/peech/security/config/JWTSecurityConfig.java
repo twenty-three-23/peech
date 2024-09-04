@@ -12,13 +12,11 @@ import org.springframework.context.annotation.Configuration;
 public class JWTSecurityConfig {
 
     private final JWTUtils jwtUtils;
-    private final UserService userService;
     private final JWTUserDetailsService jwtUserDetailsService;
 
-    public JWTSecurityConfig(JWTUtils jwtUtils, JWTUserDetailsService jwtUserDetailsService, UserService userService) {
+    public JWTSecurityConfig(JWTUtils jwtUtils, JWTUserDetailsService jwtUserDetailsService) {
         this.jwtUtils = jwtUtils;
         this.jwtUserDetailsService = jwtUserDetailsService;
-        this.userService = userService;
     }
 
     @Bean
