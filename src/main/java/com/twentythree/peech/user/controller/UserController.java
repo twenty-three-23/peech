@@ -1,9 +1,10 @@
 package com.twentythree.peech.user.controller;
 
+import com.twentythree.peech.auth.service.SecurityContextHolder;
 import com.twentythree.peech.common.dto.response.WrappedResponseBody;
-import com.twentythree.peech.security.jwt.JWTAuthentication;
 import com.twentythree.peech.user.domain.UserFetcher;
 import com.twentythree.peech.user.domain.UserMapper;
+import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.value.AuthorizationServer;
 import com.twentythree.peech.user.domain.UserDomain;
@@ -19,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,12 +47,12 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "소셜로 회원 가입",
             description = "소셜 계정으로 회원 가입")
     @PostMapping("api/v1.1/user")
-    public ResponseEntity<WrappedResponseBody<UserIdTokenResponseDTO>> loginBySocial(@RequestBody LoginBySocialRequestDTO request) {
+    public ResponseEntity<WrappedResponseBody<UserIdTokenResponseDTO>> loginBySocial(@RequestBody LoginBySocialRequestDTO request, @RequestParam String funnel) {
 
         String token = request.getSocialToken();
         AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
-        LoginBySocial loginBySocial = userService.loginBySocial(token, authorizationServer);
+        LoginBySocial loginBySocial = userService.loginBySocial(token, authorizationServer, funnel);
         UserIdTokenResponseDTO userIdTokenResponseDTO = new UserIdTokenResponseDTO(loginBySocial.getAccessToken(), loginBySocial.getRefreshToken());
         log.info("{}", userIdTokenResponseDTO.getAccessToken());
         return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(loginBySocial.getResponseCode(), userIdTokenResponseDTO));
@@ -62,17 +61,15 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "로그인에 필요한 추가 정보를 입력 받는다",
             description = "gender는 꼭 입력 받지 않아도 된다.")
     @PatchMapping("api/v1.1/user")
-    public ResponseEntity<UserIdTokenResponseDTO> completeProfile(@RequestBody CompleteProfileRequestDTO request) {
+    public ResponseEntity<UserIdTokenResponseDTO> completeProfile(@RequestBody CompleteProfileRequestDTO request, @RequestParam String funnel) {
         if (request.getFirstName() == null || request.getLastName() == null || request.getBirth() == null || request.getNickName() == null ) {
             return ResponseEntity.badRequest().build();
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
 
-        Long userId = jwtAuthentication.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
         log.info("userId : {}", userId);
 
-        LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender());
+        LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender(), funnel);
 
         return ResponseEntity.status(200).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }
@@ -100,5 +97,14 @@ public class UserController implements SwaggerUserController{
 
         UserDomain userDomain = userService.deleteUser(userId);
         return new UserDeleteResponseDTO(userDomain.getDeleteAt());
+    }
+
+    @Operation(summary = "토큰 재발급")
+    @PostMapping("api/v1.1/user/reissue")
+    public AccessAndRefreshToken reissueToken(String refreshToken) {
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
+        String funnel = SecurityContextHolder.getContextHolder().getFunnel();
+
+        return userService.createNewToken(refreshToken, userId, funnel);
     }
 }

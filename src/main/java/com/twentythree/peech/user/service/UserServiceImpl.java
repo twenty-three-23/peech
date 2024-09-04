@@ -3,11 +3,16 @@ package com.twentythree.peech.user.service;
 import com.twentythree.peech.common.exception.Unauthorized;
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
+import com.twentythree.peech.common.utils.UserRoleConvertUtils;
+import com.twentythree.peech.security.exception.JWTAuthenticationException;
+import com.twentythree.peech.security.exception.LoginExceptionCode;
+import com.twentythree.peech.security.jwt.JWTAuthenticationToken;
 import com.twentythree.peech.usagetime.domain.UsageTimeEntity;
 import com.twentythree.peech.usagetime.repository.UsageTimeRepository;
 import com.twentythree.peech.user.client.AppleLoginClient;
 import com.twentythree.peech.user.client.KakaoLoginClient;
 import com.twentythree.peech.user.domain.*;
+import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.LoginBySocial;
 import com.twentythree.peech.user.dto.IdentityToken;
 import com.twentythree.peech.user.dto.KakaoAccount;
@@ -18,10 +23,13 @@ import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.validator.UserValidator;
 import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
 
 @RequiredArgsConstructor
@@ -64,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer) {
+    public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer, String funnel) {
 
         String userEmail = null;
 
@@ -109,8 +117,8 @@ public class UserServiceImpl implements UserService {
             Long userId = userMapper.saveUserDomain(userDomain);
             UserRole userRole = userDomain.getRole();
 
-            accessToken = jwtUtils.createAccessToken(userId, userRole);
-            refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+            accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
+            refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
 
         } else if (userValidator.existUserByEmail(userEmail)) {
             UserDomain userDomain = userFetcher.fetchUserByEmail(userEmail);
@@ -122,8 +130,8 @@ public class UserServiceImpl implements UserService {
                 responseCode = 200;
             }
 
-            accessToken = jwtUtils.createAccessToken(userId, userRole);
-            refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+            accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
+            refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
         } else {
             throw new RuntimeException("유저 생성에서 예상치 못한 문제가 생겼습니다.");
         }
@@ -142,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender) {
+    public LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender, String funnel) {
 
         Integer responseCode = 200;
 
@@ -152,8 +160,8 @@ public class UserServiceImpl implements UserService {
         UserRole userRole = userDomain.getRole();
 
 
-        String accessToken = jwtUtils.createAccessToken(userId, userRole);
-        String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+        String accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
+        String refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
         return new LoginBySocial(accessToken, refreshToken, responseCode);
     }
 
@@ -174,6 +182,25 @@ public class UserServiceImpl implements UserService {
         GetUserInformationResponseDTO getUserInformationResponse = new GetUserInformationResponseDTO(nickName);
 
         return getUserInformationResponse;
+    }
+
+    @Override
+    public AccessAndRefreshToken createNewToken(String refreshToken, Long userId, String funnel) {
+        try {
+            JWTAuthenticationToken authentication = (JWTAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+
+            GrantedAuthority Authority = authentication.getAuthorities()
+                    .stream().findFirst().orElseThrow(() -> new NoSuchElementException("유저의 권한이 부여되지 않았습니다"));
+
+            String newAccessToken = jwtUtils.createAccessToken(userId, UserRoleConvertUtils
+                    .convertStringToUserRole(Authority.getAuthority()), funnel);
+            String newRefreshToken = jwtUtils.createRefreshToken(userId, UserRoleConvertUtils
+                    .convertStringToUserRole(Authority.getAuthority()), funnel);
+
+            return new AccessAndRefreshToken(newAccessToken, newRefreshToken);
+        }catch (Exception e){
+            throw new JWTAuthenticationException(LoginExceptionCode.LOGIN_EXCEPTION_CODE);
+        }
     }
 
     @Override

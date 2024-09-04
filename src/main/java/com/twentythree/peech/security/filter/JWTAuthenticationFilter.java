@@ -57,6 +57,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                         claims = jwtUtils.validateAccessToken(jwtToken);
                     }
                     Long userId = claims.get("userId", Long.class);
+                    String funnel = claims.get("site", String.class);
                     List<GrantedAuthority> authorities = createAuthorities(claims);
 
                     if (userId != null && !authorities.isEmpty()) {
@@ -65,7 +66,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
                         Long userDetailsId = userDetails.getUserEntity().getId();
 
-                        JWTAuthentication jwtAuthentication = new JWTAuthentication(userDetailsId);
+                        JWTAuthentication jwtAuthentication = new JWTAuthentication(userDetailsId, funnel);
 
                         JWTAuthenticationToken authenticationToken = new JWTAuthenticationToken(jwtAuthentication, authorities);
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
