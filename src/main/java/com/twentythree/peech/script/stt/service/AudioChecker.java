@@ -35,7 +35,7 @@ public class AudioChecker {
 
     public boolean checkRemainingAudioDuration(double duration, Long remainingTime) {
         try {
-            return duration <= remainingTime;
+            return duration > remainingTime;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
