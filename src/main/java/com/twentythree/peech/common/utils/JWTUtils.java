@@ -77,7 +77,7 @@ public class JWTUtils {
                 compact();
     }
 
-    public String createAccessToken(Long userId, UserRole userRole) {
+    public String createAccessToken(Long userId, UserRole userRole, String site) {
         setExpirationDate();
 
         return Jwts.builder().
@@ -86,12 +86,13 @@ public class JWTUtils {
                 subject("AccessToken").
                 claim("userId", userId).
                 claim("userRole", userRole).
+                claim("site", site).
                 expiration(accessExpirationDate).
                 signWith(accessKey, Jwts.SIG.HS256).
                 compact();
     }
 
-    public String createRefreshToken(Long userId, UserRole userRole) {
+    public String createRefreshToken(Long userId, UserRole userRole, String site) {
         setExpirationDate();
 
         return Jwts.builder().
@@ -100,6 +101,7 @@ public class JWTUtils {
                 subject("RefreshToken").
                 claim("userId", userId).
                 claim("userRole", userRole).
+                claim("site", site).
                 expiration(refreshExpirationDate).
                 signWith(refreshKey, Jwts.SIG.HS256).
                 compact();
