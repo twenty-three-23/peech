@@ -1,9 +1,10 @@
 package com.twentythree.peech.user.controller;
 
+import com.twentythree.peech.auth.service.SecurityContextHolder;
 import com.twentythree.peech.common.dto.response.WrappedResponseBody;
-import com.twentythree.peech.security.jwt.JWTAuthentication;
 import com.twentythree.peech.user.domain.UserFetcher;
 import com.twentythree.peech.user.domain.UserMapper;
+import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.value.AuthorizationServer;
 import com.twentythree.peech.user.domain.UserDomain;
@@ -19,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,10 +65,8 @@ public class UserController implements SwaggerUserController{
         if (request.getFirstName() == null || request.getLastName() == null || request.getBirth() == null || request.getNickName() == null ) {
             return ResponseEntity.badRequest().build();
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
 
-        Long userId = jwtAuthentication.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
         log.info("userId : {}", userId);
 
         LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender(), funnel);
@@ -100,5 +97,14 @@ public class UserController implements SwaggerUserController{
 
         UserDomain userDomain = userService.deleteUser(userId);
         return new UserDeleteResponseDTO(userDomain.getDeleteAt());
+    }
+
+    @Operation(summary = "토큰 재발급")
+    @PostMapping("api/v1.1/user/reissue")
+    public AccessAndRefreshToken reissueToken(String refreshToken) {
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
+        String funnel = SecurityContextHolder.getContextHolder().getFunnel();
+
+        return userService.createNewToken(refreshToken, userId, funnel);
     }
 }

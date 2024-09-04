@@ -17,7 +17,7 @@ public class RequestLogInterceptor implements HandlerInterceptor {
         Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
         Long userId;
         try {
-            userId = SecurityContextHolder.getUserId();
+            userId = SecurityContextHolder.getContextHolder().getUserId();
         } catch (NullPointerException e) {
             userId = null;
         }

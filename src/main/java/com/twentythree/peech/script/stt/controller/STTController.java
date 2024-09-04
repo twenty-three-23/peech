@@ -24,7 +24,7 @@ public class STTController implements SwaggerSTTController {
     @PostMapping(value = "/api/v1/themes/{themeId}/scripts/speech/script", consumes = "multipart/form-data")
     @Override
     public STTScriptResponseDTO responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId) {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         return processSTTService.createSTTResult(request, themeId, userId).block();
     }
@@ -35,7 +35,7 @@ public class STTController implements SwaggerSTTController {
     @PostMapping(value = "/api/v1/themes/{themeId}/scripts/{scriptId}/speech/script", consumes = "multipart/form-data")
     @Override
     public STTScriptResponseDTO responseSTTResult(@ModelAttribute STTRequestDto request, @PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId) {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         return processSTTService.createSTTResult(request, themeId, scriptId, userId).block();
     }
@@ -43,7 +43,7 @@ public class STTController implements SwaggerSTTController {
     @PostMapping(value = "/web/api/v1/themes/{themeId}/scripts/{scriptId}/speech/script")
     public STTScriptResponseDTO responseSTTResult(@RequestBody STTRequest2DTO requestDto, @PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId) {
         try {
-            Long userId = SecurityContextHolder.getUserId();
+            Long userId = SecurityContextHolder.getContextHolder().getUserId();
             String base64 = requestDto.getFile();
             File file = FileUtils.createAudioFileFromBase64EncodedString(base64);
 
@@ -60,7 +60,7 @@ public class STTController implements SwaggerSTTController {
             description = "대본 입력없이 바로 음성녹음을 STTRequestDTO에 담아 요청하면 Processing과정을 거쳐 STTResultResponseDTO에 담아 응답한다.")
     @PostMapping(value = "/web/api/v1/themes/{themeId}/scripts/speech/script")
     public STTScriptResponseDTO responseSTTResult(@RequestBody STTRequest2DTO request, @PathVariable("themeId") Long themeId) {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
         String base64 = request.getFile();
         File file = FileUtils.createAudioFileFromBase64EncodedString(base64);
 

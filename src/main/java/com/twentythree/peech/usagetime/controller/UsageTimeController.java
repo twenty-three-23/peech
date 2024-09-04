@@ -18,7 +18,7 @@ public class UsageTimeController implements SwaggerUsageTimeController{
     @Override
     @GetMapping("api/v1/usage-time")
     public CheckRemainingTimeResponseDTO checkRemainingTime(Long audioTime) {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         return usageTimeService.checkRemainingTime(userId, audioTime);
     }
@@ -26,7 +26,7 @@ public class UsageTimeController implements SwaggerUsageTimeController{
     @Override
     @GetMapping("api/v1/remaining-time")
     public TextAndSecondResponseDTO getUsageTime() {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         return usageTimeService.getUsageTime(userId);
     }
