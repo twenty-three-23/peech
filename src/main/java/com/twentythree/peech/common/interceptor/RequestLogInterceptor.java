@@ -1,5 +1,6 @@
 package com.twentythree.peech.common.interceptor;
 
+import com.twentythree.peech.auth.dto.SecurityContextHolderDTO;
 import com.twentythree.peech.auth.service.SecurityContextHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,15 +17,20 @@ public class RequestLogInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
         Long userId;
+        String funnel;
         try {
-            userId = SecurityContextHolder.getContextHolder().getUserId();
+            SecurityContextHolderDTO contextHolder = SecurityContextHolder.getContextHolder();
+            userId = contextHolder.getUserId();
+            funnel = contextHolder.getFunnel();
+
         } catch (NullPointerException e) {
             userId = null;
+            funnel = "not found funnel";
         }
         String requestURI = request.getRequestURI();
         String uuid = UUID.randomUUID().toString();
 
-        logger.info("REQUEST LOG: [ User ID: {}, Request URI: {}, UUID: {} ]", userId, requestURI, uuid);
+        logger.info("REQUEST LOG: [ Funnel: {}, User ID: {}, Request URI: {}, UUID: {} ]", funnel, userId, requestURI, uuid);
         return true;
     }
 
