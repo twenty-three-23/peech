@@ -48,12 +48,12 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "소셜로 회원 가입",
             description = "소셜 계정으로 회원 가입")
     @PostMapping("api/v1.1/user")
-    public ResponseEntity<WrappedResponseBody<UserIdTokenResponseDTO>> loginBySocial(@RequestBody LoginBySocialRequestDTO request) {
+    public ResponseEntity<WrappedResponseBody<UserIdTokenResponseDTO>> loginBySocial(@RequestBody LoginBySocialRequestDTO request, @RequestParam String funnel) {
 
         String token = request.getSocialToken();
         AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
-        LoginBySocial loginBySocial = userService.loginBySocial(token, authorizationServer);
+        LoginBySocial loginBySocial = userService.loginBySocial(token, authorizationServer, funnel);
         UserIdTokenResponseDTO userIdTokenResponseDTO = new UserIdTokenResponseDTO(loginBySocial.getAccessToken(), loginBySocial.getRefreshToken());
         log.info("{}", userIdTokenResponseDTO.getAccessToken());
         return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(loginBySocial.getResponseCode(), userIdTokenResponseDTO));
@@ -62,7 +62,7 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "로그인에 필요한 추가 정보를 입력 받는다",
             description = "gender는 꼭 입력 받지 않아도 된다.")
     @PatchMapping("api/v1.1/user")
-    public ResponseEntity<UserIdTokenResponseDTO> completeProfile(@RequestBody CompleteProfileRequestDTO request) {
+    public ResponseEntity<UserIdTokenResponseDTO> completeProfile(@RequestBody CompleteProfileRequestDTO request, @RequestParam String funnel) {
         if (request.getFirstName() == null || request.getLastName() == null || request.getBirth() == null || request.getNickName() == null ) {
             return ResponseEntity.badRequest().build();
         }
@@ -72,7 +72,7 @@ public class UserController implements SwaggerUserController{
         Long userId = jwtAuthentication.getUserId();
         log.info("userId : {}", userId);
 
-        LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender());
+        LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender(), funnel);
 
         return ResponseEntity.status(200).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }

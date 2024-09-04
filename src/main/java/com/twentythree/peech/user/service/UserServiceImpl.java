@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer) {
+    public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer, String funnel) {
 
         String userEmail = null;
 
@@ -109,8 +109,8 @@ public class UserServiceImpl implements UserService {
             Long userId = userMapper.saveUserDomain(userDomain);
             UserRole userRole = userDomain.getRole();
 
-            accessToken = jwtUtils.createAccessToken(userId, userRole);
-            refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+            accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
+            refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
 
         } else if (userValidator.existUserByEmail(userEmail)) {
             UserDomain userDomain = userFetcher.fetchUserByEmail(userEmail);
@@ -122,8 +122,8 @@ public class UserServiceImpl implements UserService {
                 responseCode = 200;
             }
 
-            accessToken = jwtUtils.createAccessToken(userId, userRole);
-            refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+            accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
+            refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
         } else {
             throw new RuntimeException("유저 생성에서 예상치 못한 문제가 생겼습니다.");
         }
@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender) {
+    public LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender, String funnel) {
 
         Integer responseCode = 200;
 
@@ -152,8 +152,8 @@ public class UserServiceImpl implements UserService {
         UserRole userRole = userDomain.getRole();
 
 
-        String accessToken = jwtUtils.createAccessToken(userId, userRole);
-        String refreshToken = jwtUtils.createRefreshToken(userId, userRole);
+        String accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
+        String refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
         return new LoginBySocial(accessToken, refreshToken, responseCode);
     }
 

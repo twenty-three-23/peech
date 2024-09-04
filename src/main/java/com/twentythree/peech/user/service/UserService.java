@@ -16,8 +16,8 @@ public interface UserService {
     String createUserByDeviceId(String deviceId) throws UserAlreadyExistException;
     String reIssuanceUserToken(String deviceId);
     UserDomain deleteUser(Long userId);
-    LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer);
-    LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender);
+    LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer, String funnel);
+    LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender, String funnel);
     UserEntity existUserById(Long userId);
     GetUserInformationResponseDTO getUserInformation();
 }
