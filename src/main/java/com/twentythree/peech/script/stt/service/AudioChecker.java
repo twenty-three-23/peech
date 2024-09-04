@@ -26,7 +26,7 @@ public class AudioChecker {
         try {
             double duration = extractDuration.getDuration(filePath);
 
-            return duration <= remainingTime;
+            return duration > remainingTime;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
