@@ -5,6 +5,8 @@ import com.twentythree.peech.common.utils.FileUtils;
 import com.twentythree.peech.script.stt.dto.request.STTRequest2DTO;
 import com.twentythree.peech.script.stt.dto.request.STTRequestDto;
 import com.twentythree.peech.script.stt.dto.response.STTScriptResponseDTO;
+import com.twentythree.peech.script.stt.exception.STTException;
+import com.twentythree.peech.script.stt.exception.STTExceptionCode;
 import com.twentythree.peech.script.stt.service.ProcessSTTService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +54,7 @@ public class STTController implements SwaggerSTTController {
             return block;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR);
         }
     }
 

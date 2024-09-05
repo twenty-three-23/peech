@@ -2,6 +2,8 @@ package com.twentythree.peech.script.stt.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
+import com.twentythree.peech.script.stt.exception.STTException;
+import com.twentythree.peech.script.stt.exception.STTExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,7 +68,7 @@ public class RequestClovaSpeechApiService {
                                 .bodyToMono(ClovaResponseDto.class);
 
                 } catch (Exception e) {
-                        throw new IllegalArgumentException("Clova Speech API 요청에 실패했습니다.");
+                        throw new STTException(STTExceptionCode.FAIL_TO_REQUEST_CLOVA_SPEECH);
                 }
         }
 }
