@@ -128,7 +128,7 @@ public class ProcessSTTService {
                         // stt 길이에서 사용시간 차감
                         long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
                         log.info("STT 요청 시간: {}초", totalRealSeconds);
-                        usageTimeService.subUsageTimeByTimePerSecond(userId, request.time());
+                        usageTimeService.subUsageTimeByTimePerSecond(userId, totalRealSeconds);
 
 
                         Mono<ParagraphDivideResponseDto> paragraphDivideResponseDtoMono = Mono.fromFuture(createParagraghService.requestClovaParagraphApi(totalText));
