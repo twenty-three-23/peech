@@ -175,7 +175,7 @@ public class ProcessSTTService {
 
             Long remainingTime = usageTimeService.getRemainingTime(userId);
 
-            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+            if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
                 throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
             }
 
@@ -235,7 +235,7 @@ public class ProcessSTTService {
 
             Long remainingTime = usageTimeService.getRemainingTime(userId);
 
-            if (!audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
+            if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
                 throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
             }
 
