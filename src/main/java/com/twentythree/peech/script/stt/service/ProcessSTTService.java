@@ -9,6 +9,8 @@ import com.twentythree.peech.script.stt.dto.request.STTRequestDto;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
 import com.twentythree.peech.script.stt.dto.response.ParagraphDivideResponseDto;
 import com.twentythree.peech.script.stt.dto.response.STTScriptResponseDTO;
+import com.twentythree.peech.script.stt.exception.STTException;
+import com.twentythree.peech.script.stt.exception.STTExceptionCode;
 import com.twentythree.peech.usagetime.service.UsageTimeService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -59,7 +61,7 @@ public class ProcessSTTService {
             Long remainingTime = usageTimeService.getRemainingTime(userId);
 
             if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+                throw new STTException(STTExceptionCode.LACK_OF_REMAINING_TIME);
             }
 
             Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
@@ -100,7 +102,7 @@ public class ProcessSTTService {
                         return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
                     });
         }else {
-            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+            throw new STTException(STTExceptionCode.VOICE_LENGTH_TOO_LONG);
         }
     }
 
@@ -117,7 +119,7 @@ public class ProcessSTTService {
             Long remainingTime = usageTimeService.getRemainingTime(userId);
 
             if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+                throw new STTException(STTExceptionCode.LACK_OF_REMAINING_TIME);
             }
 
             Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(tempFile);
@@ -156,13 +158,17 @@ public class ProcessSTTService {
                         });
                     })
                     .onErrorResume(e -> {
-                        // 예외 처리 로직 추가
-                        e.printStackTrace(); // 예외 로그 출력
-                        // 적절한 오류 메시지 반환
-                        return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                        if(e instanceof STTException){
+                            return Mono.error(e);
+                        } else {
+                            // 예외 처리 로직 추가
+                            e.printStackTrace(); // 예외 로그 출력
+                            // 적절한 오류 메시지 반환
+                            return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                        }
                     });
         }else {
-            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+            throw new STTException(STTExceptionCode.VOICE_LENGTH_TOO_LONG);
         }
     }
 
@@ -176,7 +182,8 @@ public class ProcessSTTService {
             Long remainingTime = usageTimeService.getRemainingTime(userId);
 
             if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+                throw new STTException(STTExceptionCode.LACK_OF_REMAINING_TIME);
+                // 남은 시간 부족 에러
             }
 
         Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(file);
@@ -215,13 +222,17 @@ public class ProcessSTTService {
                         });
                     })
                     .onErrorResume(e -> {
+                        if(e instanceof STTException){
+                            return Mono.error(e);
+                        } else{
                         // 예외 처리 로직 추가
                         e.printStackTrace(); // 예외 로그 출력
                         // 적절한 오류 메시지 반환
                         return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                        }
                     });
         } else {
-            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+            throw new STTException(STTExceptionCode.VOICE_LENGTH_TOO_LONG);
         }
     }
 
@@ -236,7 +247,7 @@ public class ProcessSTTService {
             Long remainingTime = usageTimeService.getRemainingTime(userId);
 
             if (audioChecker.checkRemainingAudioDuration(time, remainingTime)) {
-                throw new IllegalStateException("STT 실행이 불가합니다. 남은 시간이 부족합니다.");
+                throw new STTException(STTExceptionCode.LACK_OF_REMAINING_TIME);
             }
 
             Mono<ClovaResponseDto> clovaResponseDtoMono = requestClovaSpeechApiService.requestClovaSpeechApi(file);
@@ -273,11 +284,17 @@ public class ProcessSTTService {
                         });
                     })
                     .onErrorResume(e -> {
-                        // 적절한 오류 메시지 반환
-                        return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                        if(e instanceof STTException){
+                            return Mono.error(e);
+                        } else{
+                            // 예외 처리 로직 추가
+                            e.printStackTrace(); // 예외 로그 출력
+                            // 적절한 오류 메시지 반환
+                            return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                        }
                     });
         } else {
-            throw new IllegalArgumentException("음성 녹음 길이가 초과되었습니다.");
+            throw new STTException(STTExceptionCode.VOICE_LENGTH_TOO_LONG);
         }
     }
 
