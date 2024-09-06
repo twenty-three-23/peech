@@ -98,8 +98,14 @@ public class ProcessSTTService {
                         });
                     })
                     .onErrorResume(e -> {
-                        // 적절한 오류 메시지 반환
-                        return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                        if(e instanceof STTException){
+                            return Mono.error(e);
+                        } else {
+                            // 예외 처리 로직 추가
+                            e.printStackTrace(); // 예외 로그 출력
+                            // 적절한 오류 메시지 반환
+                            return Mono.error(new RuntimeException("STT 결과 생성 중 오류가 발생했습니다.", e));
+                        }
                     });
         }else {
             throw new STTException(STTExceptionCode.VOICE_LENGTH_TOO_LONG);
