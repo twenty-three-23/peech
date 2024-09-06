@@ -28,6 +28,8 @@ ext {
     set('springCloudVersion', "2023.0.1")
 }
 
+
+
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
@@ -89,6 +91,11 @@ dependencies {
 
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // ffmpeg
+    implementation 'net.bramp.ffmpeg:ffmpeg:0.8.0'
+
+
 
 }
 

@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JWTAuthentication {
     Long userId;
+    String funnel;
 }

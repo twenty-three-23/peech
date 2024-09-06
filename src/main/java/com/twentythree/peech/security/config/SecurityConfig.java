@@ -3,7 +3,6 @@ package com.twentythree.peech.security.config;
 import com.twentythree.peech.security.filter.JWTAuthenticationFilter;
 import com.twentythree.peech.security.handler.JWTAuthAccessDeniedHandler;
 import com.twentythree.peech.security.handler.JWTAuthEntryPoint;
-import com.twentythree.peech.security.jwt.JWTAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

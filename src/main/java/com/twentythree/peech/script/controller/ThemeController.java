@@ -23,7 +23,7 @@ public class ThemeController implements SwaggerThemeInterface {
     @Override
     @PostMapping("/api/v1/theme")
     public ThemeIdResponseDTO saveTheme(@RequestBody ThemeTitleRequestDTO request) {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         Long themeId = themeService.saveTheme(userId, request.themeTitle());
 
@@ -33,7 +33,7 @@ public class ThemeController implements SwaggerThemeInterface {
     @Override
     @GetMapping("/api/v1/themes")
     public ThemesResponseDTO getThemes() {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         return themeService.getThemesByUserId(userId);
     }

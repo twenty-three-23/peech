@@ -1,6 +1,5 @@
 package com.twentythree.peech.script.controller;
 
-import com.twentythree.peech.auth.dto.UserIdDTO;
 import com.twentythree.peech.auth.service.SecurityContextHolder;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
@@ -10,7 +9,6 @@ import com.twentythree.peech.script.service.ScriptSentenceFacade;
 import com.twentythree.peech.script.service.ScriptService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -72,7 +70,7 @@ public class ScriptController implements SwaggerScriptInterface{
     @Override
     @PostMapping("/api/v1/themes/{themeId}/scripts/{scriptId}")
     public ModifyScriptResponseDTO modifyScript(@PathVariable Long themeId, @PathVariable Long scriptId, @RequestBody ModifiedScriptRequestDTO request) {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         return scriptService.modifyScriptService(request.getParagraphs(), scriptId, userId);
     }
@@ -80,7 +78,7 @@ public class ScriptController implements SwaggerScriptInterface{
     @Override
     @PutMapping("api/v1/themes/{themeId}/scripts/{scriptId}")
     public SaveScriptAndSentencesResponseDTO saveModifyScript(@PathVariable Long themeId,@PathVariable Long scriptId) {
-        Long userId = SecurityContextHolder.getUserId();
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
         return saveModifyScriptService.saveModifyScript(themeId, scriptId, userId);
     }
 

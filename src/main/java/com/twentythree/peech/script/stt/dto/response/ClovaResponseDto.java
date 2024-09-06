@@ -3,6 +3,8 @@ package com.twentythree.peech.script.stt.dto.response;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.twentythree.peech.script.stt.exception.STTException;
+import com.twentythree.peech.script.stt.exception.STTExceptionCode;
 import com.twentythree.peech.script.stt.utils.RealTimeUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +28,7 @@ public class ClovaResponseDto {
     @JsonProperty("totalRealTime")
     public LocalTime getTotalRealTime() {
         if(sentences == null || sentences.isEmpty()){
-            throw new IllegalArgumentException("단어가 존재하지 않습니다.");
+            throw new STTException(STTExceptionCode.NOT_EXIST_VOICE_CONTENT);
         }
         int last = sentences.size()-1;
 
