@@ -4,14 +4,14 @@ import java.time.LocalTime;
 
 public class ScriptUtils {
     public static LocalTime calculateExpectedTime(String text) {
+        final int DEFAULT_SPM = 355;
 
-        final float DEFAULT_TIME_PER_WORD_SECOND = 1.75F; //LocalTime.of(0,0,1, 750000000);
+        long count = text.chars().filter(ch -> ch == '.').count();
 
-        String[] words = text.split(" ");
-        int wordsCount = words.length;
+        String noSpaceText = text.replaceAll("[^가-힣]", "");
+        int SyllableFromText = noSpaceText.length();
+        float expectedTimeToSecond = (float) SyllableFromText / DEFAULT_SPM * 60 + count * 1;
 
-        float expectedTimeToSecond = wordsCount * DEFAULT_TIME_PER_WORD_SECOND;
-        expectedTimeToSecond /= 3f;
         LocalTime expectedTime = transferSeoondToLocalTime(expectedTimeToSecond);
 
         return expectedTime;
