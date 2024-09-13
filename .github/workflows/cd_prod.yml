@@ -104,7 +104,7 @@ jobs:
           echo "${{ secrets.DOCKERHUB_PASSWORD_PROD }}" | sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME_PROD }} --password-stdin
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME_PROD }}/github-actions-demo
           sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
-          sudo docker run --name github-actions-demo --rm -v logs:/logs -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-          sudo chmode logs 777
+          sudo docker run --name github-actions-demo --rm -v logs:/logs -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME_PROD }}/github-actions-demo
+          sudo chmod logs 777
           sudo docker system prune -f 
           EOF

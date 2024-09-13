@@ -14,9 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                // Todo : main 으로 pr할때 origin 설정하기
                 .allowedOriginPatterns(allowedOrigins)
-                .allowedMethods("GET", "POST", "PATCH", "PUT") // 허용할 HTTP method
+                .allowedMethods("GET", "POST", "PATCH", "PUT", "OPTIONS") // 허용할 HTTP method
                 .allowCredentials(true); // 쿠키 인증 요청 허용
     }
 }
