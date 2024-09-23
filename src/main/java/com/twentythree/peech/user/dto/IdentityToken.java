@@ -1,11 +1,14 @@
 package com.twentythree.peech.user.dto;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
+import java.security.PublicKey;
 import java.util.Objects;
 
 @Getter
@@ -17,16 +20,18 @@ public class IdentityToken {
     private IdentityTokenHeader identityTokenHeader;
     private IdentityTokenPayload identityTokenPayload;
 
-    public boolean isVerify(List<ApplePublicKey> publicKeys) {
-        String alg = identityTokenHeader.getAlg();
-        String kid = identityTokenHeader.getKid();
+    public boolean isVerify(String jwt, PublicKey publicKey) {
 
-        for (ApplePublicKey publicKey : publicKeys) {
-            if (publicKey.getKid().equals(alg) && publicKey.getAlg().equals(kid)) {
-                return true;
-            }
+        try {
+            Jws<Claims> jwsClaims = Jwts.parser()
+                    .setSigningKey(publicKey) // 공개 키 설정
+                    .build()
+                    .parseClaimsJws(jwt);
+        } catch (Exception e) {
+            throw new RuntimeException("토큰이 올바르지 못합니다.");
         }
-        return false;
+
+        return true;
     }
 
     @Override

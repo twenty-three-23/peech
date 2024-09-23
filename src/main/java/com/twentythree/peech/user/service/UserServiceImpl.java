@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
             ApplePublicKeyResponseDTO publicKeys = appleLoginClient.getPublicKeys();
 
-            if (identityToken.isVerify(publicKeys.getApplePublicKeys())) {
+            if (identityToken.isVerify(socialToken, publicKeys.getApplePublicKeyKey(identityToken.getIdentityTokenHeader()))) {
                 userEmail = identityToken.getIdentityTokenPayload().getEmail();
             } else {
                 throw new Unauthorized("애플로그인에서 토큰이 유효하지 않습니다.");
