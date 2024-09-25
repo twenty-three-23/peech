@@ -27,10 +27,11 @@ public class RequestLogInterceptor implements HandlerInterceptor {
             userId = null;
             funnel = "not found funnel";
         }
+        String httpMethod = request.getMethod();
         String requestURI = request.getRequestURI();
         String uuid = UUID.randomUUID().toString();
 
-        logger.info("REQUEST LOG: [ Funnel: {}, User ID: {}, Request URI: {}, UUID: {} ]", funnel, userId, requestURI, uuid);
+        logger.info("REQUEST LOG: [ Funnel: {}, User ID: {}, Http Method: {}, Request URI: {}, UUID: {} ]", funnel, userId, httpMethod, requestURI, uuid);
         return true;
     }
 
