@@ -20,7 +20,7 @@ public class AudioChecker {
             return duration < UsageConstantValue.MAX_AUDIO_TIME + UsageConstantValue.BUFFER_TIME ? duration : -1;
 
         } catch (Exception e) {
-            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR);
+            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR, e);
         }
     }
 
@@ -31,7 +31,7 @@ public class AudioChecker {
             return duration > remainingTime;
 
         } catch (Exception e) {
-            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR);
+            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR, e);
         }
     }
 
@@ -40,7 +40,7 @@ public class AudioChecker {
             return duration > remainingTime;
 
         } catch (Exception e) {
-            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR);
+            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR, e);
         }
     }
 }

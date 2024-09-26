@@ -12,7 +12,9 @@ public class STTException extends RuntimeException{
         this.sttExceptionCode = sttException;
     }
 
-    public String getErrorMessage() {
-        return sttExceptionCode.getMessage();
+    public STTException(STTExceptionCode sttException, Exception e){
+        super(sttException.getMessage(), e);
+        this.sttExceptionCode = sttException;
     }
+
 }
