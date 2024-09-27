@@ -33,7 +33,7 @@ public class BaseException {
     public ResponseEntity<ErrorDTO> baseExceptionHandler(Exception e) {
         log.error("에러 발생", e);
         ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
-        return new ResponseEntity<>(errorDTO, HttpStatus.valueOf(500));
+        return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(STTException.class)
