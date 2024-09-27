@@ -27,9 +27,7 @@ public class ClovaResponseDto {
 
     @JsonProperty("totalRealTime")
     public LocalTime getTotalRealTime() {
-        if(sentences == null || sentences.isEmpty()){
-            throw new STTException(STTExceptionCode.NOT_EXIST_VOICE_CONTENT);
-        }
+
         int last = sentences.size()-1;
 
         // 마지막 문장 가져오기

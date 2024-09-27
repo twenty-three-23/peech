@@ -68,7 +68,7 @@ public class RequestClovaSpeechApiService {
                                 .bodyToMono(ClovaResponseDto.class);
 
                 } catch (Exception e) {
-                        throw new STTException(STTExceptionCode.FAIL_TO_REQUEST_CLOVA_SPEECH);
+                        throw new STTException(STTExceptionCode.FAIL_TO_REQUEST_CLOVA_SPEECH, e);
                 }
         }
 }

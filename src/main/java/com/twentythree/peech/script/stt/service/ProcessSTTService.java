@@ -68,6 +68,12 @@ public class ProcessSTTService {
 
             return clovaResponseDtoMono
                     .flatMap(clovaResponseDto -> {
+                        List<ClovaResponseDto.Segment> sentences = clovaResponseDto.getSentences();
+
+                        if (sentences == null || sentences.isEmpty()) {
+                            return Mono.error(new STTException(STTExceptionCode.NOT_EXIST_VOICE_CONTENT));
+                        }
+
                         String totalText = clovaResponseDto.getFullText();
                         // stt 길이에서 사용시간 차감
                         long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
@@ -132,6 +138,12 @@ public class ProcessSTTService {
 
             return clovaResponseDtoMono
                     .flatMap(clovaResponseDto -> {
+                        List<ClovaResponseDto.Segment> sentences = clovaResponseDto.getSentences();
+
+                        if (sentences == null || sentences.isEmpty()) {
+                            return Mono.error(new STTException(STTExceptionCode.NOT_EXIST_VOICE_CONTENT));
+                        }
+
                         String totalText = clovaResponseDto.getFullText();
                         // stt 길이에서 사용시간 차감
                         long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
@@ -196,6 +208,12 @@ public class ProcessSTTService {
 
         return clovaResponseDtoMono
                 .flatMap(clovaResponseDto -> {
+                    List<ClovaResponseDto.Segment> sentences = clovaResponseDto.getSentences();
+
+                    if (sentences == null || sentences.isEmpty()) {
+                        return Mono.error(new STTException(STTExceptionCode.NOT_EXIST_VOICE_CONTENT));
+                    }
+
                     String totalText = clovaResponseDto.getFullText();
                     // stt 길이에서 사용시간 차감
                     long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();
@@ -260,6 +278,12 @@ public class ProcessSTTService {
 
             return clovaResponseDtoMono
                     .flatMap(clovaResponseDto -> {
+                        List<ClovaResponseDto.Segment> sentences = clovaResponseDto.getSentences();
+
+                        if (sentences == null || sentences.isEmpty()) {
+                            return Mono.error(new STTException(STTExceptionCode.NOT_EXIST_VOICE_CONTENT));
+                        }
+
                         String totalText = clovaResponseDto.getFullText();
                         // stt 길이에서 사용시간 차감
                         long totalRealSeconds = clovaResponseDto.getTotalRealTime().toSecondOfDay();

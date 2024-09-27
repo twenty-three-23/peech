@@ -44,17 +44,21 @@ public class STTController implements SwaggerSTTController {
 
     @PostMapping(value = "/web/api/v1/themes/{themeId}/scripts/{scriptId}/speech/script")
     public STTScriptResponseDTO responseSTTResult(@RequestBody STTRequest2DTO requestDto, @PathVariable("themeId") Long themeId, @PathVariable("scriptId") Long scriptId) {
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
+
         try {
-            Long userId = SecurityContextHolder.getContextHolder().getUserId();
             String base64 = requestDto.getFile();
             File file = FileUtils.createAudioFileFromBase64EncodedString(base64);
-
             STTScriptResponseDTO block = processSTTService.createSTTResult(file, themeId, scriptId, userId).block();
             file.delete();
             return block;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new STTException(STTExceptionCode.VOICE_FILE_PROCESSING_ERROR);
+            if(e instanceof STTException) {
+                throw (STTException) e;
+            } else {
+                throw e;
+            }
         }
     }
 
