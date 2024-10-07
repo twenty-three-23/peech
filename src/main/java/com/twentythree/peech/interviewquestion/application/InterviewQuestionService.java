@@ -26,4 +26,11 @@ public class InterviewQuestionService {
 
         return interviewQuestionDomain.getInterviewQuestions();
     }
+
+    public List<String> getInterviewQuestionsByScript(String scriptContent) {
+        InterviewQuestionDomain interviewQuestionDomain = InterviewQuestionDomain.of(0L, scriptContent, null);
+        interviewQuestionDomain = interviewQuestionPredictor.predictInterviewQuestion(interviewQuestionDomain);
+
+        return interviewQuestionDomain.getInterviewQuestions();
+    }
 }
