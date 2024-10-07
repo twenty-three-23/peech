@@ -4,6 +4,7 @@ import com.twentythree.peech.common.exception.Unauthorized;
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.common.utils.UserRoleConvertUtils;
+import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.security.exception.JWTAuthenticationException;
 import com.twentythree.peech.security.exception.LoginExceptionCode;
 import com.twentythree.peech.security.jwt.JWTAuthenticationToken;
@@ -20,6 +21,7 @@ import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
+import com.twentythree.peech.script.validator.ThemeValidator;
 import com.twentythree.peech.user.validator.UserValidator;
 import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +51,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserValidator userValidator;
     private final JWTUtils jwtUtils;
+    private final ThemeRepository themeRepository;
+    private final ThemeValidator themeValidator;
 
 
     @Override
@@ -173,8 +177,7 @@ public class UserServiceImpl implements UserService {
 
     public GetUserInformationResponseDTO getUserInformation() {
 
-        // TODO context holder에서 id 가져옴
-        Long userId = 1L;
+        Long userId = com.twentythree.peech.auth.service.SecurityContextHolder.getContextHolder().getUserId();
 
         UserDomain userDomain = userFetcher.fetchUser(userId);
         String nickName = userDomain.getNickName();

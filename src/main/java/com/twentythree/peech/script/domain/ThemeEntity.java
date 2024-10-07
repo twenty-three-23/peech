@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ThemeEntity extends BaseTimeEntity {
 
+    static final String DEFAULT_THEME_TITLE = "default";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "theme_id")
@@ -36,6 +38,10 @@ public class ThemeEntity extends BaseTimeEntity {
 
     public static ThemeEntity of(UserEntity userEntity, String themeTitle) {
         return new ThemeEntity(userEntity, themeTitle);
+    }
+
+    public static ThemeEntity defaultOf(UserEntity userEntity) {
+        return new ThemeEntity(userEntity, DEFAULT_THEME_TITLE);
     }
 
 }
