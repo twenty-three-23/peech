@@ -175,9 +175,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
     }
 
-    public GetUserInformationResponseDTO getUserInformation() {
-
-        Long userId = com.twentythree.peech.auth.service.SecurityContextHolder.getContextHolder().getUserId();
+    public GetUserInformationResponseDTO getUserInformation(Long userId) {
 
         UserDomain userDomain = userFetcher.fetchUser(userId);
         String nickName = userDomain.getNickName();

@@ -81,7 +81,8 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "토큰으로 유저 정보 조회")
     @GetMapping("api/v1.1/user")
     public GetUserInformationResponseDTO getUserInformation() {
-        return userService.getUserInformation();
+        Long userId = SecurityContextHolder.getUserId();
+        return userService.getUserInformation(userId);
     }
 
     @Operation(summary = "유저 토큰 재발급",

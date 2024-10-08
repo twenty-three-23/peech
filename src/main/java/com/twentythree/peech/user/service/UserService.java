@@ -19,6 +19,6 @@ public interface UserService {
     LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer, String funnel);
     LoginBySocial completeProfile(Long userId, String firstName, String lastName, String nickName, LocalDate birth, UserGender gender, String funnel);
     UserEntity existUserById(Long userId);
-    GetUserInformationResponseDTO getUserInformation();
+    GetUserInformationResponseDTO getUserInformation(Long userId);
     AccessAndRefreshToken createNewToken(String refreshToken, Long userId, String funnel);
 }
