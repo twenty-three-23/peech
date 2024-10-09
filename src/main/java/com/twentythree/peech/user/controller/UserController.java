@@ -2,6 +2,7 @@ package com.twentythree.peech.user.controller;
 
 import com.twentythree.peech.auth.service.SecurityContextHolder;
 import com.twentythree.peech.common.dto.response.WrappedResponseBody;
+import com.twentythree.peech.script.service.ThemeService;
 import com.twentythree.peech.user.domain.UserFetcher;
 import com.twentythree.peech.user.domain.UserMapper;
 import com.twentythree.peech.user.dto.AccessAndRefreshToken;
@@ -34,6 +35,7 @@ public class UserController implements SwaggerUserController{
     private final UserMapper userMapper;
     private final UserFetcher userFetcher;
     private final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final ThemeService themeService;
 
     @Operation(summary = "유저 가입",
             description = "deviceId를 RequestBody에 담아 요청하면 새로운 유저를 생성하고 생성된 UserId를 응답한다.")
@@ -69,6 +71,7 @@ public class UserController implements SwaggerUserController{
         Long userId = SecurityContextHolder.getContextHolder().getUserId();
         log.info("userId : {}", userId);
 
+
         LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender(), funnel);
 
         return ResponseEntity.status(200).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
@@ -77,7 +80,8 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "토큰으로 유저 정보 조회")
     @GetMapping("api/v1.1/user")
     public GetUserInformationResponseDTO getUserInformation() {
-        return userService.getUserInformation();
+        Long userId = SecurityContextHolder.getUserId();
+        return userService.getUserInformation(userId);
     }
 
     @Operation(summary = "유저 토큰 재발급",
@@ -92,8 +96,7 @@ public class UserController implements SwaggerUserController{
     @Operation(summary = "유저 삭제")
     @DeleteMapping("api/v1.1/user")
     public UserDeleteResponseDTO deleteUser() {
-        // TODO 유저 토큰에서 userId 가져오는 코드
-        Long userId = 123L; // 임시 유저
+        Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         UserDomain userDomain = userService.deleteUser(userId);
         return new UserDeleteResponseDTO(userDomain.getDeleteAt());

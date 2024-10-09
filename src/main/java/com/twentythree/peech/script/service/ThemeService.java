@@ -3,10 +3,12 @@ package com.twentythree.peech.script.service;
 import com.twentythree.peech.script.domain.ThemeEntity;
 import com.twentythree.peech.script.domain.VersionEntity;
 import com.twentythree.peech.script.dto.ThemeDTO;
+import com.twentythree.peech.script.dto.response.ThemeIdResponseDTO;
 import com.twentythree.peech.script.dto.response.ThemesResponseDTO;
 import com.twentythree.peech.script.repository.ThemeRepository;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
+import com.twentythree.peech.script.validator.ThemeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.List;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ThemeValidator themeValidator;
     private final UserRepository userRepository;
 
     public Long saveTheme(Long userId, String themeTitle) {
@@ -50,5 +53,24 @@ public class ThemeService {
         }
 
         return new ThemesResponseDTO(themesDTO);
+    }
+
+
+    public ThemeIdResponseDTO getThemeByUserId(Long userId) {
+
+        if(themeRepository.findThemeIdByUserId(userId) == null) {
+            throw new IllegalArgumentException("생성된 기본폴더가 존재하지 않습니다.");
+        }
+
+        return new ThemeIdResponseDTO(themeRepository.findThemeIdByUserId(userId));
+    }
+
+    public void createDefaultFolder(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        if(themeValidator.existThemeById(userId)){
+            throw new IllegalArgumentException("이미 기본 폴더가 생성되었습니다.");
+        }
+        themeRepository.save(ThemeEntity.defaultOf(userEntity));
     }
 }
