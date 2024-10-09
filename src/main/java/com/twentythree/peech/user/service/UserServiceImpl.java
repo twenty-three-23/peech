@@ -4,7 +4,7 @@ import com.twentythree.peech.common.exception.Unauthorized;
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.common.utils.UserRoleConvertUtils;
-import com.twentythree.peech.script.repository.ThemeRepository;
+import com.twentythree.peech.script.service.ThemeService;
 import com.twentythree.peech.security.exception.JWTAuthenticationException;
 import com.twentythree.peech.security.exception.LoginExceptionCode;
 import com.twentythree.peech.security.jwt.JWTAuthenticationToken;
@@ -21,7 +21,6 @@ import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
-import com.twentythree.peech.script.validator.ThemeValidator;
 import com.twentythree.peech.user.validator.UserValidator;
 import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
@@ -45,14 +44,13 @@ public class UserServiceImpl implements UserService {
     private final UserCreator userCreator;
     private final UserFetcher userFetcher;
     private final UserDeleter userDeleter;
+    private final ThemeService themeService;
 
     private final KakaoLoginClient kakaoLoginClient;
     private final AppleLoginClient appleLoginClient;
 
     private final UserValidator userValidator;
     private final JWTUtils jwtUtils;
-    private final ThemeRepository themeRepository;
-    private final ThemeValidator themeValidator;
 
 
     @Override
@@ -166,6 +164,10 @@ public class UserServiceImpl implements UserService {
 
         String accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
         String refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
+
+        // 회원 생성이 완료되면 해당 회원의 기본 폴더를 생성
+        themeService.createDefaultFolder(userId);
+
         return new LoginBySocial(accessToken, refreshToken, responseCode);
     }
 

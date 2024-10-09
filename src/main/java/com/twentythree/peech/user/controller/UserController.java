@@ -73,7 +73,6 @@ public class UserController implements SwaggerUserController{
 
 
         LoginBySocial accessAndRefreshToken = userService.completeProfile(userId,request.getFirstName(), request.getLastName(), request.getNickName(), request.getBirth(), request.getGender(), funnel);
-        themeService.createDefaultFolder(userId);
 
         return ResponseEntity.status(200).body(new UserIdTokenResponseDTO(accessAndRefreshToken.getAccessToken(), accessAndRefreshToken.getRefreshToken()));
     }
