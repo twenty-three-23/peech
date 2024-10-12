@@ -87,4 +87,9 @@ public class ScriptController implements SwaggerScriptInterface{
     public ParagraphsResponseDTO getParagraphsByScriptId(Long themeId, Long scriptId) {
         return scriptService.getParagraphsByScriptId(scriptId);
     }
+
+    @GetMapping("api/v2/theme/{themeId}/scripts")
+    public HistoryListResponseDTO getScriptList(@PathVariable Long themeId){
+        return scriptService.getScriptByThemeId(themeId);
+    }
 }

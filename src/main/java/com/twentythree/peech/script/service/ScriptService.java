@@ -6,10 +6,7 @@ import com.twentythree.peech.script.cache.CacheService;
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.*;
-import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
-import com.twentythree.peech.script.dto.response.MinorScriptsResponseDTO;
-import com.twentythree.peech.script.dto.response.ModifyScriptResponseDTO;
-import com.twentythree.peech.script.dto.response.ParagraphsResponseDTO;
+import com.twentythree.peech.script.dto.response.*;
 import com.twentythree.peech.script.repository.*;
 import com.twentythree.peech.script.repository.VersionRepository;
 import com.twentythree.peech.script.stt.dto.SaveSTTScriptVO;
@@ -381,5 +378,17 @@ public class ScriptService {
     public ScriptEntity getMinorScriptDetail(Long themeId, Long majorVersion, Long minorVersion) {
 
         return scriptRepository.findMinorScriptDetailByThemeIAndMajorVersionAndMinorVersion(themeId, majorVersion, minorVersion);
+    }
+
+    public HistoryListResponseDTO getScriptByThemeId(Long themeId) {
+        List<ScriptDTO> scripts = new ArrayList<>();
+
+        List<ScriptEntity> scriptEntityList = scriptRepository.findScriptByThemeId(themeId);
+
+        for (ScriptEntity script : scriptEntityList) {
+            scripts.add(new ScriptDTO(script.getScriptId(), script.getScriptContent(), script.getCreatedAt()));
+        }
+
+        return new HistoryListResponseDTO(scripts);
     }
 }
