@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class UserCreator {
         return UserDomain.ofEmail(authorizationServer, email, UserRole.ROLE_COMMON, UsageConstantValue.DEFAULT_USAGE_TIME, UsageConstantValue.DEFAULT_USAGE_TIME, signUpFinished);
     }
 
-    public UserDomain completeUser(UserDomain userDomain,  AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, UserRole role, UserStatus userStatus, SignUpFinished signUpFinished, LocalDate deleteAt) {
+    public UserDomain completeUser(UserDomain userDomain,  AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, UserRole role, UserStatus userStatus, SignUpFinished signUpFinished, LocalDateTime deleteAt) {
         if (userValidator.NickNameIsNotDuplicated(nickName) && userDomain.getUserStatus() != UserStatus.DELETE && userStatus != UserStatus.DELETE) {
             userDomain.setUser(authorizationServer, firstName, lastName, birth, gender, email, nickName, role, userStatus, signUpFinished, deleteAt);
         } else {
