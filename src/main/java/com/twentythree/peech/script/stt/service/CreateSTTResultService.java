@@ -1,6 +1,7 @@
 
 package com.twentythree.peech.script.stt.service;
 
+import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.dto.NowStatus;
 import com.twentythree.peech.script.stt.dto.AddSentenceInformationVO;
@@ -69,7 +70,7 @@ public class CreateSTTResultService {
                             ((localTime, localTime2) -> localTime.plusHours(localTime2.getHour())
                                     .plusMinutes(localTime2.getMinute()).plusSeconds(localTime2.getSecond()).plusNanos(localTime2.getNano())));
 
-            String result = measurementSpeedResult(realTimePerParagraph, expectedTimePerParagraph);
+            String result = ScriptUtils.measurementSpeedResult(realTimePerParagraph, expectedTimePerParagraph);
 
             STTParagraphDTO sttParagraphDTO = new STTParagraphDTO(sentenceEntry.getKey(), sentenceEntry.getKey(), result,
                     realTimePerParagraph,startTime, endTime, NowStatus.REALTIME, sentenceDTOList);
@@ -77,25 +78,6 @@ public class CreateSTTResultService {
         }
 
         return new STTScriptResponseDTO(scriptId, clovaResponseDto.getTotalRealTime(), paragraphList);
-    }
-
-    private String measurementSpeedResult(LocalTime realTimePerParagraph, LocalTime expectedTimePerParagraph) {
-
-        int realTimePerSecond = realTimePerParagraph.toSecondOfDay();
-        int expectedTimePerSecond = expectedTimePerParagraph.toSecondOfDay();
-
-        double bias = realTimePerSecond * 0.1;
-
-        int lowerBound = (int) Math.round(realTimePerSecond - bias);
-        int upperBound = (int) Math.round(realTimePerSecond + bias);
-
-        if (expectedTimePerSecond >= lowerBound && expectedTimePerSecond <= upperBound) {
-            return "적정";
-        } else if ( lowerBound > expectedTimePerSecond) {
-            return "느림";
-        } else {
-            return "빠름";
-        }
     }
 }
 

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 
@@ -145,7 +146,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDomain deleteUser(Long userId) {
         UserDomain userDomain = userFetcher.fetchUser(userId);
-        LocalDate deleteAt = userDeleter.deleteUser(userDomain);
+        LocalDateTime deleteAt = userDeleter.deleteUser(userDomain);
         userMapper.saveUserDomain(userDomain);
         return userDomain;
     }

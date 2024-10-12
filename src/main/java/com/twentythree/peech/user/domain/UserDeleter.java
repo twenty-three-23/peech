@@ -3,15 +3,15 @@ package com.twentythree.peech.user.domain;
 import com.twentythree.peech.common.utils.TimeUtils;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class UserDeleter {
 
-    public LocalDate deleteUser(UserDomain userDomain) {
+    public LocalDateTime deleteUser(UserDomain userDomain) {
         userDomain.changeUserStatusToDelete();
 
-        LocalDate nowUTC = TimeUtils.CreateNowUTC();
+        LocalDateTime nowUTC = TimeUtils.CreateNowUTC();
 
         return userDomain.setDeleteAt(nowUTC);
     }

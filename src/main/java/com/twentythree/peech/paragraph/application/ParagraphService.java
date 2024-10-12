@@ -1,15 +1,22 @@
 package com.twentythree.peech.paragraph.application;
 
+import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.paragraph.domain.KeywordExtractor;
 import com.twentythree.peech.paragraph.domain.ParagraphFetcher;
 import com.twentythree.peech.paragraph.domain.ParagraphsDomain;
+import com.twentythree.peech.paragraph.domain.ParagraphsInformationDomain;
+import com.twentythree.peech.paragraph.dto.HistoryParagraphDTO;
 import com.twentythree.peech.paragraph.dto.KeyWordsByParagraph;
+import com.twentythree.peech.paragraph.dto.response.HistoryDetailResponseDTO;
 import com.twentythree.peech.paragraph.valueobject.Paragraph;
+import com.twentythree.peech.paragraph.valueobject.ParagraphInformation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +41,24 @@ public class ParagraphService {
             keyWordsByParagraphs.add(KeyWordsByParagraph.of(paragraph.getParagraphOrder(), keyWords));
         }
         return keyWordsByParagraphs;
+    }
+
+    public HistoryDetailResponseDTO getScriptDetail(Long scriptId) {
+        ParagraphsInformationDomain paragraphsInformationDomain = paragraphFetcher.fetchParagraphsInformation(scriptId);
+        List<ParagraphInformation> paragraphInformations = paragraphsInformationDomain.getParagraphInformations();
+        LocalTime totalRealTime = LocalTime.of(0, 0, 0);
+
+        List<HistoryParagraphDTO> historyParagraphs = new ArrayList<>();
+
+        for(ParagraphInformation paragraphInformation : paragraphInformations) {
+            String measurement = ScriptUtils.measurementSpeedResult(paragraphInformation.getParagraphRealTime(),
+                    paragraphInformation.getParagraphExpectedTime());
+            totalRealTime = ScriptUtils.sumLocalTime(totalRealTime, paragraphInformation.getParagraphRealTime());
+
+            historyParagraphs.add(new HistoryParagraphDTO(paragraphInformation.getParagraphOrder(), measurement,
+                    paragraphInformation.getParagraphRealTime(), paragraphInformation.getParagraphContent()));
+        }
+
+        return new HistoryDetailResponseDTO(totalRealTime, historyParagraphs);
     }
 }

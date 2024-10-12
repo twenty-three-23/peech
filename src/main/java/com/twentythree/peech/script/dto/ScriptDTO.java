@@ -1,18 +1,20 @@
 package com.twentythree.peech.script.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+
 @AllArgsConstructor
-public class MajorScriptDTO {
+@NoArgsConstructor
+public class ScriptDTO {
 
     private Long scriptId;
-    private Long majorVersion;
     private String scriptContent;
     private LocalDateTime createdAt;
-    private int minorScriptsCount;
 
 }
