@@ -1,6 +1,7 @@
 package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.auth.service.SecurityContextHolder;
+import com.twentythree.peech.script.dto.request.ExpectedTimeRequestDTO;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
 import com.twentythree.peech.script.dto.response.*;
@@ -91,5 +92,10 @@ public class ScriptController implements SwaggerScriptInterface{
     @GetMapping("api/v2/theme/{themeId}/scripts")
     public HistoryListResponseDTO getScriptList(@PathVariable Long themeId){
         return scriptService.getScriptByThemeId(themeId);
+    }
+
+    @GetMapping("api/v2/script/expected-time")
+    public ScriptExpectedTimeDTO getExpectedTimeWithFullScript(@RequestBody ExpectedTimeRequestDTO request){
+        return scriptService.getParagraphExpectedTime(request.getFullScript());
     }
 }

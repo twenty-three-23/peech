@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@Data
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ParagraphDivideResponseDto {
 
@@ -17,7 +18,7 @@ public class ParagraphDivideResponseDto {
     private Result result;
 
     @Getter
-    @Data
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Result {
 
