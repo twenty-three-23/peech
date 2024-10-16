@@ -5,8 +5,10 @@ import com.twentythree.peech.script.dto.request.ThemeTitleRequestDTO;
 import com.twentythree.peech.script.dto.response.ThemeIdResponseDTO;
 import com.twentythree.peech.script.dto.response.ThemesResponseDTO;
 import com.twentythree.peech.script.service.ThemeService;
+import com.twentythree.peech.security.jwt.JWTAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,5 +38,10 @@ public class ThemeController implements SwaggerThemeInterface {
         Long userId = SecurityContextHolder.getContextHolder().getUserId();
 
         return themeService.getThemesByUserId(userId);
+    }
+
+    @GetMapping("api/v2/theme")
+    public ThemeIdResponseDTO getTheme(@AuthenticationPrincipal JWTAuthentication jwtAuthentication) {
+        return themeService.getThemeByUserId(jwtAuthentication.getUserId());
     }
 }

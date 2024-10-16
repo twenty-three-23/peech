@@ -3,7 +3,7 @@ package com.twentythree.peech.script.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -11,7 +11,7 @@ public class ThemeDTO {
 
     private Long themeId;
     private String themeTitle;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     private int majorVersionCnt;
 
 }

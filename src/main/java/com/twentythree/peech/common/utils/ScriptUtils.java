@@ -1,6 +1,7 @@
 package com.twentythree.peech.common.utils;
 
 import java.time.LocalTime;
+import java.util.List;
 
 public class ScriptUtils {
     public static LocalTime calculateExpectedTime(String text) {
@@ -15,6 +16,17 @@ public class ScriptUtils {
         LocalTime expectedTime = transferSeoondToLocalTime(expectedTimeToSecond);
 
         return expectedTime;
+    }
+
+    public static LocalTime calculateParagraphTime(List<String> paragraph) {
+        LocalTime paragraphExpectedTime = LocalTime.of(0, 0, 0, 0);
+
+        for(String sentence : paragraph) {
+            LocalTime sentenceExpectedTime = calculateExpectedTime(sentence);
+            paragraphExpectedTime = sumLocalTime(paragraphExpectedTime, sentenceExpectedTime);
+        }
+
+        return paragraphExpectedTime;
     }
 
     public static LocalTime transferSeoondToLocalTime(float time) {
@@ -36,6 +48,25 @@ public class ScriptUtils {
                 .plusHours(time2.getHour());
 
         return expectedTime;
+    }
+
+    public static String measurementSpeedResult(LocalTime realTimePerParagraph, LocalTime expectedTimePerParagraph) {
+
+        int realTimePerSecond = realTimePerParagraph.toSecondOfDay();
+        int expectedTimePerSecond = expectedTimePerParagraph.toSecondOfDay();
+
+        double bias = expectedTimePerSecond * 0.1;
+
+        int lowerBound = (int) Math.round(expectedTimePerSecond - bias);
+        int upperBound = (int) Math.round(expectedTimePerSecond + bias);
+
+        if (realTimePerSecond >= lowerBound && realTimePerSecond <= upperBound) {
+            return "적정";
+        } else if ( realTimePerSecond > upperBound) {
+            return "느림";
+        } else {
+            return "빠름";
+        }
     }
 
 }

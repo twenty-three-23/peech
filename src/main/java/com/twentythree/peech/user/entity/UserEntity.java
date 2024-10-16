@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -63,7 +64,7 @@ public class UserEntity extends BaseTimeEntity {
     private SignUpFinished signUpFinished;
     
     @Column(name = "delete_at")
-    private LocalDate deleteAt;
+    private LocalDateTime deleteAt;
 
 
     public UserEntity(String device_id) {

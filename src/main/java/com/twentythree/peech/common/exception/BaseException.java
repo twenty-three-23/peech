@@ -38,8 +38,19 @@ public class BaseException {
 
     @ExceptionHandler(STTException.class)
     public ResponseEntity<ErrorDTO> sttExceptionHandler(STTException e) {
-        log.error("STT 에러 발생", e);
-        ErrorDTO errorDTO = new ErrorDTO(e.getErrorMessage());
-        return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        Throwable cause = e.getCause();
+
+        if(cause != null){
+            log.error("STT 에러 예외 발생 원인 = {} ", cause.getMessage());
+            log.error("STT 에러 발생 메시지 = {}", e.getMessage());
+
+            return new ResponseEntity<>(new ErrorDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } else {
+            log.error("잘못된 유저 사용으로 발생한 에러");
+            log.error("STT 에러 발생 메시지 = {}", e.getMessage());
+        }
+        ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 }

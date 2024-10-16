@@ -4,6 +4,7 @@ import com.twentythree.peech.common.exception.Unauthorized;
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.common.utils.UserRoleConvertUtils;
+import com.twentythree.peech.script.service.ThemeService;
 import com.twentythree.peech.security.exception.JWTAuthenticationException;
 import com.twentythree.peech.security.exception.LoginExceptionCode;
 import com.twentythree.peech.security.jwt.JWTAuthenticationToken;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 
@@ -43,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final UserCreator userCreator;
     private final UserFetcher userFetcher;
     private final UserDeleter userDeleter;
+    private final ThemeService themeService;
 
     private final KakaoLoginClient kakaoLoginClient;
     private final AppleLoginClient appleLoginClient;
@@ -143,7 +146,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDomain deleteUser(Long userId) {
         UserDomain userDomain = userFetcher.fetchUser(userId);
-        LocalDate deleteAt = userDeleter.deleteUser(userDomain);
+        LocalDateTime deleteAt = userDeleter.deleteUser(userDomain);
         userMapper.saveUserDomain(userDomain);
         return userDomain;
     }
@@ -162,6 +165,10 @@ public class UserServiceImpl implements UserService {
 
         String accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
         String refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
+
+        // 회원 생성이 완료되면 해당 회원의 기본 폴더를 생성
+        themeService.createDefaultFolder(userId);
+
         return new LoginBySocial(accessToken, refreshToken, responseCode);
     }
 
@@ -171,10 +178,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
     }
 
-    public GetUserInformationResponseDTO getUserInformation() {
-
-        // TODO context holder에서 id 가져옴
-        Long userId = 1L;
+    public GetUserInformationResponseDTO getUserInformation(Long userId) {
 
         UserDomain userDomain = userFetcher.fetchUser(userId);
         String nickName = userDomain.getNickName();

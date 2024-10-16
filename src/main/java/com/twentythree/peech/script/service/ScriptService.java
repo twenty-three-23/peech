@@ -4,16 +4,16 @@ import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.cache.CacheService;
 import com.twentythree.peech.script.cache.RedisTemplateImpl;
+import com.twentythree.peech.script.client.ClovaParagraphClient;
 import com.twentythree.peech.script.domain.*;
 import com.twentythree.peech.script.dto.*;
-import com.twentythree.peech.script.dto.response.MajorScriptsResponseDTO;
-import com.twentythree.peech.script.dto.response.MinorScriptsResponseDTO;
-import com.twentythree.peech.script.dto.response.ModifyScriptResponseDTO;
-import com.twentythree.peech.script.dto.response.ParagraphsResponseDTO;
+import com.twentythree.peech.script.dto.request.RequestClovaDTO;
+import com.twentythree.peech.script.dto.response.*;
 import com.twentythree.peech.script.repository.*;
 import com.twentythree.peech.script.repository.VersionRepository;
 import com.twentythree.peech.script.stt.dto.SaveSTTScriptVO;
 import com.twentythree.peech.script.stt.dto.response.ClovaResponseDto;
+import com.twentythree.peech.script.stt.dto.response.ParagraphDivideResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +45,13 @@ public class ScriptService {
     private final ThemeRepository themeRepository;
     private final VersionRepository versionRepository;
     private final CacheService scriptRedisRepository;
+
+    @Value("${clova.divide-sentence-api.key}")
+    private String clovaApiKey;
+
+    @Value("${clova.divide-sentence-api.gw-key}")
+    private String clovaGWApiKey;
+    private final ClovaParagraphClient clovaParagraphClient;
 
     @Transactional
     public SaveScriptDTO saveInputScript(Long themeId, String[] paragraphs) {
@@ -381,5 +388,35 @@ public class ScriptService {
     public ScriptEntity getMinorScriptDetail(Long themeId, Long majorVersion, Long minorVersion) {
 
         return scriptRepository.findMinorScriptDetailByThemeIAndMajorVersionAndMinorVersion(themeId, majorVersion, minorVersion);
+    }
+
+    public HistoryListResponseDTO getScriptByThemeId(Long themeId) {
+        List<ScriptDTO> scripts = new ArrayList<>();
+
+        List<ScriptEntity> scriptEntityList = scriptRepository.findScriptByThemeId(themeId);
+
+        for (ScriptEntity script : scriptEntityList) {
+            scripts.add(new ScriptDTO(script.getScriptId(), script.getScriptContent(), script.getCreatedAt()));
+        }
+
+        return new HistoryListResponseDTO(scripts);
+    }
+
+    public ScriptExpectedTimeDTO getParagraphExpectedTime(String fullScript) {
+
+        ParagraphDivideResponseDto result = clovaParagraphClient.divideScript(clovaApiKey, clovaGWApiKey, new RequestClovaDTO(fullScript));
+
+        List<List<String>> paragraphs = result.getResult().getParagraphList();
+        LocalTime totalExpectedTime = LocalTime.of(0, 0, 0, 0);
+        List<ParagraphExpectedTimeDTO> paragraphExpectedTimeDTOList = new ArrayList<>();
+
+        for(List<String> paragraph :  paragraphs) {
+            LocalTime paragraphTime = calculateParagraphTime(paragraph);
+            paragraphExpectedTimeDTOList.add(new ParagraphExpectedTimeDTO(paragraphTime, paragraph));
+            totalExpectedTime = sumLocalTime(totalExpectedTime, paragraphTime);
+        }
+
+        return new ScriptExpectedTimeDTO(totalExpectedTime, paragraphExpectedTimeDTOList);
+
     }
 }

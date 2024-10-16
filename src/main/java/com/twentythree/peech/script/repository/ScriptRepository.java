@@ -40,4 +40,10 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long> {
 
     @Query("select se from SentenceEntity se where se.scriptEntity.scriptId = :scriptId")
     Optional<List<SentenceEntity>> findAllSentencesByScriptId(Long scriptId);
+
+    @Query("select script from ScriptEntity script where script.scriptId = :scriptId")
+    Optional<ScriptEntity> findScriptByScriptId(Long scriptId);
+
+    @Query("select s from ScriptEntity s where s.version.themeEntity.themeId = :themeId and s.DType = 'STT'")
+    List<ScriptEntity> findScriptByThemeId(Long themeId);
 }

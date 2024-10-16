@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static com.twentythree.peech.usagetime.constant.UsageConstantValue.DEFAULT_USAGE_TIME;
 
@@ -27,7 +28,7 @@ public class UserDomain {
 
     private Long usageTime;
     private Long remainingTime;
-    private LocalDate deleteAt;
+    private LocalDateTime deleteAt;
 
     private UserDomain(AuthorizationServer authorizationServer, String firstName, String lastName,
                        LocalDate birth, UserGender gender, String email,
@@ -55,7 +56,7 @@ public class UserDomain {
 
     public static UserDomain of(Long userId, AuthorizationServer authorizationServer, String firstName,
                                 String lastName, LocalDate birth, UserGender gender,
-                                String email, String nickName, UserRole role, UserStatus userStatus, Long usageTime, Long remainingTime, LocalDate deleteAt, SignUpFinished signUpFinished ){
+                                String email, String nickName, UserRole role, UserStatus userStatus, Long usageTime, Long remainingTime, LocalDateTime deleteAt, SignUpFinished signUpFinished ){
         return new UserDomain(userId, authorizationServer, firstName, lastName, birth, gender, email, nickName, role, signUpFinished, userStatus, usageTime, remainingTime, deleteAt);
     }
 
@@ -70,14 +71,14 @@ public class UserDomain {
         this.userStatus = UserStatus.DELETE;
     }
 
-    public LocalDate setDeleteAt(LocalDate deleteAt) {
+    public LocalDateTime setDeleteAt(LocalDateTime deleteAt) {
         this.deleteAt = deleteAt;
         return this.deleteAt;
     }
 
     // Q 1. 이런 식으로 도메인에 수정 코드를 넣고 creator에서 함수를 생성해서 하는게 맞는가, 아니면 이 메소드를 바로 호출하는게 옮은가
     //  나의 생각으로는 바로 호출하는 게 맞다고 생각이 드는데.. 이유는 모르겠지만 느낌이 뺴야할 것 같은 느낌쓰
-    public void setUser(AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, UserRole role, UserStatus userStatus, SignUpFinished signUpFinished, LocalDate deleteAt) {
+    public void setUser(AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, UserRole role, UserStatus userStatus, SignUpFinished signUpFinished, LocalDateTime deleteAt) {
         this. authorizationServer = authorizationServer;
         this.firstName = firstName;
         this.lastName = lastName;
