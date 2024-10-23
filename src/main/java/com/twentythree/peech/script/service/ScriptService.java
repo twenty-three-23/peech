@@ -1,5 +1,6 @@
 package com.twentythree.peech.script.service;
 
+import com.twentythree.peech.aop.annotation.Trace;
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.cache.CacheService;
@@ -418,5 +419,10 @@ public class ScriptService {
 
         return new ScriptExpectedTimeDTO(totalExpectedTime, paragraphExpectedTimeDTOList);
 
+    }
+
+    @Transactional
+    public void reflectAnalyzeResult(Long scriptId, String result) {
+        scriptRepository.saveAnalyzeResult(scriptId, result);
     }
 }
