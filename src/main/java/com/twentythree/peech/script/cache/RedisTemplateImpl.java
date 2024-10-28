@@ -55,7 +55,6 @@ public class RedisTemplateImpl implements CacheService {
 
             // 해당 문장의 정보를 담아주는 Hash 저장
             redisTemplate.opsForHash().putAll(sentenceId.toString(), sentenceInformations);
-            log.info("Successfully saved redisSentence: {}", redisSentence);
 
         }catch (Exception e) {
             log.error("Error saving redisSentence List: {}",sentenceId,e);

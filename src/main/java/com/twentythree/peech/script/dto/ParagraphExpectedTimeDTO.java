@@ -11,6 +11,6 @@ import java.util.List;
 public class ParagraphExpectedTimeDTO {
 
     private LocalTime time;
-    private List<String> paragraph;
+    private String paragraph;
 
 }
