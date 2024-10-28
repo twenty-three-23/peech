@@ -6,6 +6,7 @@ import com.twentythree.peech.security.exception.LoginExceptionCode;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.value.SignUpFinished;
+import com.twentythree.peech.user.value.UserStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,6 +40,9 @@ public class JWTUserDetailsService implements UserDetailsService {
         if (userEntity.getSignUpFinished() == SignUpFinished.PENDING
                 && !httpMethod.equals("PATCH") && !uri.contains("/api/v1/users/" + userId)) {
             throw new JWTAuthenticationException(LoginExceptionCode.SIGNUP_FINISHED_NOT_YET);
+        }
+        if (userEntity.getUserStatus().equals(UserStatus.DELETE)) {
+            userEntity.changeUserStatusToActive();
         }
         return JWTUserDetails.create(userEntity);
     }

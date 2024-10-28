@@ -133,6 +133,10 @@ public class UserServiceImpl implements UserService {
                 responseCode = 200;
             }
 
+            if (userValidator.userIsNotDeleted(userId)) {
+                responseCode = 201;
+            }
+
             accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
             refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
         } else {
@@ -147,7 +151,8 @@ public class UserServiceImpl implements UserService {
     public UserDomain deleteUser(Long userId) {
         UserDomain userDomain = userFetcher.fetchUser(userId);
         LocalDateTime deleteAt = userDeleter.deleteUser(userDomain);
-        userMapper.saveUserDomain(userDomain);
+        UserEntity userEntity = userMapper.deleteUserDomain(userDomain);
+        userRepository.save(userEntity);
         return userDomain;
     }
 
