@@ -1,8 +1,8 @@
 package com.twentythree.peech.fcm.application;
 
-import com.twentythree.peech.fcm.event.FCMTokenEvent;
+import com.twentythree.peech.fcm.dto.request.RequestFCMTokenDTO;
 
 public interface NotificationService {
     void pushNotification(Long userId);
-    void saveOrUpdateToken(FCMTokenEvent fcmTokenEvent, boolean result);
+    void saveOrUpdateToken(RequestFCMTokenDTO fcmTokenDTO, Long userId);
 }

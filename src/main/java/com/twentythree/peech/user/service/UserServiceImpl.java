@@ -4,7 +4,6 @@ import com.twentythree.peech.common.exception.Unauthorized;
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.common.utils.UserRoleConvertUtils;
-import com.twentythree.peech.fcm.event.FCMTokenEvent;
 import com.twentythree.peech.script.service.ThemeService;
 import com.twentythree.peech.security.exception.JWTAuthenticationException;
 import com.twentythree.peech.security.exception.LoginExceptionCode;
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService {
         if (userValidator.notExistUserByEmail(userEmail)) {
 
             UserDomain userDomain = userCreator.createUserByEmail(authorizationServer, userEmail, SignUpFinished.PENDING);
-            userId = userMapper.saveUserDomain(userDomain);
+            Long userId = userMapper.saveUserDomain(userDomain);
             UserRole userRole = userDomain.getRole();
 
             accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
@@ -135,7 +134,7 @@ public class UserServiceImpl implements UserService {
         } else if (userValidator.existUserByEmail(userEmail)) {
             UserDomain userDomain = userFetcher.fetchUserByEmail(userEmail);
 
-            userId = userDomain.getUserId();
+            Long userId = userDomain.getUserId();
             UserRole userRole = userDomain.getRole();
 
             if (userValidator.singedUpFinishedUser(userId)) {

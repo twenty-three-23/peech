@@ -50,8 +50,11 @@ public class NotificationEntity extends BaseCreatedAtEntity {
         this.fcmToken = fcmToken;
     }
 
-    public static NotificationEntity of(UserEntity userEntity, String deviceId ,String fcmToken) {
+    public static NotificationEntity ofCreateFCMToken(UserEntity userEntity, String deviceId , String fcmToken) {
         return new NotificationEntity(userEntity, deviceId, fcmToken);
     }
 
+    public void updateToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 }

@@ -4,8 +4,6 @@ import com.google.firebase.ErrorCode;
 import com.google.firebase.messaging.*;
 import com.twentythree.peech.fcm.application.NotificationService;
 import com.twentythree.peech.fcm.event.FCMPushedEvent;
-import com.twentythree.peech.fcm.event.FCMTokenEvent;
-import com.twentythree.peech.fcm.validator.NotificationValidator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +17,6 @@ public class FCMEventHandler {
 
     static final String title = "분석이 완료되었습니다";
     static final String body = "히스토리로 이동하여 분석결과를 확인하세요";
-    private final NotificationValidator notificationValidator;
-    private final NotificationService notificationService;
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Async
@@ -33,7 +29,7 @@ public class FCMEventHandler {
                 .addAllTokens(fcmEventDTO.getFcmTokenList())
                 .build();
 
-        BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message, true);
+        BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
         log.info("messsage 전송완료");
 
         //Todo: 실패한 푸시 알림에 대한 처리
@@ -46,9 +42,4 @@ public class FCMEventHandler {
 
     }
 
-    @EventListener
-    public void handleUserCreatedEvent(FCMTokenEvent fcmTokenEvent) {
-        boolean result = notificationValidator.existTokenByDeviceId(fcmTokenEvent.getDeviceId());
-        notificationService.saveOrUpdateToken(fcmTokenEvent, result);
-    }
 }

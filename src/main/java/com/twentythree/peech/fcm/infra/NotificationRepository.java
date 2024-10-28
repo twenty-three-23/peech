@@ -14,9 +14,5 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
     List<String> findAllByUserId(Long userId);
 
     @Query("select n from NotificationEntity n where n.deviceId = :deviceId")
-    Optional<NotificationEntity> findNotificationByDeviceId(String deviceId);
-
-    @Modifying
-    @Query("update NotificationEntity n set n.fcmToken = :fcmToken where n.deviceId = :deviceId")
-    void updateTokenByDeviceId(String fcmToken, String deviceId);
+    Optional<NotificationEntity> findByDeviceId(String deviceId);
 }

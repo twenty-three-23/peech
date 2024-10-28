@@ -1,9 +1,12 @@
 package com.twentythree.peech.fcm.application;
 
+
+import com.twentythree.peech.fcm.dto.request.RequestFCMTokenDTO;
 import com.twentythree.peech.fcm.entity.NotificationEntity;
 import com.twentythree.peech.fcm.event.FCMPushedEvent;
-import com.twentythree.peech.fcm.event.FCMTokenEvent;
 import com.twentythree.peech.fcm.infra.NotificationRepository;
+import com.twentythree.peech.user.entity.UserEntity;
+import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public void pushNotification(Long userId) {
@@ -30,14 +34,25 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional
     @Override
-    public void saveOrUpdateToken(FCMTokenEvent fcmTokenEvent, boolean result) {
-        if(!result){
-            NotificationEntity notificationEntity = NotificationEntity
-                    .of(fcmTokenEvent.getUserEntity(), fcmTokenEvent.getDeviceId(), fcmTokenEvent.getFcmToken());
-            notificationRepository.save(notificationEntity);
+    public void saveOrUpdateToken(RequestFCMTokenDTO request, Long userId) {
+        notificationRepository.findByDeviceId(request.getDeviceId())
+                .ifPresentOrElse(
+                        fcmToken -> updateFCMToken(fcmToken, request.getFcmToken()),
 
-        }else {
-            notificationRepository.updateTokenByDeviceId(fcmTokenEvent.getFcmToken(), fcmTokenEvent.getDeviceId());
-        }
+                        () -> {
+                            UserEntity userEntity = userRepository.findById(userId)
+                                    .orElseThrow(() -> new IllegalStateException("유저가 존재하지 않습니다."));
+                            NotificationEntity newEntity = NotificationEntity
+                                    .ofCreateFCMToken(
+                                            userEntity,
+                                            request.getDeviceId(),
+                                            request.getFcmToken()
+                                    );
+                            notificationRepository.save(newEntity);
+                        });
+    }
+
+    private void updateFCMToken(NotificationEntity originEntity, String newToken){
+        originEntity.updateToken(newToken);
     }
 }
