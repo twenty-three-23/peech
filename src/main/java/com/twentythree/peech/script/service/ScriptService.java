@@ -412,7 +412,8 @@ public class ScriptService {
 
         for(List<String> paragraph :  paragraphs) {
             LocalTime paragraphTime = calculateParagraphTime(paragraph);
-            paragraphExpectedTimeDTOList.add(new ParagraphExpectedTimeDTO(paragraphTime, paragraph));
+            String mergedParagraph = String.join(" ", paragraph);
+            paragraphExpectedTimeDTOList.add(new ParagraphExpectedTimeDTO(paragraphTime, mergedParagraph));
             totalExpectedTime = sumLocalTime(totalExpectedTime, paragraphTime);
         }
 
