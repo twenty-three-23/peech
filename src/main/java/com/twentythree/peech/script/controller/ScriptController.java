@@ -94,7 +94,7 @@ public class ScriptController implements SwaggerScriptInterface{
         return scriptService.getScriptByThemeId(themeId);
     }
 
-    @GetMapping("api/v2/script/expected-time")
+    @PostMapping("api/v2/script/expected-time")
     public ScriptExpectedTimeDTO getExpectedTimeWithFullScript(@RequestBody ExpectedTimeRequestDTO request){
         return scriptService.getParagraphExpectedTime(request.getFullScript());
     }
