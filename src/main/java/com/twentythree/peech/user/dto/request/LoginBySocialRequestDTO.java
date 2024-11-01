@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class LoginBySocialRequestDTO {
     private String socialToken;
     private AuthorizationServer authorizationServer;
+    private String deviceId;
+    private String fcmToken;
 }

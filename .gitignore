@@ -43,3 +43,6 @@ data.sql
 
 ### Logging File ###
 /logs/**
+
+### FCM Admin SDK ###
+**/src/main/resources/peech_fcm.json

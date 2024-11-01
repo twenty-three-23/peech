@@ -6,15 +6,15 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Check;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalTime;
-import java.util.List;
 
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "SCRIPT")
 @Entity
 public class ScriptEntity extends BaseCreatedAtEntity {
@@ -45,6 +45,8 @@ public class ScriptEntity extends BaseCreatedAtEntity {
     @Enumerated(EnumType.STRING)
     private InputAndSttType DType;
 
+    @Column(name = "analysis_result", length = 65535, columnDefinition = "TEXT")
+    private String analysisResult;
 
     private ScriptEntity(VersionEntity version, String scriptContent, LocalTime time, InputAndSttType DType) {
         this.version = version;

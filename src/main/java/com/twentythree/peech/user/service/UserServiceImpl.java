@@ -17,6 +17,7 @@ import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.LoginBySocial;
 import com.twentythree.peech.user.dto.IdentityToken;
 import com.twentythree.peech.user.dto.KakaoAccount;
+import com.twentythree.peech.user.dto.request.LoginBySocialRequestDTO;
 import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
@@ -24,6 +25,7 @@ import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.validator.UserValidator;
 import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserValidator userValidator;
     private final JWTUtils jwtUtils;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -75,12 +78,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer, String funnel) {
+    public LoginBySocial loginBySocial(LoginBySocialRequestDTO request, String funnel) {
 
         String userEmail = null;
 
         String accessToken = null;
         String refreshToken = null;
+
+        String socialToken = request.getSocialToken();
+        AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
         String bearerSocialToken  = "Bearer " + socialToken;
 
@@ -113,6 +119,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Integer responseCode = 411;
+        Long userId = null;
 
         if (userValidator.notExistUserByEmail(userEmail)) {
 
@@ -122,6 +129,7 @@ public class UserServiceImpl implements UserService {
 
             accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
             refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
+
 
         } else if (userValidator.existUserByEmail(userEmail)) {
             UserDomain userDomain = userFetcher.fetchUserByEmail(userEmail);
@@ -135,9 +143,13 @@ public class UserServiceImpl implements UserService {
 
             accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
             refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
+
         } else {
             throw new RuntimeException("유저 생성에서 예상치 못한 문제가 생겼습니다.");
         }
+        // 예외를 제외하고 유저가 생성된 시점
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new Unauthorized("유저가 생성되지 않았습니다."));
+        eventPublisher.publishEvent(new FCMTokenEvent(userEntity, request.getDeviceId(), request.getFcmToken()));
 
         return new LoginBySocial(accessToken, refreshToken, responseCode);
     }

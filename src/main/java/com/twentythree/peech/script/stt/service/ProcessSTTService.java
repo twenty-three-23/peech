@@ -1,5 +1,6 @@
 package com.twentythree.peech.script.stt.service;
 
+import com.twentythree.peech.analyzescript.application.AnalyzeScriptFacade;
 import com.twentythree.peech.script.domain.SentenceEntity;
 import com.twentythree.peech.script.service.ScriptService;
 import com.twentythree.peech.script.service.SentenceService;
@@ -46,6 +47,8 @@ public class ProcessSTTService {
 
     private final AudioChecker audioChecker;
 
+    private final AnalyzeScriptFacade analyzeScriptFacade;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     // 대본 입력 없이 STT 결과 생성
@@ -91,12 +94,15 @@ public class ProcessSTTService {
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
 
-                                // 생성된 scriptId 가져오기
+                                // 생성된 scriptId 및 content 가져오기
                                 long scriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                String scriptContent = saveSTTScriptVO.scriptEntity().getScriptContent();
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
                                 STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, scriptId);
                                 // Redis 저장 로직
                                 saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+                                // 분석 결과 요청
+                                analyzeScriptFacade.analyzeScriptAndSave(userId, scriptId,scriptContent);
 
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
@@ -162,13 +168,16 @@ public class ProcessSTTService {
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
 
-                                // scriptId 저장
+                                // scriptId 및 scriptContent 가져오기
                                 long newScriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                String scriptContent = saveSTTScriptVO.scriptEntity().getScriptContent();
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
                                 STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, newScriptId);
 
                                 // Redis 저장 로직
                                 saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+                                // 분석 결과 요청
+                                analyzeScriptFacade.analyzeScriptAndSave(userId, newScriptId,scriptContent);
 
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
@@ -232,13 +241,16 @@ public class ProcessSTTService {
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
 
-                                // scriptId 저장
+                                // scriptId 및 scriptContent 저장
                                 long newScriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                String scriptContent = saveSTTScriptVO.scriptEntity().getScriptContent();
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
                                 STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, newScriptId);
 
                                 // Redis 저장 로직
                                 saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+                                // 분석 결과 요청
+                                analyzeScriptFacade.analyzeScriptAndSave(userId, newScriptId,scriptContent);
 
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);
@@ -301,12 +313,15 @@ public class ProcessSTTService {
                             // Sentence Entity 저장
                             return saveSTTScriptVOMono.flatMap(saveSTTScriptVO -> {
 
-                                // 생성된 scriptId 가져오기
+                                // 생성된 scriptId 및 scriptContent 가져오기
                                 long scriptId = saveSTTScriptVO.scriptEntity().getScriptId();
+                                String scriptContent = saveSTTScriptVO.scriptEntity().getScriptContent();
                                 List<SentenceEntity> sentenceEntityList = sentenceService.saveSTTSentences(saveSTTScriptVO.scriptEntity(), sentenceAndRealTimeList, paragraphDivideResponseDto.getResult().getSpan());
                                 STTScriptResponseDTO sttScriptResponseDTO = createSTTResultService.createSTTResultResponseDto(clovaResponseDto, sentenceEntityList, sentenceAndRealTimeList, scriptId);
                                 // Redis 저장 로직
                                 saveRedisService.saveSTTScriptInformation(userId, sentenceEntityList);
+                                // 분석 결과 요청
+                                analyzeScriptFacade.analyzeScriptAndSave(userId, scriptId,scriptContent);
 
                                 // 최종 클라이언트 반환 DTO
                                 return Mono.just(sttScriptResponseDTO);

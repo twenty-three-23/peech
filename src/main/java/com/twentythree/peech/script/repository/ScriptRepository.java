@@ -3,6 +3,7 @@ package com.twentythree.peech.script.repository;
 import com.twentythree.peech.script.domain.ScriptEntity;
 import com.twentythree.peech.script.domain.SentenceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -46,4 +47,8 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long> {
 
     @Query("select s from ScriptEntity s where s.version.themeEntity.themeId = :themeId and s.DType = 'STT'")
     List<ScriptEntity> findScriptByThemeId(Long themeId);
+
+    @Modifying
+    @Query("update ScriptEntity s set s.analysisResult = :result where s.scriptId = :scriptId")
+    void saveAnalyzeResult(Long scriptId, String result);
 }
