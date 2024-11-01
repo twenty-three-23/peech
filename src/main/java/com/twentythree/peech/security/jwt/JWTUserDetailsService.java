@@ -6,6 +6,7 @@ import com.twentythree.peech.security.exception.LoginExceptionCode;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import com.twentythree.peech.user.value.SignUpFinished;
+import com.twentythree.peech.user.value.UserStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,6 +35,10 @@ public class JWTUserDetailsService implements UserDetailsService {
         // http 메서드와 uri 뽑아오기
         String httpMethod = request.getMethod();
         String uri = request.getRequestURI();
+
+        if (userEntity.getUserStatus() == UserStatus.DELETE) {
+            throw new JWTAuthenticationException(LoginExceptionCode.NOT_EXIST_USER);
+        }
 
         // User가 Pending이면 에러 발생 단, 요청 request가 PATCH /api/v1/users/{userId} 일 경우에는 에러 발생하지 않음
         if (userEntity.getSignUpFinished() == SignUpFinished.PENDING
