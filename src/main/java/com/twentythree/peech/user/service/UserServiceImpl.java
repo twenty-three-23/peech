@@ -4,6 +4,8 @@ import com.twentythree.peech.common.exception.Unauthorized;
 import com.twentythree.peech.common.exception.UserAlreadyExistException;
 import com.twentythree.peech.common.utils.JWTUtils;
 import com.twentythree.peech.common.utils.UserRoleConvertUtils;
+import com.twentythree.peech.meta.conversionapi.annotation.MetaEventTrigger;
+import com.twentythree.peech.meta.conversionapi.eventhandler.event.FeatureType;
 import com.twentythree.peech.script.service.ThemeService;
 import com.twentythree.peech.security.exception.JWTAuthenticationException;
 import com.twentythree.peech.security.exception.LoginExceptionCode;
@@ -21,6 +23,7 @@ import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
+import com.twentythree.peech.user.util.UserEmailHolder;
 import com.twentythree.peech.user.validator.UserValidator;
 import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +76,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @MetaEventTrigger(name = FeatureType.LOGIN)
     @Override
     @Transactional
     public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer, String funnel) {
@@ -138,6 +142,7 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new RuntimeException("유저 생성에서 예상치 못한 문제가 생겼습니다.");
         }
+        UserEmailHolder.setUserEmail(userEmail);
 
         return new LoginBySocial(accessToken, refreshToken, responseCode);
     }
