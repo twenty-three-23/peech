@@ -83,3 +83,5 @@ meta:
   app:
     pixel-id: ${META_APP_PIXEL_ID}
     access-token: ${META_APP_ACCESS_TOKEN}
+  tag:
+    content: ${META_TAG_CONTENT}
