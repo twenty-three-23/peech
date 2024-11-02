@@ -17,5 +17,9 @@ public class JWTAuthentication {
         this.serviceType = (serviceType != null) ? serviceType : "InWeb";
         this.funnel = funnel;
     }
+
+    public static JWTAuthentication ofPending(String serviceType){
+        return new JWTAuthentication(null, null, serviceType, null);
+    }
 }
 

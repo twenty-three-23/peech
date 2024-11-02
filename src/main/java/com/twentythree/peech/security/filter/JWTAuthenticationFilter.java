@@ -84,6 +84,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.clearContext();
                 }
 
+            } else {
+                String serviceType = request.getHeader("serviceType");
+                JWTAuthenticationToken authenticationToken = new JWTAuthenticationToken(JWTAuthentication.ofPending(serviceType));
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
         filterChain.doFilter(request, response);
