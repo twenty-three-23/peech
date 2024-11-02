@@ -56,6 +56,11 @@ jobs:
         ffmpeg.path: ${{ secrets.FFMPEG_PATH_DEV }}
         ffprobe.path: ${{ secrets.FFPROBE_PATH_DEV }}
         spring.cors.allowed-origins: ${{ secrets.CORS_ALLOWED_ORIGINS }}
+        meta.api-version: ${{ secrets.META_API_VERSION}}
+        meta.web.pixel-id: ${{ secrets.META_WEB_PIXEL_ID}}
+        meta.web.access-token: ${{ secrets.META_WEB_ACCESS_TOKEN}}
+        meta.app.pixel-id: ${{ secrets.META_APP_PIXEL_ID}}
+        meta.app.access-token: ${{ secrets.META_APP_ACCESS_TOKEN}}
 
     # application.yml 파일 내용 확인
     - name: Display modified application.yml
