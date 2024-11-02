@@ -2,7 +2,6 @@ package com.twentythree.peech.meta.util;
 
 import com.twentythree.peech.meta.conversionapi.eventhandler.event.MetaSecret;
 import com.twentythree.peech.meta.dto.DeviceDTO;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
