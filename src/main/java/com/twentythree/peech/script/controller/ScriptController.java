@@ -1,6 +1,8 @@
 package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.auth.service.SecurityContextHolder;
+import com.twentythree.peech.meta.conversionapi.annotation.MetaEventTrigger;
+import com.twentythree.peech.meta.conversionapi.eventhandler.event.FeatureType;
 import com.twentythree.peech.script.dto.request.ExpectedTimeRequestDTO;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
@@ -89,12 +91,13 @@ public class ScriptController implements SwaggerScriptInterface{
         return scriptService.getParagraphsByScriptId(scriptId);
     }
 
-    @GetMapping("api/v2/theme/{themeId}/scripts")
+    @GetMapping("/api/v2/theme/{themeId}/scripts")
     public HistoryListResponseDTO getScriptList(@PathVariable Long themeId){
         return scriptService.getScriptByThemeId(themeId);
     }
 
-    @GetMapping("api/v2/script/expected-time")
+    @MetaEventTrigger(name = FeatureType.EXPECTED_TIME)
+    @PostMapping("api/v2/script/expected-time")
     public ScriptExpectedTimeDTO getExpectedTimeWithFullScript(@RequestBody ExpectedTimeRequestDTO request){
         return scriptService.getParagraphExpectedTime(request.getFullScript());
     }

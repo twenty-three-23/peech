@@ -74,3 +74,12 @@ sentry:
   max-request-body-size: always
   send-default-pii: true
   traces-sample-rate: 1.0
+
+meta:
+  api-version: ${META_API_VERSION}
+  web:
+    pixel-id: ${META_WEB_PIXEL_ID}
+    access-token: ${META_WEB_ACCESS_TOKEN}
+  app:
+    pixel-id: ${META_APP_PIXEL_ID}
+    access-token: ${META_APP_ACCESS_TOKEN}
