@@ -60,6 +60,7 @@ jobs:
           meta.web.access-token: ${{ secrets.META_WEB_ACCESS_TOKEN_PROD}}
           meta.app.pixel-id: ${{ secrets.META_APP_PIXEL_ID_PROD}}
           meta.app.access-token: ${{ secrets.META_APP_ACCESS_TOKEN_PROD}}
+          meta.tag.content: ${{ secrets.META_TAG_CONTENT_PROD}}
 
 
 

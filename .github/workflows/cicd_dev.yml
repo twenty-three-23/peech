@@ -61,8 +61,10 @@ jobs:
         meta.web.access-token: ${{ secrets.META_WEB_ACCESS_TOKEN}}
         meta.app.pixel-id: ${{ secrets.META_APP_PIXEL_ID}}
         meta.app.access-token: ${{ secrets.META_APP_ACCESS_TOKEN}}
+        meta.tag.content: ${{ secrets.META_TAG_CONTENT}}
 
-    # application.yml 파일 내용 확인
+
+      # application.yml 파일 내용 확인
     - name: Display modified application.yml
       run: cat ${{ env.RESOURCE_PATH }}
     # excute 허용
