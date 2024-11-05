@@ -41,7 +41,7 @@ public class ThemeController implements SwaggerThemeInterface {
     }
 
     @GetMapping("api/v2/theme")
-    public ThemeIdResponseDTO getTheme(@AuthenticationPrincipal JWTAuthentication jwtAuthentication) {
-        return themeService.getThemeByUserId(jwtAuthentication.getUserId());
+    public ThemeIdResponseDTO getThemeId(@AuthenticationPrincipal JWTAuthentication jwtAuthentication) {
+        return themeService.getThemeIdByUserId(jwtAuthentication.getUserId());
     }
 }
