@@ -60,7 +60,7 @@ public class ScriptService {
 
         LocalTime expectedTime = calculateExpectedTime(script);
 
-        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+        ThemeEntity ThemeEntity = themeRepository.findDefaultThemeByUserId(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
 
         Long latestMajorVersion = scriptRepository.findByMaxMajorVersionInthemeId(themeId);
 
@@ -78,7 +78,7 @@ public class ScriptService {
 
         ScriptEntity scriptEntity = scriptRepository.findById(scriptId).orElseThrow(() -> new IllegalArgumentException("scriptId가 잘못 되었습니다."));
 
-        ThemeEntity ThemeEntity = themeRepository.findById(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
+        ThemeEntity ThemeEntity = themeRepository.findDefaultThemeByUserId(themeId).orElseThrow(() -> new IllegalArgumentException("패키지 아이디가 잘못되었습니다."));
 
         // 해당 스크립트의 MajorVersion과 MinorVersion을 가져옴
         Long majorVersion = scriptEntity.getVersion().getMajorVersion();
