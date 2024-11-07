@@ -3,10 +3,7 @@ package com.twentythree.peech.user.entity;
 import com.twentythree.peech.common.domain.BaseTimeEntity;
 import com.twentythree.peech.user.value.*;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
@@ -78,6 +75,14 @@ public class UserEntity extends BaseTimeEntity {
 
     public static UserEntity of(Long id, String deviceId, AuthorizationServer authorizationServer, String firstName, String lastName, LocalDate birth, UserGender gender, String email, String nickName, SignUpFinished signUpFinished) {
         return new UserEntity(id, authorizationServer, deviceId, firstName, lastName, birth, gender, email, nickName, UserRole.ROLE_COMMON, UserStatus.ACTIVE, signUpFinished, null );
+    }
+
+    public void changeUserStatusToDelete() {
+        this.userStatus = UserStatus.DELETE;
+    }
+
+    public void changeUserStatusToActive() {
+        this.userStatus = UserStatus.ACTIVE;
     }
 
     @Override
