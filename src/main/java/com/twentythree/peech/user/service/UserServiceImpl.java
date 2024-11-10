@@ -19,7 +19,6 @@ import com.twentythree.peech.user.dto.AccessAndRefreshToken;
 import com.twentythree.peech.user.dto.LoginBySocial;
 import com.twentythree.peech.user.dto.IdentityToken;
 import com.twentythree.peech.user.dto.KakaoAccount;
-import com.twentythree.peech.user.dto.request.LoginBySocialRequestDTO;
 import com.twentythree.peech.user.dto.response.ApplePublicKeyResponseDTO;
 import com.twentythree.peech.user.dto.response.GetUserInformationResponseDTO;
 import com.twentythree.peech.user.entity.UserEntity;
@@ -82,15 +81,12 @@ public class UserServiceImpl implements UserService {
     @MetaEventTrigger(name = FeatureType.LOGIN)
     @Override
     @Transactional
-    public LoginBySocial loginBySocial(LoginBySocialRequestDTO request, String funnel) {
+    public LoginBySocial loginBySocial(String socialToken, AuthorizationServer authorizationServer, String funnel) {
 
         String userEmail = null;
 
         String accessToken = null;
         String refreshToken = null;
-
-        String socialToken = request.getSocialToken();
-        AuthorizationServer authorizationServer = request.getAuthorizationServer();
 
         String bearerSocialToken  = "Bearer " + socialToken;
 
@@ -123,7 +119,6 @@ public class UserServiceImpl implements UserService {
         }
 
         Integer responseCode = 411;
-        Long userId = null;
 
         if (userValidator.notExistUserByEmail(userEmail)) {
 
@@ -153,9 +148,6 @@ public class UserServiceImpl implements UserService {
         }
 
         // 예외를 제외하고 유저가 생성된 시점
-        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new Unauthorized("유저가 생성되지 않았습니다."));
-        eventPublisher.publishEvent(new FCMTokenEvent(userEntity, request.getDeviceId(), request.getFcmToken()));
-
         UserEmailHolder.setUserEmail(userEmail);
 
         return new LoginBySocial(accessToken, refreshToken, responseCode);

@@ -53,7 +53,10 @@ public class UserController implements SwaggerUserController{
     @PostMapping("api/v1.1/user")
     public ResponseEntity<WrappedResponseBody<UserIdTokenResponseDTO>> loginBySocial(@RequestBody LoginBySocialRequestDTO request, @RequestParam String funnel) {
 
-        LoginBySocial loginBySocial = userService.loginBySocial(request, funnel);
+        String token = request.getSocialToken();
+        AuthorizationServer authorizationServer = request.getAuthorizationServer();
+
+        LoginBySocial loginBySocial = userService.loginBySocial(token, authorizationServer, funnel);
         UserIdTokenResponseDTO userIdTokenResponseDTO = new UserIdTokenResponseDTO(loginBySocial.getAccessToken(), loginBySocial.getRefreshToken());
         log.info("{}", userIdTokenResponseDTO.getAccessToken());
         return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(loginBySocial.getResponseCode(), userIdTokenResponseDTO));
