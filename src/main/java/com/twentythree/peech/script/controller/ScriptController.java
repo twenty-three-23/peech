@@ -10,6 +10,7 @@ import com.twentythree.peech.script.service.ScriptSentenceFacade;
 import com.twentythree.peech.script.service.ScriptService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -97,5 +98,11 @@ public class ScriptController implements SwaggerScriptInterface{
     @GetMapping("api/v2/script/expected-time")
     public ScriptExpectedTimeDTO getExpectedTimeWithFullScript(@RequestBody ExpectedTimeRequestDTO request){
         return scriptService.getParagraphExpectedTime(request.getFullScript());
+    }
+
+    @GetMapping("api/v2/script/{scriptId}/analyze-result")
+    public ResponseEntity<String> getAnalyzeResult(@PathVariable Long scriptId){
+        AnalyzeResultDTO result = scriptService.getAnalyzeResult(scriptId);
+        return ResponseEntity.status(result.getHttpStatus()).body(result.getResult());
     }
 }

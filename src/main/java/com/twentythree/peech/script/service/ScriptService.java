@@ -425,4 +425,10 @@ public class ScriptService {
     public void reflectAnalyzeResult(Long scriptId, String result) {
         scriptRepository.saveAnalyzeResult(scriptId, result);
     }
+
+    public AnalyzeResultDTO getAnalyzeResult(Long scriptId) {
+        return scriptRepository.findAnalyzeResultByScriptId(scriptId)
+                .map(result -> new AnalyzeResultDTO(200, result))
+                .orElseGet(() -> new AnalyzeResultDTO(202, "스크립트를 분석중입니다."));
+    }
 }

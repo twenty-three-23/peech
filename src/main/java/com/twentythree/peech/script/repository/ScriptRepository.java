@@ -51,4 +51,7 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long> {
     @Modifying
     @Query("update ScriptEntity s set s.analysisResult = :result where s.scriptId = :scriptId")
     void saveAnalyzeResult(Long scriptId, String result);
+
+    @Query("select s.analysisResult from ScriptEntity s where s.scriptId = :scriptId")
+    Optional<String> findAnalyzeResultByScriptId(Long scriptId);
 }
