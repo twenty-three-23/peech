@@ -1,6 +1,7 @@
 package com.twentythree.peech.script.controller;
 
 import com.twentythree.peech.auth.service.SecurityContextHolder;
+import com.twentythree.peech.script.dto.AnalyzeResultDTO;
 import com.twentythree.peech.script.dto.request.ExpectedTimeRequestDTO;
 import com.twentythree.peech.script.dto.request.ModifiedScriptRequestDTO;
 import com.twentythree.peech.script.dto.request.ParagraphsRequestDTO;
