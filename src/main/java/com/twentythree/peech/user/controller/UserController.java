@@ -2,6 +2,8 @@ package com.twentythree.peech.user.controller;
 
 import com.twentythree.peech.auth.service.SecurityContextHolder;
 import com.twentythree.peech.common.dto.response.WrappedResponseBody;
+import com.twentythree.peech.meta.conversionapi.annotation.MetaEventTrigger;
+import com.twentythree.peech.meta.conversionapi.eventhandler.event.FeatureType;
 import com.twentythree.peech.script.service.ThemeService;
 import com.twentythree.peech.user.domain.UserFetcher;
 import com.twentythree.peech.user.domain.UserMapper;
@@ -57,6 +59,7 @@ public class UserController implements SwaggerUserController{
         return ResponseEntity.status(201).body(new WrappedResponseBody<UserIdTokenResponseDTO>(loginBySocial.getResponseCode(), userIdTokenResponseDTO));
     }
 
+    @MetaEventTrigger(name = FeatureType.SIGNUP)
     @Operation(summary = "로그인에 필요한 추가 정보를 입력 받는다",
             description = "gender는 꼭 입력 받지 않아도 된다.")
     @PatchMapping("api/v1.1/user")

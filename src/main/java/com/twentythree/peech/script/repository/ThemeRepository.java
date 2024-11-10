@@ -16,6 +16,9 @@ public interface ThemeRepository extends JpaRepository<ThemeEntity, Long> {
     @Query("select v from VersionEntity v where v.themeEntity.themeId = :themeId")
     Optional<List<VersionEntity>> findAllVersionsByThemeId(Long themeId);
 
-    @Query("select t.themeId from ThemeEntity t where t.userEntity.id = :userId")
+    @Query("select t.themeId from ThemeEntity t where t.userEntity.id = :userId and t.themeTitle = 'default'")
     Long findThemeIdByUserId(Long userId);
+
+    @Query("select t from ThemeEntity t where t.userEntity.id = :userId and t.themeTitle = 'default'")
+    Optional<ThemeEntity> findDefaultThemeByUserId(Long userId);
 }

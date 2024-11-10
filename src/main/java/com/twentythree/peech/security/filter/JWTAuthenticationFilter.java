@@ -65,8 +65,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                         JWTUserDetails userDetails = jwtUserDetailsService.loadUserByUsername(String.valueOf(userId));
 
                         Long userDetailsId = userDetails.getUserEntity().getId();
+                        String email = userDetails.getUserEntity().getEmail();
 
-                        JWTAuthentication jwtAuthentication = new JWTAuthentication(userDetailsId, funnel);
+                        String serviceType = request.getHeader("serviceType");
+
+                        JWTAuthentication jwtAuthentication = new JWTAuthentication(userDetailsId, email, serviceType, funnel);
 
                         JWTAuthenticationToken authenticationToken = new JWTAuthenticationToken(jwtAuthentication, authorities);
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -81,6 +84,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.clearContext();
                 }
 
+            } else {
+                String serviceType = request.getHeader("serviceType");
+                JWTAuthenticationToken authenticationToken = new JWTAuthenticationToken(JWTAuthentication.ofPending(serviceType));
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
         filterChain.doFilter(request, response);

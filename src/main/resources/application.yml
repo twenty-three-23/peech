@@ -81,3 +81,14 @@ fcm:
   secret-key: ${FCM_SECRET_KEY}
   key-path: ${FCM_KEY_PATH}
   project-id: ${FCM_PROJECT_ID}
+
+meta:
+  api-version: ${META_API_VERSION}
+  web:
+    pixel-id: ${META_WEB_PIXEL_ID}
+    access-token: ${META_WEB_ACCESS_TOKEN}
+  app:
+    pixel-id: ${META_APP_PIXEL_ID}
+    access-token: ${META_APP_ACCESS_TOKEN}
+  tag:
+    content: ${META_TAG_CONTENT}

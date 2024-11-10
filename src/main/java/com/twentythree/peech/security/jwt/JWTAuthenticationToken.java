@@ -18,6 +18,12 @@ public class JWTAuthenticationToken extends AbstractAuthenticationToken {
         this.principal = principal;
     }
 
+    public JWTAuthenticationToken(JWTAuthentication principal) {
+        super(null); // Authorities 없이 호출
+        super.setAuthenticated(true); // 인증 상태를 true로 설정
+        this.principal = principal;
+    }
+
     @Override
     public String getCredentials() {
         return "";
