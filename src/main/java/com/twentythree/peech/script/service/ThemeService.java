@@ -56,7 +56,7 @@ public class ThemeService {
     }
 
 
-    public ThemeIdResponseDTO getThemeByUserId(Long userId) {
+    public ThemeIdResponseDTO getThemeIdByUserId(Long userId) {
 
         if(themeRepository.findThemeIdByUserId(userId) == null) {
             throw new IllegalArgumentException("생성된 기본폴더가 존재하지 않습니다.");

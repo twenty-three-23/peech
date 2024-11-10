@@ -18,8 +18,21 @@ public class SecurityContextHolder {
     public static Long getUserId() {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
-        Long userId = jwtAuthentication.getUserId();
 
-        return userId;
+        return jwtAuthentication.getUserId();
+    }
+
+    public static String getEmail() {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
+
+        return jwtAuthentication.getEmail();
+    }
+
+    public static String getServiceType() {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        JWTAuthentication jwtAuthentication = (JWTAuthentication) authentication.getPrincipal();
+
+        return jwtAuthentication.getServiceType();
     }
 }
