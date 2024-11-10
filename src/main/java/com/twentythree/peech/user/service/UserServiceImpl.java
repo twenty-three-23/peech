@@ -27,6 +27,7 @@ import com.twentythree.peech.user.util.UserEmailHolder;
 import com.twentythree.peech.user.validator.UserValidator;
 import com.twentythree.peech.user.value.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserValidator userValidator;
     private final JWTUtils jwtUtils;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -127,6 +129,7 @@ public class UserServiceImpl implements UserService {
             accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
             refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
 
+
         } else if (userValidator.existUserByEmail(userEmail)) {
             UserDomain userDomain = userFetcher.fetchUserByEmail(userEmail);
 
@@ -139,9 +142,12 @@ public class UserServiceImpl implements UserService {
 
             accessToken = jwtUtils.createAccessToken(userId, userRole, funnel);
             refreshToken = jwtUtils.createRefreshToken(userId, userRole, funnel);
+
         } else {
             throw new RuntimeException("유저 생성에서 예상치 못한 문제가 생겼습니다.");
         }
+
+        // 예외를 제외하고 유저가 생성된 시점
         UserEmailHolder.setUserEmail(userEmail);
 
         return new LoginBySocial(accessToken, refreshToken, responseCode);

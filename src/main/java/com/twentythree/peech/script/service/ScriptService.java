@@ -1,5 +1,6 @@
 package com.twentythree.peech.script.service;
 
+import com.twentythree.peech.aop.annotation.Trace;
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.cache.CacheService;
@@ -419,5 +420,16 @@ public class ScriptService {
 
         return new ScriptExpectedTimeDTO(totalExpectedTime, paragraphExpectedTimeDTOList);
 
+    }
+
+    @Transactional
+    public void reflectAnalyzeResult(Long scriptId, String result) {
+        scriptRepository.saveAnalyzeResult(scriptId, result);
+    }
+
+    public AnalyzeResultDTO getAnalyzeResult(Long scriptId) {
+        return scriptRepository.findAnalyzeResultByScriptId(scriptId)
+                .map(result -> new AnalyzeResultDTO(200, result))
+                .orElseGet(() -> new AnalyzeResultDTO(202, "스크립트를 분석중입니다."));
     }
 }
