@@ -25,7 +25,6 @@ public class AnalyzeScriptPredictor {
 
     private final AnalyzeScriptGPT analyzeScriptGPT;
 
-    @Trace
     public CompletableFuture<String> requestAnalyzeScript(String scriptContent) {
         List<Message> messages = new ArrayList<>();
 
