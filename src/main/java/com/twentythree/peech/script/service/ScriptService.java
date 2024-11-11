@@ -1,6 +1,5 @@
 package com.twentythree.peech.script.service;
 
-import com.twentythree.peech.aop.annotation.Trace;
 import com.twentythree.peech.common.dto.request.GPTRequest;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import com.twentythree.peech.script.cache.CacheService;
