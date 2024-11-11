@@ -79,7 +79,7 @@ jobs:
     - name: Set up FCM server key
       run: |
         cd ./src/main/resources/
-        echo "${{ secrets.FCM_SECRET_KEY }}" > ./peech_fcm.json 
+        echo "${{ secrets.FCM_SECRET_KEY }}" | base64 --decode > ./peech_fcm.json 
       
     # 2. Spring Boot 애플리케이션 빌드
     - name: Build with Gradle
