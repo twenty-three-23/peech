@@ -2,11 +2,9 @@ package com.twentythree.peech.analyzescript.domain;
 
 import com.twentythree.peech.analyzescript.client.AnalyzeScriptGPT;
 import com.twentythree.peech.analyzescript.dto.request.GPTRequest;
-import com.twentythree.peech.aop.annotation.Trace;
 import com.twentythree.peech.common.dto.Message;
 import com.twentythree.peech.common.dto.response.GPTResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
