@@ -78,7 +78,7 @@ jobs:
     # fcm 서버 키 설정
     - name: Set up FCM server key
       run: |
-        cd ./peech/src/main/resources/
+        cd ./src/main/resources/
         echo "${{ secrets.FCM_SECRET_KEY }}" > ./peech_fcm.json 
       
     # 2. Spring Boot 애플리케이션 빌드
