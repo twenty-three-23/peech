@@ -2,8 +2,8 @@ package com.twentythree.peech.fcm.event.handler;
 
 import com.google.firebase.ErrorCode;
 import com.google.firebase.messaging.*;
-import com.twentythree.peech.fcm.application.NotificationService;
 import com.twentythree.peech.fcm.event.FCMPushedEvent;
+import com.twentythree.peech.fcm.event.FCMTestPushEvent;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +40,27 @@ public class FCMEventHandler {
                     log.error("Failed to send message to: id = {} {}", res.getException().getMessagingErrorCode(), res.getException().getMessage());
                 });
 
+    }
+
+    @EventListener
+    public void testPush(FCMTestPushEvent fcmTokenList) throws FirebaseMessagingException {
+
+        MulticastMessage message = MulticastMessage.builder()
+                .putData("title", "테스트 푸시 알림")
+                .putData("body", "테스트 푸시 알림을 보냅니다.")
+                .addAllTokens(fcmTokenList.getFcmTokenList())
+                .build();
+
+        BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
+        log.info("test messsage 전송완료");
+
+        //Todo: 실패한 푸시 알림에 대한 처리
+        response.getResponses().stream()
+                .filter(res -> !res.isSuccessful())
+                .filter(res -> res.getException().getErrorCode() == ErrorCode.INVALID_ARGUMENT)
+                .forEach(res -> {
+                    log.error("Failed to send message to: id = {} {}", res.getMessageId(), res.getException().getMessage());
+                });
     }
 
 }

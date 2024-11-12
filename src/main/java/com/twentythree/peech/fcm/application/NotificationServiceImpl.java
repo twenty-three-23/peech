@@ -4,11 +4,11 @@ package com.twentythree.peech.fcm.application;
 import com.twentythree.peech.fcm.dto.request.RequestFCMTokenDTO;
 import com.twentythree.peech.fcm.entity.NotificationEntity;
 import com.twentythree.peech.fcm.event.FCMPushedEvent;
+import com.twentythree.peech.fcm.event.FCMTestPushEvent;
 import com.twentythree.peech.fcm.infra.NotificationRepository;
 import com.twentythree.peech.user.entity.UserEntity;
 import com.twentythree.peech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +51,17 @@ public class NotificationServiceImpl implements NotificationService {
                                     );
                             notificationRepository.save(newEntity);
                         });
+    }
+
+    @Override
+    public void testPushNotification(Long userId) {
+        List<String> fcmTokenList = notificationRepository.findAllByUserId(userId);
+
+        if(fcmTokenList.isEmpty()){
+            throw new IllegalStateException("FCM 토큰이 존재하지 않습니다.");
+        }
+
+        applicationEventPublisher.publishEvent(new FCMTestPushEvent(fcmTokenList));
     }
 
     private void updateFCMToken(NotificationEntity originEntity, String newToken){
