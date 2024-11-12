@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,5 +25,13 @@ public class FCMController {
         notificationService.saveOrUpdateToken(request, userId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/api/v2/notification/test")
+    public ResponseEntity<String> testNotification(@AuthenticationPrincipal JWTAuthentication jwtAuthentication){
+        Long userId = jwtAuthentication.getUserId();
+        notificationService.testPushNotification(userId);
+
+        return ResponseEntity.ok("요청 처리 완료");
     }
 }
