@@ -24,6 +24,11 @@ public class FCMEventHandler {
     public void sendMessage(FCMPushedEvent fcmEventDTO) throws FirebaseMessagingException {
         // 유저가 접속한 모든 기기에 완료 푸시 알림을 보냄
         MulticastMessage message = MulticastMessage.builder()
+                .setNotification(Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build()
+                )
                 .putData("title", title)
                 .putData("body", body)
                 .addAllTokens(fcmEventDTO.getFcmTokenList())
@@ -46,6 +51,11 @@ public class FCMEventHandler {
     public void testPush(FCMTestPushEvent fcmTokenList) throws FirebaseMessagingException {
 
         MulticastMessage message = MulticastMessage.builder()
+                .setNotification(Notification.builder()
+                        .setTitle("테스트 푸시 알림")
+                        .setBody("테스트 푸시 알림을 보냅니다.")
+                        .build()
+                )
                 .putData("title", "테스트 푸시 알림")
                 .putData("body", "테스트 푸시 알림을 보냅니다.")
                 .addAllTokens(fcmTokenList.getFcmTokenList())
