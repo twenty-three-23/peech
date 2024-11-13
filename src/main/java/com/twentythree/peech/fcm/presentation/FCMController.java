@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -19,7 +20,7 @@ public class FCMController {
     private final NotificationService notificationService;
 
     @PutMapping("api/v2/user/notification/token")
-    public ResponseEntity<Void> putFCMToken(RequestFCMTokenDTO request, @AuthenticationPrincipal JWTAuthentication jwtAuthentication) {
+    public ResponseEntity<Void> putFCMToken(@RequestBody RequestFCMTokenDTO request, @AuthenticationPrincipal JWTAuthentication jwtAuthentication) {
 
         Long userId = jwtAuthentication.getUserId();
         notificationService.saveOrUpdateToken(request, userId);
