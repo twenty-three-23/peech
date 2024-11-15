@@ -64,6 +64,15 @@ public class NotificationServiceImpl implements NotificationService {
         applicationEventPublisher.publishEvent(new FCMTestPushEvent(fcmTokenList));
     }
 
+    @Override
+    public void deleteToken(String deviceId) {
+        notificationRepository.findByDeviceId(deviceId)
+                .ifPresentOrElse(
+                        notificationRepository::delete,
+                        () -> { throw new IllegalStateException("deviceId가 존재하지 않습니다.");}
+                );
+    }
+
     private void updateFCMToken(NotificationEntity originEntity, String newToken){
         originEntity.updateToken(newToken);
     }
