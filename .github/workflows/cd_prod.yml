@@ -24,6 +24,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Set up GPT_PROMPT_SYSTEM environment variable decode
+        run: echo "GPT_PROMPT_SYSTEM=${{ secrets.GPT_PROMPT_SYSTEM }}" >> $GITHUB_ENV
+
       - name: Set yaml file
         uses: microsoft/variable-substitution@v1
         with:
@@ -39,6 +42,7 @@ jobs:
           logging.level.com.twentythree.peech: off
           logging.config: classpath:spring-logback.xml
           gpt.api.key: ${{secrets.GPT_API_KEY_PROD}}
+          gpt.prompt.system: ${{env.GPT_PROMPT_SYSTEM}}
           jwt.secret.key: ${{secrets.JWT_SECRET_KEY_PROD}}
           jwt.access.key: ${{secrets.JWT_ACCESS_KEY}}
           jwt.refresh.key: ${{secrets.JWT_REFRESH_KEY}}
@@ -55,6 +59,9 @@ jobs:
           ffmpeg.path: ${{ secrets.FFMPEG_PATH_PROD }}
           ffprobe.path: ${{ secrets.FFPROBE_PATH_PROD }}
           spring.cors.allowed-origins: ${{ secrets.CORS_ALLOWED_ORIGINS_PROD }}
+          fcm.secret-key: ${{ secrets.FCM_SECRET_KEY }}
+          fcm.key-path: ${{ secrets.FCM_KEY_PATH }}
+          fcm.project-id: ${{ secrets.FCM_PROJECT_ID }}
           meta.api-version: ${{ secrets.META_API_VERSION}}
           meta.web.pixel-id: ${{ secrets.META_WEB_PIXEL_ID_PROD}}
           meta.web.access-token: ${{ secrets.META_WEB_ACCESS_TOKEN_PROD}}
@@ -70,6 +77,12 @@ jobs:
       # excute 허용
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
+
+      # fcm 서버 키 설정
+      - name: Set up FCM server key
+        run: |
+          cd ./src/main/resources/
+          echo "${{ secrets.FCM_SECRET_KEY }}" | base64 --decode > ./peech_fcm.json  
 
       # 2. Spring Boot 애플리케이션 빌드
       - name: Build with Gradle
