@@ -1,16 +1,14 @@
 package com.twentythree.peech.fcm.presentation;
 
 import com.twentythree.peech.fcm.application.NotificationService;
+import com.twentythree.peech.fcm.dto.request.RequestDeviceIdDTO;
 import com.twentythree.peech.fcm.dto.request.RequestFCMTokenDTO;
 import com.twentythree.peech.security.jwt.JWTAuthentication;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,5 +32,12 @@ public class FCMController {
         notificationService.testPushNotification(userId);
 
         return ResponseEntity.ok("요청 처리 완료");
+    }
+
+    @DeleteMapping("/api/v2/user/notification/token")
+    public ResponseEntity<Void> deleteFCMToken(@RequestBody RequestDeviceIdDTO request){
+        notificationService.deleteToken(request.getDeviceId());
+
+        return ResponseEntity.ok().build();
     }
 }
