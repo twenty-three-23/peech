@@ -24,10 +24,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up GPT_PROMPT_SYSTEM environment variable decode
+      - name: Decode GPT Prompt and Set Environment Variable
         run: |
           DECODED_PROMPT=$(echo "${{ secrets.GPT_PROMPT_SYSTEM }}" | base64 --decode)
-          echo "GPT_PROMPT_SYSTEM=$DECODED_PROMPT" >> $GITHUB_ENV
+          echo "GPT_PROMPT_SYSTEM<<EOF" >> $GITHUB_ENV
+          echo "$DECODED_PROMPT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Set yaml file
         uses: microsoft/variable-substitution@v1
@@ -44,7 +46,7 @@ jobs:
           logging.level.com.twentythree.peech: off
           logging.config: classpath:spring-logback.xml
           gpt.api.key: ${{secrets.GPT_API_KEY_PROD}}
-          gpt.prompt.system: ${{env.GPT_PROMPT_SYSTEM}}
+          gpt.prompt.system: DECODED_PROMPT=$(echo "${{ secrets.GPT_PROMPT_SYSTEM }}" | base64 --decode)
           jwt.secret.key: ${{secrets.JWT_SECRET_KEY_PROD}}
           jwt.access.key: ${{secrets.JWT_ACCESS_KEY}}
           jwt.refresh.key: ${{secrets.JWT_REFRESH_KEY}}
