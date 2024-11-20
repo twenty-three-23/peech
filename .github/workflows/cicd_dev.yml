@@ -26,7 +26,9 @@ jobs:
         distribution: 'temurin'
 
     - name: Set up GPT_PROMPT_SYSTEM environment variable decode
-      run: echo "GPT_PROMPT_SYSTEM=${{ secrets.GPT_PROMPT_SYSTEM }}" | base64 --decode >> $GITHUB_ENV
+      run: |
+        DECODED_PROMPT=$(echo "${{ secrets.GPT_PROMPT_SYSTEM }}" | base64 --decode)
+        echo "GPT_PROMPT_SYSTEM=$DECODED_PROMPT" >> $GITHUB_ENV
 
     - name: Set yaml file 
       uses: microsoft/variable-substitution@v1
