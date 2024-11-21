@@ -1,6 +1,5 @@
 package com.twentythree.peech.paragraph.infrastructure;
 
-import com.twentythree.peech.common.utils.ScriptUtils;
 import com.twentythree.peech.paragraph.domain.ParagraphFetcher;
 import com.twentythree.peech.paragraph.domain.ParagraphsDomain;
 import com.twentythree.peech.paragraph.domain.ParagraphsInformationDomain;
@@ -16,6 +15,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static com.twentythree.peech.common.utils.ScriptUtils.sumLocalTime;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -79,6 +80,8 @@ public class ParagraphFetcherImpl implements ParagraphFetcher {
             if (latestParagraphOrder == null) {
                 latestParagraphOrder = paragraphOrder;
                 paragraphContent = sentence.getSentenceContent();
+                expectedTimePerParagraph = sumLocalTime(expectedTimePerParagraph, sentence.getSentenceExpectTime());
+                realTimePerParagraph = sumLocalTime(realTimePerParagraph, sentence.getSentenceRealTime());
             }
             else if (paragraphOrder > latestParagraphOrder) {
 
@@ -88,8 +91,8 @@ public class ParagraphFetcherImpl implements ParagraphFetcher {
                 paragraphContent = sentence.getSentenceContent();
             } else if (paragraphOrder.equals(latestParagraphOrder)) {
                 paragraphContent += sentence.getSentenceContent();
-                expectedTimePerParagraph = ScriptUtils.sumLocalTime(expectedTimePerParagraph, sentence.getSentenceExpectTime());
-                realTimePerParagraph = ScriptUtils.sumLocalTime(realTimePerParagraph, sentence.getSentenceRealTime());
+                expectedTimePerParagraph = sumLocalTime(expectedTimePerParagraph, sentence.getSentenceExpectTime());
+                realTimePerParagraph = sumLocalTime(realTimePerParagraph, sentence.getSentenceRealTime());
             } else {
                 throw new RuntimeException("문단 도메인 생성중 알 수 없는 오류 발생");
             }
