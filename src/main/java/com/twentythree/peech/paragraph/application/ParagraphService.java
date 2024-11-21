@@ -13,12 +13,13 @@ import com.twentythree.peech.paragraph.valueobject.ParagraphInformation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.twentythree.peech.common.utils.ScriptUtils.*;
 
 @RequiredArgsConstructor
 @Service
@@ -46,14 +47,14 @@ public class ParagraphService {
     public HistoryDetailResponseDTO getScriptDetail(Long scriptId) {
         ParagraphsInformationDomain paragraphsInformationDomain = paragraphFetcher.fetchParagraphsInformation(scriptId);
         List<ParagraphInformation> paragraphInformations = paragraphsInformationDomain.getParagraphInformations();
-        LocalTime totalRealTime = LocalTime.of(0, 0, 0);
+        LocalTime totalRealTime = LocalTime.of(0, 0, 0, 0);
 
         List<HistoryParagraphDTO> historyParagraphs = new ArrayList<>();
 
         for(ParagraphInformation paragraphInformation : paragraphInformations) {
-            String measurement = ScriptUtils.measurementSpeedResult(paragraphInformation.getParagraphRealTime(),
+            String measurement = measurementSpeedResult(paragraphInformation.getParagraphRealTime(),
                     paragraphInformation.getParagraphExpectedTime());
-            totalRealTime = ScriptUtils.sumLocalTime(totalRealTime, paragraphInformation.getParagraphRealTime());
+            totalRealTime = sumLocalTime(totalRealTime, paragraphInformation.getParagraphRealTime());
 
             historyParagraphs.add(new HistoryParagraphDTO(paragraphInformation.getParagraphOrder(), measurement,
                     paragraphInformation.getParagraphRealTime(), paragraphInformation.getParagraphContent()));
