@@ -86,9 +86,13 @@ public class ParagraphFetcherImpl implements ParagraphFetcher {
             else if (paragraphOrder > latestParagraphOrder) {
 
                 paragraphInformations.add(new ParagraphInformation(latestParagraphOrder, paragraphContent, expectedTimePerParagraph, realTimePerParagraph));
+                expectedTimePerParagraph = LocalTime.of(0,0,0,0);
+                realTimePerParagraph = LocalTime.of(0,0,0,0);
 
                 latestParagraphOrder = paragraphOrder;
                 paragraphContent = sentence.getSentenceContent();
+                expectedTimePerParagraph = sumLocalTime(expectedTimePerParagraph, sentence.getSentenceExpectTime());
+                realTimePerParagraph = sumLocalTime(realTimePerParagraph, sentence.getSentenceRealTime());
             } else if (paragraphOrder.equals(latestParagraphOrder)) {
                 paragraphContent += sentence.getSentenceContent();
                 expectedTimePerParagraph = sumLocalTime(expectedTimePerParagraph, sentence.getSentenceExpectTime());
